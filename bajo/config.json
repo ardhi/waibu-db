@@ -1,0 +1,9 @@
+{
+  "alias": "wdb",
+  "dbModel": {
+    "dataOnly": false,
+    "count": false,
+    "patchEnabled": false
+  },
+  "dependencies": ["waibu", "dobo"]
+}
