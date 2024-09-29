@@ -1,4 +1,4 @@
-async function waibuMpaThemefterInjectCss ({ items, reply }) {
+async function waibuMpaThemefterInjectCss ({ items }) {
   items.push(`${this.name}.virtual:/bs-table/bootstrap-table.min.css`)
 }
 
