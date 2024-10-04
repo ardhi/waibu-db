@@ -1,7 +1,7 @@
 export function getUrlOpts () {
   const { get } = this.plugin.app.bajo.lib._
   return {
-    excludes: [
+    without: [
       get(this, 'plugin.app.waibu.config.qsKey.lang', 'lang'),
       get(this, 'plugin.app.waibuMpa.config.darkMode.qsKey', 'dark-mode')
     ]

@@ -1,18 +1,29 @@
+export function getFields (fields) {
+  const qsKey = this.plugin.app.waibu.config.qsKey
+  const { get, isEmpty, isString, pull } = this.plugin.app.bajo.lib._
+  const schema = get(this, 'locals.schema', {})
+  fields = fields ?? get(this, `locals._meta.query.${qsKey.fields}`, '')
+  if (isEmpty(fields)) fields = schema.properties.map(p => p.name)
+  if (isString(fields)) fields = fields.split(',')
+  pull(fields, 'id')
+  fields.unshift('id')
+  return fields
+}
+
 async function table (params = {}) {
   const { attrToObject } = this.plugin.app.waibuMpa
-  const { get, isEmpty, omit, set } = this.plugin.app.bajo.lib._
-  const qsKey = this.plugin.app.waibu.config.qsKey
-  let { count, limit, page, query, sort } = attrToObject(params.attr.options)
-  count = count ?? get(this, 'locals.params.count', 0)
-  page = page ?? get(this, 'locals.params.page', 1)
-  limit = limit ?? get(this, 'locals.params.limit', 25)
-  query = count ?? get(this, 'locals._meta.query.query', '')
-  sort = sort ?? get(this, 'locals._meta.query.sort', '')
-  let [sortCol, sortDir] = sort.split(':')
-  if (!['-1', '1'].includes(sortDir)) sortDir = '1'
+  const { get, omit, set } = this.plugin.app.bajo.lib._
 
   const data = get(this, 'locals.data', [])
   const schema = get(this, 'locals.schema', {})
+  const qsKey = this.plugin.app.waibu.config.qsKey
+  let { sort, fields } = attrToObject(params.attr.options)
+  sort = sort ?? get(this, `locals._meta.query.${qsKey.sort}`, '')
+  fields = getFields.call(this, fields)
+
+  let [sortCol, sortDir] = sort.split(':')
+  if (!['-1', '1'].includes(sortDir)) sortDir = '1'
+
   let selection = params.attr.selection
   if (![undefined, 'single', 'multi'].includes(selection)) selection = 'multi'
   if (selection) params.attr.hover = true
@@ -22,6 +33,7 @@ async function table (params = {}) {
   let items = []
   // head
   for (const p of schema.properties) {
+    if (!fields.includes(p.name)) continue
     let head = this.req.t(`field.${p.name}`)
     if (!params.attr.noSort && (schema.sortables ?? []).includes(p.name)) {
       let sortItem = `${p.name}:-1`
@@ -43,7 +55,7 @@ async function table (params = {}) {
   if (items.length > 0 && selection) {
     let item = '<th></th>'
     if (selection === 'multi') {
-      const attr = { name: '_rtm', noWrapper: true, noLabel: true }
+      const attr = { 'x-model': 'toggleAll', name: '_rtm', noWrapper: true, noLabel: true }
       item = await this.buildTag({ tag: 'formCheck', attr, prepend: '<th>', append: '</th>' })
     }
     items.unshift(item)
@@ -56,21 +68,49 @@ async function table (params = {}) {
     const lines = []
     if (selection) {
       const tag = selection === 'single' ? 'formRadio' : 'formCheck'
-      const attr = { name: '_rt', value: d.id, noLabel: true, noWrapper: true }
+      const attr = { 'x-model': 'selected', name: '_rt', value: d.id, noLabel: true, noWrapper: true }
       lines.push(await this.buildTag({ tag, attr, prepend: '<td>', append: '</td>' }))
     }
     for (const p of schema.properties) {
+      if (!fields.includes(p.name)) continue
       const value = this.req.format(d[p.name], p.type)
       const attr = {}
       if (['integer', 'smallint', 'float', 'double'].includes(p.type)) attr.text = 'end'
       lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
     }
-    const attr = { 'x-data': true, '@click': 'selected.push(\'x\'); console.log(selected)' }
+    const attr = { '@click': `toggle('${d.id}')` }
     items.push(await this.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
   }
-  const attr = { 'x-data': '{ selected: [] }' }
-  html.push(await this.buildTag({ tag: 'tbody', attr, html: items.join('\n') }))
+  html.push(await this.buildTag({ tag: 'tbody', html: items.join('\n') }))
   params.attr = omit(params.attr, ['sortUpIcon', 'sortDownIcon', 'noSort', 'selection', 'headerNowrap'])
+  if (selection === 'multi') {
+    params.attr['x-data'] = `{
+      toggleAll: false,
+      selected: [],
+      toggle (id) {
+        if (this.selected.includes(id)) {
+          const idx = this.selected.indexOf(id)
+          this.selected.splice(idx, 1)
+        } else this.selected.push(id)
+      }
+    }`
+    params.attr['x-init'] = `
+      $watch('toggleAll', val => {
+        if (val) {
+          const els = document.getElementsByName('_rt')
+          const items = Array.from(els)
+          selected = items.map(el => el.value)
+        } else selected = []
+      })
+    `
+  } else if (selection === 'single') {
+    params.attr['x-data'] = `{
+      selected: '',
+      toggle (id) {
+        this.selected = id
+      }
+    }`
+  }
   params.html = await this.buildTag({ tag: 'table', attr: params.attr, html: html.join('\n') })
 }
 
