@@ -57,6 +57,9 @@ async function table (params = {}) {
     if (selection === 'multi') {
       const attr = { 'x-model': 'toggleAll', name: '_rtm', noWrapper: true, noLabel: true }
       item = await this.buildTag({ tag: 'formCheck', attr, prepend: '<th>', append: '</th>' })
+    } else {
+      const attr = { name: 'remove', '@click': 'selected = \'\'', style: { cursor: 'pointer' } }
+      item = await this.buildTag({ tag: 'icon', attr, prepend: '<th>', append: '</th>' })
     }
     items.unshift(item)
   }
@@ -102,6 +105,7 @@ async function table (params = {}) {
           selected = items.map(el => el.value)
         } else selected = []
       })
+      $watch('selected', val => $dispatch('on-selection', val))
     `
   } else if (selection === 'single') {
     params.attr['x-data'] = `{
@@ -110,6 +114,9 @@ async function table (params = {}) {
         this.selected = id
       }
     }`
+    params.attr['x-init'] = `
+      $watch('selected', val => $dispatch('on-selection', [val]))
+    `
   }
   params.html = await this.buildTag({ tag: 'table', attr: params.attr, html: html.join('\n') })
 }

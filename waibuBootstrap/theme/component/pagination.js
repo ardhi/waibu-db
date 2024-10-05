@@ -34,7 +34,7 @@ async function pagination (params = {}) {
   if (!params.attr.noPages) {
     for (const p of pages) {
       attr = { disabled: p === '...', href: this._buildUrl({ page: p }, getUrlOpts.call(this)), active: p === page }
-      html.push(await this.buildTag({ tag: 'paginationItem', attr, html: p }))
+      html.push(await this.buildTag({ tag: 'paginationItem', attr, html: (p + '') }))
     }
   }
   if (params.attr.next) {

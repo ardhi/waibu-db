@@ -34,7 +34,7 @@ async function recordsInfo (params = {}) {
     }
     const attr = group.dropdown
     attr.content = limit + ''
-    attr.color = attr.color ?? 'primary'
+    attr.color = attr.color ?? 'secondary-outline'
     html.push(await this.buildTag({ tag: 'dropdown', attr, html: items.join('\n') }))
     html.push(' recs per page')
   }
