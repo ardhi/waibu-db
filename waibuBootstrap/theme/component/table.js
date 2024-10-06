@@ -1,3 +1,5 @@
+import { buildHref } from './btn-add.js'
+
 export function getFields (fields) {
   const qsKey = this.plugin.app.waibu.config.qsKey
   const { get, isEmpty, isString, pull } = this.plugin.app.bajo.lib._
@@ -11,8 +13,10 @@ export function getFields (fields) {
 }
 
 async function table (params = {}) {
-  const { attrToObject } = this.plugin.app.waibuMpa
+  const { attrToObject, groupAttrs } = this.plugin.app.waibuMpa
   const { get, omit, set } = this.plugin.app.bajo.lib._
+  const group = groupAttrs(params.attr, ['body', 'head', 'foot'])
+  params.attr = group._
 
   const data = get(this, 'locals.data', [])
   const schema = get(this, 'locals.schema', {})
@@ -64,7 +68,7 @@ async function table (params = {}) {
     items.unshift(item)
   }
   const header = await this.buildTag({ tag: 'tr', html: items.join('\n') })
-  html.push(await this.buildTag({ tag: 'thead', html: header }))
+  html.push(await this.buildTag({ tag: 'thead', attr: group.head, html: header }))
   // body
   items = []
   for (const d of data) {
@@ -81,10 +85,10 @@ async function table (params = {}) {
       if (['integer', 'smallint', 'float', 'double'].includes(p.type)) attr.text = 'end'
       lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
     }
-    const attr = { '@click': `toggle('${d.id}')` }
+    const attr = { '@click': `toggle('${d.id}')`, '@dblclick': `goDetails('${d.id}')` }
     items.push(await this.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
   }
-  html.push(await this.buildTag({ tag: 'tbody', html: items.join('\n') }))
+  html.push(await this.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
   params.attr = omit(params.attr, ['sortUpIcon', 'sortDownIcon', 'noSort', 'selection', 'headerNowrap'])
   if (selection === 'multi') {
     params.attr['x-data'] = `{
@@ -95,6 +99,9 @@ async function table (params = {}) {
           const idx = this.selected.indexOf(id)
           this.selected.splice(idx, 1)
         } else this.selected.push(id)
+      },
+      goDetails (id) {
+        window.location.href = '${buildHref.call(this, 'details')}?id=' + id
       }
     }`
     params.attr['x-init'] = `

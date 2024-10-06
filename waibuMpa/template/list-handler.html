@@ -1,0 +1,27 @@
+<c:grid-row gutter="3" margin="bottom-4">
+  <c:grid-col col="3-md">
+    <c:form-input type="search" t:placeholder="Search">
+      <c:form-input-addon><c:btn icon="dotsThree" /></c:form-input-addon>
+    </c:form-input>
+  </c:grid-col>
+  <c:grid-col col="9-md" flex="justify-content:end">
+    <c:btn-group margin="start-2">
+      <c:wdb-btn-details />
+      <c:wdb-btn-add text="nowrap"/>
+      <c:wdb-btn-edit />
+    </c:btn-group>
+    <c:wdb-btn-delete margin="start-2" />
+    <c:btn-group margin="start-2">
+      <c:wdb-btn-columns menu="end" />
+    </c:btn-group>
+  </c:grid-col>
+</c:grid-row>
+<c:wdb-table border body-divider strip responsive selection="multi" margin="bottom-4"/>
+<c:grid-row gutter="3">
+  <c:grid-col col="6-md">
+    <c:wdb-recs-info pages recs-per-page recs-per-page-values="10 15 25 50" />
+  </c:grid-col>
+  <c:grid-col col="6-md" flex="justify-content:end">
+    <c:wdb-pagination />
+  </c:grid-col>
+</c:grid-row>
