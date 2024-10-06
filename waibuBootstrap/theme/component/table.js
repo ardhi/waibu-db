@@ -1,5 +1,3 @@
-import { buildHref } from './btn-add.js'
-
 export function getFields (fields) {
   const qsKey = this.plugin.app.waibu.config.qsKey
   const { get, isEmpty, isString, pull } = this.plugin.app.bajo.lib._
@@ -101,7 +99,7 @@ async function table (params = {}) {
         } else this.selected.push(id)
       },
       goDetails (id) {
-        window.location.href = '${buildHref.call(this, 'details')}?id=' + id
+        window.location.href = '${this._wdbBuildHref('details')}&id=' + id
       }
     }`
     params.attr['x-init'] = `

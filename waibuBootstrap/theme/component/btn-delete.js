@@ -5,19 +5,28 @@ async function btnDelete (params = {}) {
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Delete')
   params.attr.color = params.attr.color ?? 'danger-outline'
   params.attr.id = generateId('alpha')
-  params.attr.disabled = true
-  params.attr['x-data'] = `{
-    selected: [],
-    remove (ids) {
-      wmpa.postForm({ action: 'remove', ids })
-    }
-  }`
-  params.attr['@on-selection.window'] = `
+  if (params.attr.auto) {
+    params.attr.disabled = true
+    params.attr['x-data'] = `{
+      selected: [],
+      remove (ids) {
+        wmpa.postForm({ action: 'remove', ids })
+      }
+    }`
+    params.attr['@on-selection.window'] = `
     const el = document.getElementById('${params.attr.id}')
     selected = $event.detail
     if (selected.length > 0) el.classList.remove('disabled')
     else el.classList.add('disabled')
   `
+  } else {
+    params.attr['x-data'] = `{
+      selected: ['${this.req.query.id}'],
+      remove (ids) {
+        wmpa.postForm({ action: 'remove', ids }, '${this._wdbBuildHref('list', ['id', 'page'])}')
+      }
+    }`
+  }
   const msg = 'You\'re about to remove one or more records. Are you really sure to do this?'
   params.attr['@click'] = `
     const opts = selected.join(',')

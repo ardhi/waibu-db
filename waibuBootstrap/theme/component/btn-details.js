@@ -1,5 +1,3 @@
-import { buildHref } from './btn-add.js'
-
 async function btnDetails (params = {}) {
   const { generateId } = this.plugin.app.bajo
   const { isEmpty } = this.plugin.app.bajo.lib._
@@ -7,7 +5,7 @@ async function btnDetails (params = {}) {
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Details')
   params.attr.color = params.attr.color ?? 'secondary-outline'
   params.attr.id = generateId('alpha')
-  if (!params.attr.href) params.attr.href = buildHref.call(this, 'details')
+  if (!params.attr.href) params.attr.href = this._wdbBuildHref('details')
   params.attr.split = true
   params.attr.disabled = true
   params.attr['x-data'] = `{
@@ -18,7 +16,7 @@ async function btnDetails (params = {}) {
     const el = document.getElementById('${params.attr.id}')
     if ($event.detail.length === 1) el.classList.remove('disabled')
     else el.classList.add('disabled')
-    el.href = path + '?id=' + recId
+    el.href = path + '&id=' + recId
   `
   params.html = await this.buildTag({ tag: 'btn', attr: params.attr, html: params.html })
 }
