@@ -16,7 +16,7 @@ async function table (params = {}) {
   const group = groupAttrs(params.attr, ['body', 'head', 'foot'])
   params.attr = group._
 
-  const data = get(this, 'locals.data', [])
+  const data = get(this, 'locals.data.data', [])
   const schema = get(this, 'locals.schema', {})
   const qsKey = this.plugin.app.waibu.config.qsKey
   let { sort, fields } = attrToObject(params.attr.options)

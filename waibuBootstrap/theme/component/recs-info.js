@@ -4,10 +4,10 @@ async function recordsInfo (params = {}) {
   const { attrToObject, groupAttrs, attrToArray } = this.plugin.app.waibuMpa
   const { get, isEmpty, omit } = this.plugin.app.bajo.lib._
   let { count, limit, page, pages } = attrToObject(params.attr.options)
-  count = count ?? get(this, 'locals.params.count', 0)
-  page = page ?? get(this, 'locals.params.page', 1)
-  limit = limit ?? get(this, 'locals.params.limit', 25)
-  pages = pages ?? get(this, 'locals.params.pages', 0)
+  count = count ?? get(this, 'locals.data.count', 0)
+  page = page ?? get(this, 'locals.data.page', 1)
+  limit = limit ?? get(this, 'locals.data.limit', 25)
+  pages = pages ?? get(this, 'locals.data.pages', 0)
 
   params.tag = 'div'
   params.attr.flex = 'justify-center:start align-items:center'
