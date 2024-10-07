@@ -1,5 +1,5 @@
 {
-  "alias": "wdb",
+  "prefix": "db",
   "dbModel": {
     "dataOnly": false,
     "count": false,
