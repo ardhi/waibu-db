@@ -5,7 +5,7 @@ async function btnClone (params = {}) {
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Clone')
   params.attr.color = params.attr.color ?? 'secondary-outline'
   params.attr.id = generateId('alpha')
-  if (!params.attr.href) params.attr.href = this._wdbBuildHref('add', ['id']) + '&mode=clone'
+  if (!params.attr.href) params.attr.href = this._buildUrl({ base: 'add', exclude: ['id'] }) + '&mode=clone'
   if (params.attr.auto) {
     params.attr.disabled = true
     params.attr['x-data'] = `{

@@ -2,7 +2,7 @@ import { getUrlOpts } from './pagination.js'
 
 async function recordsInfo (params = {}) {
   const { attrToObject, groupAttrs, attrToArray } = this.plugin.app.waibuMpa
-  const { get, isEmpty, omit } = this.plugin.app.bajo.lib._
+  const { get, isEmpty, omit, merge } = this.plugin.app.bajo.lib._
   let { count, limit, page, pages } = attrToObject(params.attr.options)
   count = count ?? get(this, 'locals.data.count', 0)
   page = page ?? get(this, 'locals.data.page', 1)
@@ -29,7 +29,7 @@ async function recordsInfo (params = {}) {
     if (!isEmpty(html)) html[html.length - 1] += ','
     const items = []
     for (const i of params.attr.recsPerPageValues) {
-      const attr = { href: this._buildUrl({ limit: i, page: 1 }, getUrlOpts.call(this)), disabled: i === limit }
+      const attr = { href: this._buildUrl(merge(getUrlOpts.call(this), { params: { limit: i, page: 1 } })), disabled: i === limit }
       items.push(await this.buildTag({ tag: 'dropdownItem', attr, html: i + '' }))
     }
     const attr = group.dropdown

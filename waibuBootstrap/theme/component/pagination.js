@@ -1,7 +1,8 @@
-export function getUrlOpts () {
+export function getUrlOpts (params = {}) {
   const { get } = this.plugin.app.bajo.lib._
   return {
-    without: [
+    params,
+    excludes: [
       get(this, 'plugin.app.waibu.config.qsKey.lang', 'lang'),
       get(this, 'plugin.app.waibuMpa.config.darkMode.qsKey', 'dark-mode')
     ]
@@ -23,28 +24,28 @@ async function pagination (params = {}) {
   let attr
   if (params.attr.first) {
     icon = await this.buildTag({ tag: 'icon', attr: { name: params.attr.firstIcon ?? 'playSkipStart' } })
-    attr = { disabled: page <= pages[0], href: this._buildUrl({ page: 1 }, getUrlOpts.call(this)) }
+    attr = { disabled: page <= pages[0], href: this._buildUrl(getUrlOpts.call(this, { page: 1 })) }
     html.push(await this.buildTag({ tag: 'paginationItem', attr, html: icon }))
   }
   if (params.attr.prev) {
     icon = await this.buildTag({ tag: 'icon', attr: { name: params.attr.prevIcon ?? 'playFastBackward' } })
-    attr = { disabled: page <= pages[0], href: this._buildUrl({ page: page - 1 }, getUrlOpts.call(this)) }
+    attr = { disabled: page <= pages[0], href: this._buildUrl(getUrlOpts.call(this, { page: page - 1 })) }
     html.push(await this.buildTag({ tag: 'paginationItem', attr, html: icon }))
   }
   if (!params.attr.noPages) {
     for (const p of pages) {
-      attr = { disabled: p === '...', href: this._buildUrl({ page: p }, getUrlOpts.call(this)), active: p === page }
+      attr = { disabled: p === '...', href: this._buildUrl(getUrlOpts.call(this, { page: p })), active: p === page }
       html.push(await this.buildTag({ tag: 'paginationItem', attr, html: (p + '') }))
     }
   }
   if (params.attr.next) {
     icon = await this.buildTag({ tag: 'icon', attr: { name: params.attr.nextIcon ?? 'playFastForward' } })
-    attr = { disabled: page >= pages[pages.length - 1], href: this._buildUrl({ page: page + 1 }, getUrlOpts.call(this)) }
+    attr = { disabled: page >= pages[pages.length - 1], href: this._buildUrl(getUrlOpts.call(this, { page: page + 1 })) }
     html.push(await this.buildTag({ tag: 'paginationItem', attr, html: icon }))
   }
   if (params.attr.last) {
     icon = await this.buildTag({ tag: 'icon', attr: { name: params.attr.lastIcon ?? 'playSkipEnd' } })
-    attr = { disabled: page >= pages[pages.length - 1], href: this._buildUrl({ page: pages[pages.length - 1] }, getUrlOpts.call(this)) }
+    attr = { disabled: page >= pages[pages.length - 1], href: this._buildUrl(getUrlOpts.call(this, { page: pages[pages.length - 1] })) }
     html.push(await this.buildTag({ tag: 'paginationItem', attr, html: icon }))
   }
   params.attr = group.pagination

@@ -23,7 +23,7 @@ async function btnDelete (params = {}) {
     params.attr['x-data'] = `{
       selected: ['${this.req.query.id}'],
       remove (ids) {
-        wmpa.postForm({ action: 'remove', ids }, '${this._wdbBuildHref('list', ['id', 'page'])}')
+        wmpa.postForm({ action: 'remove', ids }, '${this._buildUrl({ base: 'list', exclude: ['id', 'page'] })}')
       }
     }`
   }

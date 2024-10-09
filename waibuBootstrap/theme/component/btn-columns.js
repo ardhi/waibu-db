@@ -2,28 +2,28 @@ import { getFields } from './table.js'
 
 async function btnColumns (params = {}) {
   const { generateId } = this.plugin.app.bajo
-  const { get, map, isEmpty } = this.plugin.app.bajo.lib._
+  const { get, isEmpty } = this.plugin.app.bajo.lib._
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
   const fields = getFields.call(this, params.attr.fields)
   const items = []
   params.attr.color = params.attr.color ?? 'secondary-outline'
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Columns')
-  for (const p of schema.properties) {
-    if (p.name === 'id') {
-      items.push(await this.buildTag({ tag: 'formCheck', attr: { checked: true, label: this.req.t('ID'), value: p.name, disabled: true } }))
+  for (const f of schema.view.fields) {
+    if (f === 'id') {
+      items.push(await this.buildTag({ tag: 'formCheck', attr: { checked: true, label: this.req.t('ID'), value: f, disabled: true } }))
       continue
     }
-    const attr = { 'x-model': 'selected', label: this.req.t(`field.${p.name}`), value: p.name }
-    if (fields.includes(p.name)) attr.checked = true
+    const attr = { 'x-model': 'selected', label: this.req.t(`field.${f}`), value: f }
+    if (fields.includes(f)) attr.checked = true
     items.push(await this.buildTag({ tag: 'formCheck', attr }))
   }
   const applyId = generateId('alpha')
-  const href = this._buildUrl({}, { without: [qsKey.fields] })
+  const href = this._buildUrl({ exclude: [qsKey.fields] })
   const html = ['<form class="mt-1 mb-2 mx-3" ']
   html.push(`x-data="{
     selected: ${JSON.stringify(fields).replaceAll('"', "'")},
-    all: ${JSON.stringify(map(schema.properties, 'name')).replaceAll('"', "'")}
+    all: ${JSON.stringify(schema.view.fields).replaceAll('"', "'")}
   }"`)
   html.push(`x-init="
     const el = document.getElementById('${applyId}')

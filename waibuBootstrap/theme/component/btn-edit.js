@@ -5,7 +5,7 @@ async function btnEdit (params = {}) {
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Edit')
   params.attr.color = params.attr.color ?? 'secondary-outline'
   params.attr.id = generateId('alpha')
-  if (!params.attr.href) params.attr.href = this._wdbBuildHref('edit', ['id'])
+  if (!params.attr.href) params.attr.href = this._buildUrl({ base: 'edit', exclude: ['id'] })
   if (params.attr.auto) {
     params.attr.split = true
     params.attr.disabled = true

@@ -11,17 +11,16 @@ export function getFields (fields) {
 }
 
 async function table (params = {}) {
-  const { attrToObject, groupAttrs } = this.plugin.app.waibuMpa
-  const { get, omit, set } = this.plugin.app.bajo.lib._
+  const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
+  const { get, omit, set, find } = this.plugin.app.bajo.lib._
   const group = groupAttrs(params.attr, ['body', 'head', 'foot'])
   params.attr = group._
 
   const data = get(this, 'locals.data.data', [])
   const schema = get(this, 'locals.schema', {})
   const qsKey = this.plugin.app.waibu.config.qsKey
-  let { sort, fields } = attrToObject(params.attr.options)
-  sort = sort ?? get(this, `locals._meta.query.${qsKey.sort}`, '')
-  fields = getFields.call(this, fields)
+  const fields = getFields.call(this, params.attr.fields)
+  const sort = params.attr.sort ? attrToArray(params.attr.sort) : get(this, `locals._meta.query.${qsKey.sort}`, '')
 
   let [sortCol, sortDir] = sort.split(':')
   if (!['-1', '1'].includes(sortDir)) sortDir = '1'
@@ -34,20 +33,20 @@ async function table (params = {}) {
   const html = []
   let items = []
   // head
-  for (const p of schema.properties) {
-    if (!fields.includes(p.name)) continue
-    let head = this.req.t(`field.${p.name}`)
-    if (!params.attr.noSort && (schema.sortables ?? []).includes(p.name)) {
-      let sortItem = `${p.name}:-1`
+  for (const f of schema.view.fields) {
+    if (!fields.includes(f)) continue
+    let head = this.req.t(`field.${f}`)
+    if (!params.attr.noSort && (schema.sortables ?? []).includes(f)) {
+      let sortItem = `${f}:-1`
       let icon = params.attr.sortUpIcon ?? 'caretUp'
-      if (p.name === sortCol) {
-        sortItem = `${p.name}:${sortDir === '1' ? '-1' : '1'}`
+      if (f === sortCol) {
+        sortItem = `${f}:${sortDir === '1' ? '-1' : '1'}`
         icon = sortDir === '1' ? (params.attr.sortUpIcon ?? 'caretUp') : (params.attr.sortDownIcon ?? 'caretDown')
       }
       const item = set({ page: 1 }, qsKey.sort, sortItem)
-      const href = this._buildUrl(item)
+      const href = this._buildUrl({ params: item })
       const content = [
-        await this.buildTag({ tag: 'div', html: this.req.t(`field.${p.name}`) }),
+        await this.buildTag({ tag: 'div', html: this.req.t(`field.${f}`) }),
         await this.buildTag({ tag: 'a', attr: { icon, href }, prepend: '<div class="ms-1">', append: '</div>' })
       ]
       head = await this.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
@@ -76,11 +75,12 @@ async function table (params = {}) {
       const attr = { 'x-model': 'selected', name: '_rt', value: d.id, noLabel: true, noWrapper: true }
       lines.push(await this.buildTag({ tag, attr, prepend: '<td>', append: '</td>' }))
     }
-    for (const p of schema.properties) {
-      if (!fields.includes(p.name)) continue
-      const value = this.req.format(d[p.name], p.type)
+    for (const f of schema.view.fields) {
+      const prop = find(schema.properties, { name: f })
+      if (!fields.includes(f)) continue
+      const value = this.req.format(d[f], prop.type)
       const attr = {}
-      if (['integer', 'smallint', 'float', 'double'].includes(p.type)) attr.text = 'end'
+      if (['integer', 'smallint', 'float', 'double'].includes(prop.type)) attr.text = 'end'
       lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
     }
     const attr = { '@click': `toggle('${d.id}')`, '@dblclick': `goDetails('${d.id}')` }
@@ -99,7 +99,7 @@ async function table (params = {}) {
         } else this.selected.push(id)
       },
       goDetails (id) {
-        window.location.href = '${this._wdbBuildHref('details')}&id=' + id
+        window.location.href = '${this._buildUrl({ base: 'details' })}&id=' + id
       }
     }`
     params.attr['x-init'] = `
