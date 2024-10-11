@@ -3,7 +3,7 @@ import path from 'path'
 const disableds = ['id', 'createdAt', 'updatedAt']
 
 function getFields (action, schema, ext, { hidden = [] } = {}) {
-  const { map, get, without } = this.app.bajo.lib._
+  const { map, get, without, uniq } = this.app.bajo.lib._
   const allFields = map(schema.properties, p => {
     if (p.hidden) hidden.push(p.name)
     return p.name
@@ -13,7 +13,7 @@ function getFields (action, schema, ext, { hidden = [] } = {}) {
   for (const f of forFields) {
     if (allFields.includes(f)) fields.push(f)
   }
-  fields = without(fields, ...hidden)
+  fields = uniq(without(fields, ...hidden))
   if (!fields.includes('id')) fields.unshift('id')
   return { fields, allFields }
 }

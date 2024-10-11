@@ -1,25 +1,15 @@
-export function getFields (fields) {
-  const qsKey = this.plugin.app.waibu.config.qsKey
-  const { get, isEmpty, isString, pull } = this.plugin.app.bajo.lib._
-  const schema = get(this, 'locals.schema', {})
-  fields = fields ?? get(this, `locals._meta.query.${qsKey.fields}`, '')
-  if (isEmpty(fields)) fields = schema.properties.map(p => p.name)
-  if (isString(fields)) fields = fields.split(',')
-  pull(fields, 'id')
-  fields.unshift('id')
-  return fields
-}
-
 async function table (params = {}) {
+  const { escape } = this.plugin.app.bajo
   const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
-  const { get, omit, set, find } = this.plugin.app.bajo.lib._
+  const { get, omit, set, find, isEmpty, without } = this.plugin.app.bajo.lib._
   const group = groupAttrs(params.attr, ['body', 'head', 'foot'])
   params.attr = group._
 
   const data = get(this, 'locals.data.data', [])
   const schema = get(this, 'locals.schema', {})
   const qsKey = this.plugin.app.waibu.config.qsKey
-  const fields = getFields.call(this, params.attr.fields)
+  let fields = without(get(this, `locals._meta.query.${qsKey.fields}`, '').split(','), '')
+  if (isEmpty(fields)) fields = schema.view.fields
   const sort = params.attr.sort ? attrToArray(params.attr.sort) : get(this, `locals._meta.query.${qsKey.sort}`, '')
 
   let [sortCol, sortDir] = sort.split(':')
@@ -51,7 +41,8 @@ async function table (params = {}) {
       ]
       head = await this.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
     }
-    items.push(await this.buildTag({ tag: 'th', attr: { text: params.attr.headerNowrap ? '' : 'nowrap' }, html: head }))
+    const prop = find(schema.properties, { name: f })
+    items.push(await this.buildTag({ tag: 'th', attr: { dataKey: f, dataType: prop.type, text: params.attr.headerNowrap ? '' : 'nowrap' }, html: head }))
   }
   if (items.length > 0 && selection) {
     let item = '<th></th>'
@@ -79,7 +70,7 @@ async function table (params = {}) {
       const prop = find(schema.properties, { name: f })
       if (!fields.includes(f)) continue
       const value = this.req.format(d[f], prop.type)
-      const attr = {}
+      const attr = { dataValue: ['array', 'object'].includes(prop.type) ? escape(JSON.stringify(d[f])) : d[f] }
       if (['integer', 'smallint', 'float', 'double'].includes(prop.type)) attr.text = 'end'
       lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
     }

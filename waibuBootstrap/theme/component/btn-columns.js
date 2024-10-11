@@ -1,11 +1,9 @@
-import { getFields } from './table.js'
-
 async function btnColumns (params = {}) {
-  const { generateId } = this.plugin.app.bajo
-  const { get, isEmpty } = this.plugin.app.bajo.lib._
+  const { get, isEmpty, without } = this.plugin.app.bajo.lib._
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
-  const fields = getFields.call(this, params.attr.fields)
+  let fields = without(get(this, `locals._meta.query.${qsKey.fields}`, '').split(','), '')
+  if (isEmpty(fields)) fields = schema.view.fields
   const items = []
   params.attr.color = params.attr.color ?? 'secondary-outline'
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Columns')
@@ -18,7 +16,6 @@ async function btnColumns (params = {}) {
     if (fields.includes(f)) attr.checked = true
     items.push(await this.buildTag({ tag: 'formCheck', attr }))
   }
-  const applyId = generateId('alpha')
   const href = this._buildUrl({ exclude: [qsKey.fields] })
   const html = ['<form class="mt-1 mb-2 mx-3" ']
   html.push(`x-data="{
@@ -26,15 +23,14 @@ async function btnColumns (params = {}) {
     all: ${JSON.stringify(schema.view.fields).replaceAll('"', "'")}
   }"`)
   html.push(`x-init="
-    const el = document.getElementById('${applyId}')
-    el.href = '${href}&${qsKey.fields}=' + selected.join(',')
+    $refs.apply.href = '${href}&${qsKey.fields}=' + selected.join(',')
     $watch('selected', v => {
-      if (_.isEqual(all.sort(), selected.sort())) el.href = '${href}'
-      else el.href = '${href}&${qsKey.fields}=' + v.join(',')
+      if (_.isEqual(all.sort(), selected.sort())) $refs.apply.href = '${href}'
+      else $refs.apply.href = '${href}&${qsKey.fields}=' + v.join(',')
     })
   ">`)
   html.push(...items)
-  const attr = { size: 'sm', id: applyId, margin: 'top-2', color: params.attr.applyColor ?? 'primary', icon: params.attr.applyIcon ?? 'arrowsStartEnd', href }
+  const attr = { size: 'sm', 'x-ref': 'apply', margin: 'top-2', color: params.attr.applyColor ?? 'primary', icon: params.attr.applyIcon ?? 'arrowsStartEnd', href }
   html.push(await this.buildTag({ tag: 'btn', attr, html: this.req.t('Apply') }))
   html.push('</form>')
   params.attr.autoClose = 'outside'

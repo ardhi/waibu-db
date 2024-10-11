@@ -1,9 +1,12 @@
-<c:form>
+<c:form id="main-form">
   <c:include resource="waibuDb.template:/partial/_form.html" />
   <c:grid-row gutter="2" margin="top-2">
     <c:grid-col col="6-md">
       <c:wdb-btn-back />
-      <c:wdb-btn-clone margin="start-1"/>
+      <c:btn-group margin="start-1">
+        <c:wdb-btn-export selector="#main-form" handler="edit"/>
+        <c:wdb-btn-clone/>
+      </c:btn-group>
     </c:grid-col>
     <c:grid-col col="6-md" flex="justify-content:end align-items:center">
       <c:wdb-btn-delete/>

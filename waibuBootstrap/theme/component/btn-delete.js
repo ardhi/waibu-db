@@ -5,7 +5,7 @@ async function btnDelete (params = {}) {
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Delete')
   params.attr.color = params.attr.color ?? 'danger-outline'
   params.attr.id = generateId('alpha')
-  if (params.attr.auto) {
+  if (params.attr.onList) {
     params.attr.disabled = true
     params.attr['x-data'] = `{
       selected: [],

@@ -2,12 +2,13 @@
 <c:grid-row gutter="2" margin="top-2">
   <c:grid-col col="6-md">
     <c:wdb-btn-back />
+    <c:btn-group margin="start-1">
+      <c:wdb-btn-export selector="#main-form" handler="details"/>
+      <c:wdb-btn-clone />
+    </c:btn-group>
   </c:grid-col>
   <c:grid-col col="6-md" flex="justify-content:end align-items:center">
-    <c:btn-group>
-      <c:wdb-btn-clone />
-      <c:wdb-btn-edit />
-    </c:btn-group>
+    <c:wdb-btn-edit />
     <c:wdb-btn-delete margin="start-2"/>
   </c:grid-col>
 </c:grid-row>

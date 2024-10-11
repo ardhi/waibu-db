@@ -8,15 +8,16 @@
     <c:btn-group margin="start-2">
       <c:wdb-btn-details />
       <c:wdb-btn-add text="nowrap"/>
-      <c:wdb-btn-edit auto />
+      <c:wdb-btn-edit on-list />
     </c:btn-group>
-    <c:wdb-btn-delete auto margin="start-2" />
+    <c:wdb-btn-delete on-list margin="start-2" />
     <c:btn-group margin="start-2">
-      <c:wdb-btn-columns menu="end" />
+      <c:wdb-btn-export selector="#main-table" handler="list"/>
+      <c:wdb-btn-columns menu="end"/>
     </c:btn-group>
   </c:grid-col>
 </c:grid-row>
-<c:wdb-table border body-divider strip responsive selection="multi" margin="bottom-4"/>
+<c:wdb-table id="main-table" border body-divider strip responsive selection="multi" margin="bottom-4" />
 <c:grid-row gutter="3">
   <c:grid-col col="6-md">
     <c:wdb-recs-info pages recs-per-page recs-per-page-values="10 15 25 50" />

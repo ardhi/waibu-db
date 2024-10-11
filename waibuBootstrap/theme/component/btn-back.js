@@ -5,8 +5,7 @@ async function btnBack (params = {}) {
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Back')
   if (isEmpty(params.attr.icon)) params.attr.icon = 'arrowStart'
   params.attr.color = params.attr.color ?? 'secondary-outline'
-  params.attr.excludeQs = params.attr.excludeQs ?? 'id'
-  params.attr.excludeQs = attrToArray(params.attr.excludeQs)
+  params.attr.excludeQs = ['mode', 'id', ...attrToArray(params.attr.excludeQs ?? '')]
   if (!params.attr.href) params.attr.href = this._buildUrl({ base: 'list', exclude: params.attr.excludeQs })
   params.html = await this.buildTag({ tag: 'btn', attr: params.attr, html: params.html })
 }

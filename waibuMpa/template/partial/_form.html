@@ -1,11 +1,12 @@
 <% for (const l of schema.view.layout) { %>
 <c:fieldset t:legend="<%= l.name[0] === '_' ? 'false' : l.name %>" grid-gutter="2">
   <% for (const w of l.widgets) {
+    const prop = _.find(schema.properties, { name: w.name })
     const attr = []
     _.forOwn(w.attr, (v, k) => {
       attr.push(`${k}="${v}"`)
     })
-    print(`<c:${w.component} label-floating name="${w.name}" ${attr.join(' ')} />`)
+    print(`<c:${w.component} data-type="${prop.type}" label-floating name="${w.name}" ${attr.join(' ')} />`)
   } %>
 </c:fieldset>
 <% } %>
