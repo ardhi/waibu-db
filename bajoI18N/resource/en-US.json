@@ -1,0 +1,18 @@
+{
+  "op": {
+    "equals": "Equals",
+    "notEquals": "Not Equals",
+    "greaterThan": "Greater Than",
+    "greaterThanOrEquals": "Greater Than or Equals",
+    "lessThan": "Less Than",
+    "lessThanOrEquals": "Less Than or Equals",
+    "in": "Includes",
+    "notIn": "Not Includes",
+    "contains": "Contains",
+    "notContains": "Not Contains",
+    "startsWith": "Starts With",
+    "notStartsWith": "Not Starts With",
+    "endsWith": "Ends With",
+    "notEndsWith": "Not Ends With"
+  }
+}

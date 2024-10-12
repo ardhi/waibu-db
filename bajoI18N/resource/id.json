@@ -1,0 +1,18 @@
+{
+  "op": {
+    "equals": "Sama Dengan",
+    "notEquals": "Tidak Sama Dengan",
+    "greaterThan": "Lebih Besar Dari",
+    "greaterThanOrEquals": "Lebih Besar Dari atau Sama Dengan",
+    "lessThan": "Lebih Kecil Dari",
+    "lessThanOrEquals": "Lebih Kecil Dari atau Sama Dengan",
+    "in": "Termasuk",
+    "notIn": "Tidak Termasuk",
+    "contains": "Mengandung",
+    "notContains": "Tidak Mengandung",
+    "startsWith": "Dimulai Dengan",
+    "notStartsWith": "Tidak Dimulai Dengan",
+    "endsWith": "Diakhiri Dengan",
+    "notEndsWith": "Tidak Diakhiri Dengan"
+  }
+}

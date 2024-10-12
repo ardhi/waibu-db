@@ -10,7 +10,7 @@ async function btnDelete (params = {}) {
     params.attr['x-data'] = `{
       selected: [],
       remove (ids) {
-        wmpa.postForm({ action: 'remove', ids })
+        wmpa.postForm({ ids }, '${this._buildUrl({ base: 'delete' })}')
       }
     }`
     params.attr['@on-selection.window'] = `
@@ -23,7 +23,7 @@ async function btnDelete (params = {}) {
     params.attr['x-data'] = `{
       selected: ['${this.req.query.id}'],
       remove (ids) {
-        wmpa.postForm({ action: 'remove', ids }, '${this._buildUrl({ base: 'list', exclude: ['id', 'page'] })}')
+        wmpa.postForm({ ids }, '${this._buildUrl({ base: 'delete', exclude: ['id', 'page'] })}')
       }
     }`
   }
