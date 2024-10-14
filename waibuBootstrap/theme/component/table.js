@@ -7,6 +7,10 @@ async function table (params = {}) {
 
   const data = get(this, 'locals.data.data', [])
   const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('find')) {
+    params.html = ''
+    return
+  }
   const qsKey = this.plugin.app.waibu.config.qsKey
   let fields = without(get(this, `locals._meta.query.${qsKey.fields}`, '').split(','), '')
   if (isEmpty(fields)) fields = schema.view.fields
@@ -15,8 +19,11 @@ async function table (params = {}) {
   let [sortCol, sortDir] = sort.split(':')
   if (!['-1', '1'].includes(sortDir)) sortDir = '1'
 
-  let selection = params.attr.selection
-  if (![undefined, 'single', 'multi'].includes(selection)) selection = 'multi'
+  let selection
+  const canDelete = !schema.disabled.includes('remove')
+  const canEdit = !schema.disabled.includes('update')
+  if (canEdit) selection = 'single'
+  if (canDelete) selection = 'multi'
   if (selection) params.attr.hover = true
 
   params.noTag = true
@@ -74,11 +81,18 @@ async function table (params = {}) {
       if (['integer', 'smallint', 'float', 'double'].includes(prop.type)) attr.text = 'end'
       lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
     }
-    const attr = { '@click': `toggle('${d.id}')`, '@dblclick': `goDetails('${d.id}')` }
+    const attr = {}
+    if (!schema.disabled.includes('update') || !schema.disabled.includes('remove')) attr['@click'] = `toggle('${d.id}')`
+    if (!schema.disabled.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
     items.push(await this.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
   }
   html.push(await this.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
   params.attr = omit(params.attr, ['sortUpIcon', 'sortDownIcon', 'noSort', 'selection', 'headerNowrap'])
+  const goDetails = `
+    goDetails (id) {
+      window.location.href = '${this._buildUrl({ base: 'details' })}&id=' + id
+    }
+  `
   if (selection === 'multi') {
     params.attr['x-data'] = `{
       toggleAll: false,
@@ -89,9 +103,7 @@ async function table (params = {}) {
           this.selected.splice(idx, 1)
         } else this.selected.push(id)
       },
-      goDetails (id) {
-        window.location.href = '${this._buildUrl({ base: 'details' })}&id=' + id
-      }
+      ${goDetails}
     }`
     params.attr['x-init'] = `
       $watch('toggleAll', val => {
@@ -108,11 +120,16 @@ async function table (params = {}) {
       selected: '',
       toggle (id) {
         this.selected = id
-      }
+      },
+      ${goDetails}
     }`
     params.attr['x-init'] = `
       $watch('selected', val => $dispatch('on-selection', [val]))
     `
+  } else {
+    params.attr['x-data'] = `{
+      ${goDetails}
+    }`
   }
   params.html = await this.buildTag({ tag: 'table', attr: params.attr, html: html.join('\n') })
 }

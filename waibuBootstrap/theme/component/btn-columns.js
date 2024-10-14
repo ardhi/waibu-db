@@ -2,6 +2,10 @@ async function btnColumns (params = {}) {
   const { get, isEmpty, without } = this.plugin.app.bajo.lib._
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('find')) {
+    params.html = ''
+    return
+  }
   let fields = without(get(this, `locals._meta.query.${qsKey.fields}`, '').split(','), '')
   if (isEmpty(fields)) fields = schema.view.fields
   const items = []

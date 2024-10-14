@@ -3,6 +3,11 @@ import { getUrlOpts } from './pagination.js'
 async function recordsInfo (params = {}) {
   const { attrToObject, groupAttrs, attrToArray } = this.plugin.app.waibuMpa
   const { get, isEmpty, omit, merge } = this.plugin.app.bajo.lib._
+  const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('find')) {
+    params.html = ''
+    return
+  }
   let { count, limit, page, pages } = attrToObject(params.attr.options)
   count = count ?? get(this, 'locals.data.count', 0)
   page = page ?? get(this, 'locals.data.page', 1)

@@ -12,6 +12,11 @@ export function getUrlOpts (params = {}) {
 async function pagination (params = {}) {
   const { attrToObject, paginationLayout, groupAttrs } = this.plugin.app.waibuMpa
   const { get } = this.plugin.app.bajo.lib._
+  const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('find')) {
+    params.html = ''
+    return
+  }
   let { count, limit, page } = attrToObject(params.attr.options)
   count = count ?? get(this, 'locals.data.count', 0)
   limit = limit ?? get(this, 'locals.data.limit', 25)

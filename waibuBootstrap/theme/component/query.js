@@ -3,6 +3,10 @@ async function query (params = {}) {
   const { find, get, without, isEmpty, filter } = this.plugin.app.bajo.lib._
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('find')) {
+    params.html = ''
+    return
+  }
   let fields = without(get(this, `locals._meta.query.${qsKey.fields}`, '').split(','), '')
   if (isEmpty(fields)) fields = schema.view.fields
   fields = filter(fields, f => schema.sortables.includes(f))
@@ -57,7 +61,7 @@ async function query (params = {}) {
       query = url.searchParams.get('${qsKey.query}') ?? ''
     " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
       <c:form-input-addon>
-        <c:modal launch-icon="${params.attr.icon ?? 'dotsThree'}" launch-end t:title="Query Builder" x-ref="query" x-data="{
+        <c:modal launch-icon="${params.attr.icon ?? 'dotsThree'}" launch-on-end t:title="Query Builder" x-ref="query" x-data="{
           fields: ${JSON.stringify(fields).replaceAll('"', "'")},
           builder: '',
           selected: [],

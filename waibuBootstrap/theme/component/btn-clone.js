@@ -1,6 +1,11 @@
 async function btnClone (params = {}) {
-  const { isEmpty } = this.plugin.app.bajo.lib._
+  const { isEmpty, get } = this.plugin.app.bajo.lib._
   params.noTag = true
+  const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('create')) {
+    params.html = ''
+    return
+  }
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Clone')
   params.attr.color = params.attr.color ?? 'secondary-outline'
   if (!params.attr.href) params.attr.href = this._buildUrl({ base: 'add', exclude: ['id'] }) + '&mode=clone'

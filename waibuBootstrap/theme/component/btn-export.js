@@ -1,6 +1,11 @@
 async function btnExport (params = {}) {
-  const { isEmpty } = this.plugin.app.bajo.lib._
+  const { isEmpty, get } = this.plugin.app.bajo.lib._
   params.noTag = true
+  const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('find')) {
+    params.html = ''
+    return
+  }
   if (isEmpty(params.attr.launch)) params.attr.launch = this.req.t('Export')
   params.attr.launchColor = params.attr.launchColor ?? 'secondary-outline'
   params.attr.title = this.req.t('Data Export')

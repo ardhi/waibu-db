@@ -1,27 +1,27 @@
 import path from 'path'
 
-const disableds = ['id', 'createdAt', 'updatedAt']
+const defReadonly = ['id', 'createdAt', 'updatedAt']
 
-function getFields (action, schema, ext, { hidden = [] } = {}) {
+function getFields (action, schema, ext, opts = {}) {
   const { map, get, without, uniq } = this.app.bajo.lib._
-  const allFields = map(schema.properties, p => {
-    if (p.hidden) hidden.push(p.name)
-    return p.name
-  })
+  const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
+  hidden.push(...schema.hidden, ...(opts.hidden ?? []))
+  const allFields = without(map(schema.properties, 'name'), ...hidden)
   const forFields = get(ext, `view.${action}.fields`, get(ext, 'common.fields', allFields))
   let fields = []
   for (const f of forFields) {
     if (allFields.includes(f)) fields.push(f)
   }
   fields = uniq(without(fields, ...hidden))
-  if (!fields.includes('id')) fields.unshift('id')
+  if (action !== 'add' && !fields.includes('id')) fields.unshift('id')
   return { fields, allFields }
 }
 
 function applyLayout (action, schema, ext) {
-  const { set, get, isEmpty, map, find } = this.app.bajo.lib._
+  const { set, get, isEmpty, map, find, omit, merge, isString } = this.app.bajo.lib._
   const { fields } = getFields.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
+  const readonly = get(ext, `view.${action}.readonly`, get(ext, 'common.readonly', defReadonly))
   const allWidgets = map(fields, f => {
     const prop = find(schema.properties, { name: f })
     const result = { name: f, component: 'form-input', attr: { col: '4-md' } }
@@ -30,7 +30,12 @@ function applyLayout (action, schema, ext) {
       return result
     }
     if (prop.type === 'boolean') result.component = 'form-check'
+    if (prop.values) {
+      result.component = 'form-select'
+      result.attr.options = prop.values.join(' ')
+    }
     if (['string', 'text'].includes(prop.type) && prop.maxLength) set(result, 'attr.maxlength', prop.maxLength)
+    if (readonly.includes(f)) result.component = 'form-plaintext'
     return result
   })
   if (isEmpty(layout)) {
@@ -40,15 +45,19 @@ function applyLayout (action, schema, ext) {
     layout.splice(0, layout.length)
     for (const item of items) {
       const widgets = []
-      for (const f of item.fields) {
-        let [name, col] = f.split(':')
-        if (!col) col = '4-md'
-        const widget = find(allWidgets, { name })
+      for (let f of item.fields) {
+        if (isString(f)) {
+          let [name, col] = f.split(':')
+          if (!col) col = '4-md'
+          f = { name, col }
+        }
+        const widget = find(allWidgets, { name: f.name })
         if (!widget) continue
-        widget.attr.col = col
+        widget.attr = merge({}, widget.attr, omit(f, ['component']))
+        if (f.component && !readonly.includes(f.name) && action !== 'details') widget.component = f.component
         widgets.push(widget)
       }
-      layout.push({ name: item.name, widgets })
+      if (widgets.length > 0) layout.push({ name: item.name, widgets })
     }
   }
   set(schema, 'view.layout', layout)
@@ -123,8 +132,8 @@ async function getSchemaExt (model, view, opts) {
   let schema = getSchema(model)
   const base = path.basename(schema.file, path.extname(schema.file))
   const ext = await readConfig(`${schema.ns}:/waibuDb/model/${base}.*`, { ignoreError: true })
-  schema = pick(schema, ['name', 'properties', 'indexes', 'disabled', 'attachment', 'sortables'])
   await handler[view].call(this, schema, ext, opts)
+  schema = pick(schema, ['name', 'properties', 'indexes', 'disabled', 'attachment', 'sortables', 'view'])
   return { schema, ext }
 }
 

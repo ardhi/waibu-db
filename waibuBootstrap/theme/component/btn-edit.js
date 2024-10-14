@@ -1,7 +1,12 @@
 async function btnEdit (params = {}) {
   const { generateId } = this.plugin.app.bajo
-  const { isEmpty } = this.plugin.app.bajo.lib._
+  const { isEmpty, get } = this.plugin.app.bajo.lib._
   params.noTag = true
+  const schema = get(this, 'locals.schema', {})
+  if (schema.disabled.includes('update')) {
+    params.html = ''
+    return
+  }
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Edit')
   params.attr.color = params.attr.color ?? 'secondary-outline'
   params.attr.id = generateId('alpha')
