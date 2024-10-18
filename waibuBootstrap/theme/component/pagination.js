@@ -18,9 +18,9 @@ async function pagination (params = {}) {
     return
   }
   let { count, limit, page } = attrToObject(params.attr.options)
-  count = count ?? get(this, 'locals.data.count', 0)
-  limit = limit ?? get(this, 'locals.data.limit', 25)
-  page = page ?? get(this, 'locals.data.page', 1)
+  count = count ?? get(this, 'locals.list.count', 0)
+  limit = limit ?? get(this, 'locals.list.limit', 25)
+  page = page ?? get(this, 'locals.list.page', 1)
   const pages = paginationLayout(count, limit, page) ?? []
   params.noTag = true
   const group = groupAttrs(params.attr, ['pagination'])

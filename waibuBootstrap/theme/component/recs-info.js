@@ -9,10 +9,10 @@ async function recordsInfo (params = {}) {
     return
   }
   let { count, limit, page, pages } = attrToObject(params.attr.options)
-  count = count ?? get(this, 'locals.data.count', 0)
-  page = page ?? get(this, 'locals.data.page', 1)
-  limit = limit ?? get(this, 'locals.data.limit', 25)
-  pages = pages ?? get(this, 'locals.data.pages', 0)
+  count = count ?? get(this, 'locals.list.count', 0)
+  page = page ?? get(this, 'locals.list.page', 1)
+  limit = limit ?? get(this, 'locals.list.limit', 25)
+  pages = pages ?? get(this, 'locals.list.pages', 0)
 
   params.tag = 'div'
   params.attr.flex = 'justify-center:start align-items:center'

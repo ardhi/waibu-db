@@ -1,5 +1,8 @@
 async function virtual () {
   const items = [{
+    prefix: 'echarts',
+    root: 'echarts:/dist'
+  }, {
     prefix: 'bs-table',
     root: 'bootstrap-table:/dist'
   }]
