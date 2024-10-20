@@ -1,7 +1,9 @@
 <c:card>
-  <c:card-header t:content="judul" />
+  <c:card-header>
+    <c:card-title t:content="<%= attr.name %>" />
+  </c:card-header>
   <c:card-body>
-    <c:wdb-echarts style="height: 150px;">
+    <c:wdb-echarts style="height: 150px;" option="<%= attr.option %>">
     </c:wdb-echarts>
   </c:card-body>
 </c:card>

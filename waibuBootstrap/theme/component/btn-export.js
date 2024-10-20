@@ -2,7 +2,7 @@ async function btnExport (params = {}) {
   const { isEmpty, get } = this.plugin.app.bajo.lib._
   params.noTag = true
   const schema = get(this, 'locals.schema', {})
-  if (schema.disabled.includes('find')) {
+  if (schema.view.disabled.includes('find')) {
     params.html = ''
     return
   }
@@ -101,7 +101,7 @@ async function btnExport (params = {}) {
             <c:form-radio x-model="delivery" value="clipboard" t:label="Copy to Clipboard" />
           </c:fieldset>
           <c:fieldset t:legend="Options" legend-type="6" margin="top-2">
-            <c:form-check x-ref="fkey" x-model="options" value="fkey" t:label="Formatted Key" />
+            <c:form-check x-ref="fkey" x-model="options" value="fkey" t:label="Formatted Field" />
             <c:form-check x-ref="fvalue" x-model="options" value="fvalue" t:label="Formatted Value" />
             <c:form-check x-ref="zip" x-model="options" value="zip" t:label="Zipped" />
           </c:fieldset>

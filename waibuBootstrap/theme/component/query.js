@@ -3,7 +3,7 @@ async function query (params = {}) {
   const { find, get, without, isEmpty, filter } = this.plugin.app.bajo.lib._
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
-  if (schema.disabled.includes('find')) {
+  if (schema.view.disabled.includes('find')) {
     params.html = ''
     return
   }

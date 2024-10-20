@@ -2,7 +2,7 @@ async function btnColumns (params = {}) {
   const { get, isEmpty, without } = this.plugin.app.bajo.lib._
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
-  if (schema.disabled.includes('find')) {
+  if (schema.view.disabled.includes('find')) {
     params.html = ''
     return
   }
@@ -29,8 +29,7 @@ async function btnColumns (params = {}) {
   html.push(`x-init="
     $refs.apply.href = '${href}&${qsKey.fields}=' + selected.join(',')
     $watch('selected', v => {
-      if (_.isEqual(all.sort(), selected.sort())) $refs.apply.href = '${href}'
-      else $refs.apply.href = '${href}&${qsKey.fields}=' + v.join(',')
+      $refs.apply.href = '${href}&${qsKey.fields}=' + v.join(',')
     })
   ">`)
   html.push(...items)

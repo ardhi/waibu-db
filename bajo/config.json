@@ -1,7 +1,6 @@
 {
   "prefix": "db",
   "dbModel": {
-    "dataOnly": false,
     "count": false,
     "patchEnabled": false
   },

@@ -3,7 +3,7 @@ async function btnDetails (params = {}) {
   const { isEmpty, get } = this.plugin.app.bajo.lib._
   params.noTag = true
   const schema = get(this, 'locals.schema', {})
-  if (schema.disabled.includes('update')) {
+  if (schema.view.disabled.includes('update')) {
     params.html = ''
     return
   }

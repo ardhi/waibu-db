@@ -4,7 +4,7 @@ async function recordsInfo (params = {}) {
   const { attrToObject, groupAttrs, attrToArray } = this.plugin.app.waibuMpa
   const { get, isEmpty, omit, merge } = this.plugin.app.bajo.lib._
   const schema = get(this, 'locals.schema', {})
-  if (schema.disabled.includes('find')) {
+  if (schema.view.disabled.includes('find')) {
     params.html = ''
     return
   }
@@ -23,7 +23,7 @@ async function recordsInfo (params = {}) {
   if (!params.attr.dropdown) params.attr.dropdown = true
   const group = groupAttrs(params.attr, ['dropdown'])
   const html = []
-  if (params.attr.count) html.push(this.req.t('%d records found', count))
+  if (params.attr.count) html.push(this.req.t('%d record(s) found', count))
   if (params.attr.pages) {
     if (!isEmpty(html)) html[html.length - 1] += '.'
     html.push(this.req.t('Page %d of %d pages', page, pages))
@@ -41,7 +41,7 @@ async function recordsInfo (params = {}) {
     attr.content = limit + ''
     attr.color = attr.color ?? 'secondary-outline'
     html.push(await this.buildTag({ tag: 'dropdown', attr, html: items.join('\n') }))
-    html.push(' recs per page')
+    html.push(' ', this.req.t('recs per page'))
   }
   params.attr = omit(params.attr, ['count', 'pages', 'recsPerPage', 'dropdown', 'recsPerPageValues'])
   params.html = html.map(h => `<div class="me-1">${h}</div>`).join('\n')

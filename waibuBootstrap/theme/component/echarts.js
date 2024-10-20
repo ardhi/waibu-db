@@ -2,14 +2,8 @@ const defOption = {
   grid: {
     top: 8,
     bottom: 20,
-    left: 22,
+    left: 25,
     right: 0
-  },
-  xAxis: {
-    type: 'category'
-  },
-  yAxis: {
-    type: 'value'
   }
 }
 
@@ -18,19 +12,20 @@ const chart = {
     '^waibuDb.virtual:/echarts/echarts.min.js'
   ],
   handler: async function (params = {}) {
-    const { defaultsDeep } = this.plugin.app.bajo
+    const { defaultsDeep, generateId } = this.plugin.app.bajo
     const { base64JsonDecode } = this.plugin.app.waibuMpa
     const { cloneDeep } = this.plugin.app.bajo.lib._
     this._normalizeAttr(params, { tag: 'div' })
     params.attr.dim = params.attr.dim ?? 'width:100 height:100'
-    params.attr['x-data'] = 'chart'
-    params.attr['x-ref'] = 'chartc'
+    params.attr.id = generateId('alpha')
+    params.attr['x-data'] = `chart${params.attr.id}`
     params.attr['@resize.window.debounce.500ms'] = `
       if (chart) {
         chart.resize()
       }
     `
     let option = cloneDeep(defOption)
+    if (params.attr.option === true) params.attr.option = 'e30='
     if (params.attr.option) option = defaultsDeep(base64JsonDecode(params.attr.option), defOption)
     params.attr['x-init'] = `
       $watch('option', val => {
@@ -40,11 +35,12 @@ const chart = {
     params.append = `
       <script>
         document.addEventListener('alpine:init', () => {
-          Alpine.data('chart', () => {
+          Alpine.data('chart${params.attr.id}', () => {
             let chart
             return {
               init () {
-                chart = echarts.init(this.$refs.chartc, null, { renderer: 'canvas' })
+                const el = document.getElementById('${params.attr.id}')
+                chart = echarts.init(el, null, { renderer: 'canvas' })
                 chart.setOption(this.option)
               },
               get chart () {

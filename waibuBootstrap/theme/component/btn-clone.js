@@ -2,7 +2,7 @@ async function btnClone (params = {}) {
   const { isEmpty, get } = this.plugin.app.bajo.lib._
   params.noTag = true
   const schema = get(this, 'locals.schema', {})
-  if (schema.disabled.includes('create')) {
+  if (schema.view.disabled.includes('create')) {
     params.html = ''
     return
   }

@@ -8,7 +8,7 @@ const table = {
 
     const data = get(this, 'locals.list.data', [])
     const schema = get(this, 'locals.schema', {})
-    if (schema.disabled.includes('find')) {
+    if (schema.view.disabled.includes('find')) {
       params.html = ''
       return
     }
@@ -21,8 +21,8 @@ const table = {
     if (!['-1', '1'].includes(sortDir)) sortDir = '1'
 
     let selection
-    const canDelete = !schema.disabled.includes('remove')
-    const canEdit = !schema.disabled.includes('update')
+    const canDelete = !schema.view.disabled.includes('remove')
+    const canEdit = !schema.view.disabled.includes('update')
     if (canEdit) selection = 'single'
     if (canDelete) selection = 'multi'
     if (selection) params.attr.hover = true
@@ -83,8 +83,8 @@ const table = {
         lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
       }
       const attr = {}
-      if (!schema.disabled.includes('update') || !schema.disabled.includes('remove')) attr['@click'] = `toggle('${d.id}')`
-      if (!schema.disabled.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
+      if (!schema.view.disabled.includes('update') || !schema.view.disabled.includes('remove')) attr['@click'] = `toggle('${d.id}')`
+      if (!schema.view.disabled.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
       items.push(await this.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
     }
     html.push(await this.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))

@@ -13,7 +13,7 @@ async function pagination (params = {}) {
   const { attrToObject, paginationLayout, groupAttrs } = this.plugin.app.waibuMpa
   const { get } = this.plugin.app.bajo.lib._
   const schema = get(this, 'locals.schema', {})
-  if (schema.disabled.includes('find')) {
+  if (schema.view.disabled.includes('find')) {
     params.html = ''
     return
   }
