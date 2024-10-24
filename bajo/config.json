@@ -1,5 +1,7 @@
 {
-  "prefix": "db",
+  "waibu": {
+    "prefix": "db"
+  },
   "dbModel": {
     "count": false,
     "patchEnabled": false

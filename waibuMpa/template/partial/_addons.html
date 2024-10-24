@@ -1,10 +1,5 @@
-<% if (arguments[0].addOns) {
-if (addOns.length > 0) {
-  for (const ao of addOns) { %>
-  <c:div append-to="#sb-addons" margin="bottom-4">
-    <c:include resource="<%= ao.resource %>" <% for (const k in ao.data) { print(k + '="' + ao.data[k] + '" ') } %>/>
-  </c:div>
-  <% }
-} else { %>
-  <c:div move-to="#sb-addons" t:content="No statistic yet, sorry" />
-<% }} %>
+<% for (const ao of addOns) { %>
+<c:div append-to="#sb-addons" margin="bottom-3">
+  <c:include resource="<%= ao.resource %>" <% for (const k in ao.data) { print(k + '="' + ao.data[k] + '" ') } %>/>
+</c:div>
+<% } %>
