@@ -5,7 +5,7 @@
   <c:grid-col col="8-lg" flex="justify-content:end-lg">
     <c:btn-group margin="end-2">
       <c:wdb-btn-add text="nowrap"/>
-      <c:wdb-btn-edit on-list />
+      <c:wdb-btn-edit on-list menu="end"/>
     </c:btn-group>
     <c:wdb-btn-delete on-list margin="end-2" />
     <c:btn-group>
@@ -23,4 +23,4 @@
     <c:wdb-pagination />
   </c:grid-col>
 </c:grid-row>
-<c:include resource="waibuDb.template:/partial/_addons.html" />
+<c:include resource="waibuDb.partial:/_addons.html" />
