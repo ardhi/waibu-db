@@ -17,6 +17,8 @@
   "List": "Daftar",
   "Add": "Tambah",
   "Edit": "Ubah",
+  "Yes": "Ya",
+  "No": "Tidak",
   "op": {
     "equals": "Sama Dengan",
     "notEquals": "Tidak Sama Dengan",

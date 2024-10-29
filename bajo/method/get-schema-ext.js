@@ -72,7 +72,10 @@ function applyLayout (action, schema, ext) {
     if (action === 'details') {
       result.component = 'form-plaintext'
     } else {
-      if (prop.type === 'boolean') result.component = 'form-check'
+      if (prop.type === 'boolean') {
+        result.component = 'form-select'
+        result.attr.options = 'false:No true:Yes'
+      }
       if (prop.values) {
         result.component = 'form-select'
         result.attr.options = prop.values.join(' ')
@@ -86,40 +89,6 @@ function applyLayout (action, schema, ext) {
   else customLayout.call(this, { layout, allWidgets, schema, action, ext, readonly })
   set(schema, 'view.layout', layout)
   set(schema, 'view.fields', fields)
-  /*
-  if ((schema.view.layouts ?? []).length === 0) {
-    schema.view.layouts = [{
-      fields: map(schema.properties, p => {
-        const f = { name: p.name, col: ':12', type: p.type }
-        if (plaintext || disableds.includes(p.name)) f.widget = 'formPlaintext'
-        // if (disableds.includes(p.name)) f.placeholder = '- autocreate -'
-        return f
-      })
-    }]
-  } else {
-    each(schema.view.layouts, (layout, i) => {
-      const deleted = []
-      each(layout.fields, (f, j) => {
-        if (isString(f)) {
-          const [name, col, widget, placeholder] = map(f.split(';'), m => trim(m))
-          f = { name }
-          f.col = col ?? ':12'
-          if (widget) f.widget = widget
-          if (placeholder) f.placeholder = placeholder
-        }
-        if (hidden.includes(f.name)) deleted.push(j)
-        if (plaintext) f.widget = 'formPlaintext'
-        if (!f.widget && disableds.includes(f.name)) f.widget = 'formPlaintext'
-        const prop = find(schema.properties, { name: f.name })
-        if (prop) {
-          f.type = prop.type
-          layout.fields[j] = f
-        }
-      })
-      if (deleted.length > 0) pullAt(layout.fields, deleted)
-    })
-  }
-  */
 }
 
 const handler = {

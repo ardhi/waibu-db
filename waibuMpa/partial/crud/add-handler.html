@@ -1,5 +1,5 @@
 <c:form>
-  <c:include resource="waibuDb.partial:/_form.html" />
+  <c:include resource="waibuDb.partial:/crud/_form.html" />
   <c:grid-row gutter="2" margin="top-2">
     <c:grid-col col="6-md">
       <c:wdb-btn-back />
@@ -11,9 +11,9 @@
       </c:div>
     </c:grid-col>
     <c:grid-col col="12" margin="top-4">
-      <c:form-switch t:label="Add more after submit"/>
-      <c:form-switch t:label="Clone previous"/>
+      <c:form-switch name="_addmore" t:label="Add more after submit"/>
+      <c:form-switch name="_cloneprev" t:label="Clone previous"/>
     </c:grid-col>
   </c:grid-row>
 </c:form>
-<c:include resource="waibuDb.partial:/_addons.html" />
+<c:include resource="waibuDb.partial:/crud/_addons.html" />

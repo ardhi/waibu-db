@@ -1,6 +1,11 @@
 {
   "waibu": {
-    "prefix": "db"
+    "prefix": "db",
+    "title": "Model Database"
+  },
+  "waibuMpa": {
+    "icon": "database",
+    "menuHandler": "waibuDb:buildAdminMenu"
   },
   "dbModel": {
     "count": false,

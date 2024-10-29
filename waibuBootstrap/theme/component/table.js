@@ -1,3 +1,7 @@
+function isRightAligned (type) {
+  return ['smallint', 'integer', 'float', 'double'].includes(type)
+}
+
 const table = {
   handler: async function (params = {}) {
     const { escape } = this.plugin.app.bajo
@@ -33,6 +37,7 @@ const table = {
     // head
     for (const f of schema.view.fields) {
       if (!fields.includes(f)) continue
+      const prop = find(schema.properties, { name: f })
       let head = this.req.t(`field.${f}`)
       if (!params.attr.noSort && (schema.sortables ?? []).includes(f)) {
         let sortItem = `${f}:-1`
@@ -43,14 +48,17 @@ const table = {
         }
         const item = set({ page: 1 }, qsKey.sort, sortItem)
         const href = this._buildUrl({ params: item })
+        const attr = isRightAligned(prop.type) ? { text: 'align:end' } : {}
         const content = [
-          await this.buildTag({ tag: 'div', html: this.req.t(`field.${f}`) }),
+          await this.buildTag({ tag: 'div', attr, html: this.req.t(`field.${f}`) }),
           await this.buildTag({ tag: 'a', attr: { icon, href }, prepend: '<div class="ms-1">', append: '</div>' })
         ]
         head = await this.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
       }
-      const prop = find(schema.properties, { name: f })
-      items.push(await this.buildTag({ tag: 'th', attr: { dataKey: f, dataType: prop.type, text: params.attr.headerNowrap ? '' : 'nowrap' }, html: head }))
+      let text = params.attr.headerNowrap ? '' : 'nowrap'
+      if (isRightAligned(prop.type)) text += ' align:end'
+      const attr = { dataKey: f, dataType: prop.type, text }
+      items.push(await this.buildTag({ tag: 'th', attr, html: head }))
     }
     if (items.length > 0 && selection) {
       let item = '<th></th>'
@@ -77,9 +85,13 @@ const table = {
       for (const f of schema.view.fields) {
         const prop = find(schema.properties, { name: f })
         if (!fields.includes(f)) continue
-        const value = this.req.format(d[f], prop.type)
+        let value = this.req.format(d[f], prop.type)
+        if (prop.type === 'boolean') {
+          value = (await this.buildTag({ tag: 'icon', attr: { name: `circle${d[f] ? 'Check' : ''}` } })) +
+            ' ' + (this.req.t(d[f] ? 'Yes' : 'No'))
+        }
         const attr = { dataValue: ['array', 'object'].includes(prop.type) ? escape(JSON.stringify(d[f])) : d[f] }
-        if (['integer', 'smallint', 'float', 'double'].includes(prop.type)) attr.text = 'end'
+        if (isRightAligned(prop.type)) attr.text = 'align:end'
         lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
       }
       const attr = {}
