@@ -47,7 +47,7 @@ function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
         f = { name, col, label }
       }
       const widget = find(allWidgets, { name: f.name })
-      if (!widget) continue
+      if (!widget && !f.component) continue
       widget.attr = merge({}, widget.attr, omit(f, ['component']))
       if (f.component && !readonly.includes(f.name) && action !== 'details') widget.component = f.component
       widgets.push(widget)

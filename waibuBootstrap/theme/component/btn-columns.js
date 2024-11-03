@@ -1,5 +1,6 @@
 async function btnColumns (params = {}) {
   const { get, isEmpty, without } = this.plugin.app.bajo.lib._
+  const { jsonStringify } = this.plugin.app.waibuMpa
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
   if (schema.view.disabled.includes('find')) {
@@ -23,8 +24,8 @@ async function btnColumns (params = {}) {
   const href = this._buildUrl({ exclude: [qsKey.fields] })
   const html = ['<form class="mt-1 mb-2 mx-3" ']
   html.push(`x-data="{
-    selected: ${JSON.stringify(fields).replaceAll('"', "'")},
-    all: ${JSON.stringify(schema.view.fields).replaceAll('"', "'")}
+    selected: ${jsonStringify(fields, true)},
+    all: ${jsonStringify(schema.view.fields, true)}
   }"`)
   html.push(`x-init="
     $refs.apply.href = '${href}&${qsKey.fields}=' + selected.join(',')

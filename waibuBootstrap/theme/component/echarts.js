@@ -13,7 +13,7 @@ const chart = {
   ],
   handler: async function (params = {}) {
     const { defaultsDeep, generateId } = this.plugin.app.bajo
-    const { base64JsonDecode } = this.plugin.app.waibuMpa
+    const { base64JsonDecode, jsonStringify } = this.plugin.app.waibuMpa
     const { cloneDeep } = this.plugin.app.bajo.lib._
     this._normalizeAttr(params, { tag: 'div' })
     params.attr.dim = params.attr.dim ?? 'width:100 height:100'
@@ -46,7 +46,7 @@ const chart = {
               get chart () {
                 return chart
               },
-              option: ${JSON.stringify(option, null, 2)}
+              option: ${jsonStringify(option, true)}
             }
           })
         })

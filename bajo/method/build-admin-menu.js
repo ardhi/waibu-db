@@ -36,7 +36,7 @@ function modelsMenu () {
 }
 
 async function buildAdminMenu (locals, req) {
-  const { getAppPrefix } = this.app.waibu
+  const { getPluginPrefix } = this.app.waibu
   const menus = modelsMenu.call(this)
   const dropdown = []
   dropdown.push('<div><c:accordion no-border text="nowrap" style="margin-top:-5px;margin-bottom:-5px;">')
@@ -44,7 +44,7 @@ async function buildAdminMenu (locals, req) {
     dropdown.push(`<c:accordion-item t:header="${menu.name}&nbsp;&nbsp;" no-padding narrow-header>`)
     dropdown.push('<c:list type="group" no-border hover>')
     for (const child of menu.children) {
-      dropdown.push(`<c:list-item href="waibuAdmin:/${getAppPrefix(this.name)}/${child.id}/list" t:content="${child.name}" />`)
+      dropdown.push(`<c:list-item href="waibuAdmin:/${getPluginPrefix(this.name)}/${child.id}/list" t:content="${child.name}" />`)
     }
     dropdown.push('</c:list></c:accordion-item>')
   }

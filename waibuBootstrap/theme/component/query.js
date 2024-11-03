@@ -1,6 +1,7 @@
 async function query (params = {}) {
   const { generateId } = this.plugin.app.bajo
-  const { find, get, without, isEmpty, filter } = this.plugin.app.bajo.lib._
+  const { jsonStringify } = this.plugin.app.waibuMpa
+  const { find, get, without, isEmpty, filter, upperFirst } = this.plugin.app.bajo.lib._
   const qsKey = this.plugin.app.waibu.config.qsKey
   const schema = get(this, 'locals.schema', {})
   if (schema.view.disabled.includes('find')) {
@@ -55,14 +56,15 @@ async function query (params = {}) {
     `)
   }
   params.noTag = true
+  const container = params.attr.modal ? 'modal' : 'drawer'
   params.html = await this.buildSentence(`
     <c:form-input type="search" t:placeholder="Query" id="${id}" x-data="{ query: '' }" x-init="
       const url = new URL(window.location.href)
       query = url.searchParams.get('${qsKey.query}') ?? ''
     " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
       <c:form-input-addon>
-        <c:modal launch-icon="${params.attr.icon ?? 'dotsThree'}" launch-on-end t:title="Query Builder" x-ref="query" x-data="{
-          fields: ${JSON.stringify(fields).replaceAll('"', "'")},
+        <c:${container} launch launch-icon="${params.attr.icon ?? 'dotsThree'}" launch-on-end t:title="Query Builder" x-ref="query" x-data="{
+          fields: ${jsonStringify(fields, true)},
           builder: '',
           selected: [],
           ${models.join(',\n')},
@@ -109,7 +111,7 @@ async function query (params = {}) {
               params.set('${qsKey.query}', this.builder ?? '')
               window.location.href = '?' + params.toString()
             } else $dispatch('on-query', this.builder)
-            const instance = wbs.getInstance('Modal', $refs.query)
+            const instance = wbs.getInstance('${upperFirst(container)}', $refs.query)
             instance.hide()
           }
         }" x-init="
@@ -125,11 +127,11 @@ async function query (params = {}) {
             ${columns.join('\n')}
           </c:grid-row>
           <c:div flex="justify-content:end" margin="top-3">
-            <c:btn color="secondary" t:content="Close" dismiss />
+            <c:btn color="secondary" t:content="Close" dismiss="${container}" />
             <c:btn color="primary" t:content="Apply" margin="start-2" @click="submit()" />
             <c:btn color="primary" t:content="Submit Query" margin="start-2" @click="submit(true)" />
           </c:div>
-        </c:modal>
+        </c:${container}>
       </c:form-input-addon>
       <c:form-input-addon>
         <c:btn t:content="Submit" x-data="{
