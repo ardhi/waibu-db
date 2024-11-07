@@ -85,14 +85,21 @@ const table = {
       for (const f of schema.view.fields) {
         const prop = find(schema.properties, { name: f })
         if (!fields.includes(f)) continue
-        let value = this.req.format(d[f], prop.type)
+        const opts = {}
+        if (f === 'lng') opts.longitude = true
+        else if (f === 'lat') opts.latitude = true
+        let value = this.req.format(d[f], prop.type, opts)
         if (prop.type === 'boolean') {
           value = (await this.buildTag({ tag: 'icon', attr: { name: `circle${d[f] ? 'Check' : ''}` } })) +
             ' ' + (this.req.t(d[f] ? 'Yes' : 'No'))
         }
         const attr = { dataValue: ['array', 'object'].includes(prop.type) ? escape(JSON.stringify(d[f])) : d[f] }
-        if (isRightAligned(prop.type)) attr.text = 'align:end'
-        lines.push(await this.buildTag({ tag: 'td', attr, html: value }))
+        if (!['object', 'array'].includes(prop.type)) {
+          if (isRightAligned(prop.type)) attr.text = 'align:end nowrap'
+          else attr.text = 'nowrap'
+        }
+        const line = await this.buildTag({ tag: 'td', attr, html: value })
+        lines.push(line)
       }
       const attr = {}
       if (!schema.view.disabled.includes('update') || !schema.view.disabled.includes('remove')) attr['@click'] = `toggle('${d.id}')`

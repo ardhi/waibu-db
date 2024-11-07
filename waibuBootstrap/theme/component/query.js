@@ -14,22 +14,7 @@ async function query (params = {}) {
   const id = generateId('alpha')
   const columns = []
   const models = []
-  const selects = {
-    eq: this.req.t('op.equals'),
-    neq: this.req.t('op.notEquals'),
-    gt: this.req.t('op.greaterThan'),
-    gte: this.req.t('op.greaterThanOrEquals'),
-    lt: this.req.t('op.lessThan'),
-    lte: this.req.t('op.lessThanOrEquals'),
-    in: this.req.t('op.in'),
-    nin: this.req.t('op.notIn'),
-    contains: this.req.t('op.contains'),
-    ncontains: this.req.t('op.notContains'),
-    startsWith: this.req.t('op.startsWith'),
-    nstartsWith: this.req.t('op.notStartsWith'),
-    endsWith: this.req.t('op.endsWith'),
-    nendsWith: this.req.t('op.notEndsWith')
-  }
+  const selects = ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'in', 'contains', 'starts', 'ends', '!in', '!contains', '!starts', '!ends']
   for (const f of schema.view.fields) {
     if (!fields.includes(f)) continue
     const prop = find(schema.properties, { name: f })
@@ -37,9 +22,9 @@ async function query (params = {}) {
     if (['float', 'double', 'integer', 'smallint'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte')
     else if (['datetime', 'date', 'time'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte')
     else if (['boolean'].includes(prop.type)) ops.push('eq', 'neq')
-    else ops.push(...Object.keys(selects))
+    else ops.push(...selects)
     if (ops.length === 0) continue
-    const sels = ops.map(o => `<c:option value="${o}">${selects[o]}</c:option>`)
+    const sels = ops.map(o => `<c:option>${o}</c:option>`)
     models.push(`${f}Op: 'eq'`, `${f}Val: ''`)
     columns.push(`
       <c:grid-col col="4-md" flex="align-items:center">
@@ -63,7 +48,7 @@ async function query (params = {}) {
       query = url.searchParams.get('${qsKey.query}') ?? ''
     " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
       <c:form-input-addon>
-        <c:${container} launch launch-icon="${params.attr.icon ?? 'dotsThree'}" launch-on-end t:title="Query Builder" x-ref="query" x-data="{
+        <c:${container} launch-icon="${params.attr.icon ?? 'dotsThree'}" launch-on-end t:title="Query Builder" x-ref="query" x-data="{
           fields: ${jsonStringify(fields, true)},
           builder: '',
           selected: [],
@@ -90,13 +75,13 @@ async function query (params = {}) {
               if (_.isEmpty(val)) continue
               let item
               if (key === 'in') item = this.opsIn(val)
-              else if (key === 'nin') item = this.opsIn(val, true)
+              else if (key === '!in') item = this.opsIn(val, true)
               else if (key === 'contains') item = this.opsExt(val)
-              else if (key === 'ncontains') item = this.opsExt(val, true)
-              else if (key === 'startsWith') item = this.opsExt(val, false, '^')
-              else if (key === 'nstartsWith') item = this.opsExt(val, true, '^')
-              else if (key === 'endsWith') item = this.opsExt(val, false, '$$')
-              else if (key === 'nendsWith') item = this.opsExt(val, true, '$$')
+              else if (key === '!contains') item = this.opsExt(val, true)
+              else if (key === 'starts') item = this.opsExt(val, false, '^')
+              else if (key === '!starts') item = this.opsExt(val, true, '^')
+              else if (key === 'ends') item = this.opsExt(val, false, '$$')
+              else if (key === '!ends') item = this.opsExt(val, true, '$$')
               else if (val.includes(' ')) item = this.ops[key] + '\\'' + val + '\\''
               else item = this.ops[key] + val
               items.push(sel + item)

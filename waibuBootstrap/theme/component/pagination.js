@@ -11,7 +11,7 @@ export function getUrlOpts (params = {}) {
 
 async function pagination (params = {}) {
   const { attrToObject, paginationLayout, groupAttrs } = this.plugin.app.waibuMpa
-  const { get } = this.plugin.app.bajo.lib._
+  const { get, isNumber } = this.plugin.app.bajo.lib._
   const schema = get(this, 'locals.schema', {})
   if (schema.view.disabled.includes('find')) {
     params.html = ''
@@ -40,7 +40,7 @@ async function pagination (params = {}) {
   if (!params.attr.noPages) {
     for (const p of pages) {
       attr = { disabled: p === '...', href: this._buildUrl(getUrlOpts.call(this, { page: p })), active: p === page }
-      html.push(await this.buildTag({ tag: 'paginationItem', attr, html: (p + '') }))
+      html.push(await this.buildTag({ tag: 'paginationItem', attr, html: isNumber(p) ? this.req.format(p, 'integer') : p }))
     }
   }
   if (params.attr.next) {

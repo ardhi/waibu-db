@@ -23,10 +23,10 @@ async function recordsInfo (params = {}) {
   if (!params.attr.dropdown) params.attr.dropdown = true
   const group = groupAttrs(params.attr, ['dropdown'])
   const html = []
-  if (params.attr.count) html.push(this.req.t('%d record(s) found', count))
+  if (params.attr.count) html.push(this.req.t('%s record(s) found', this.req.format(count, 'integer')))
   if (params.attr.pages) {
     if (!isEmpty(html)) html[html.length - 1] += '.'
-    html.push(this.req.t('Page %d of %d pages', page, pages))
+    html.push(this.req.t('Page %s of %s pages', this.req.format(page, 'integer'), this.req.format(pages, 'integer')))
   }
   if (params.attr.recsPerPage) {
     params.attr.recsPerPageValues = params.attr.recsPerPageValues ?? '10 25 50'

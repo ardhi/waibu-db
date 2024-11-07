@@ -3,9 +3,11 @@
     "prefix": "db",
     "title": "Model Database"
   },
+  "waibuAdmin": {
+    "menuHandler": "waibuDb:adminMenu"
+  },
   "waibuMpa": {
-    "icon": "database",
-    "menuHandler": "waibuDb:buildAdminMenu"
+    "icon": "database"
   },
   "dbModel": {
     "count": false,

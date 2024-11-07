@@ -1,7 +1,10 @@
 function modelsMenu () {
+  const { getPluginPrefix } = this.app.waibu
   const { titleize, pascalCase } = this.app.bajo
   const { getAppTitle } = this.app.waibuMpa
   const { map, pick, groupBy, keys, kebabCase, filter, get } = this.app.bajo.lib._
+
+  const prefix = getPluginPrefix(this.name)
   const schemas = filter(this.app.dobo.schemas, s => {
     const byModelFind = !s.disabled.includes('find')
     let modelDisabled = get(this, `app.${s.ns}.config.waibuAdmin.modelDisabled`)
@@ -27,7 +30,7 @@ function modelsMenu () {
       children: map(items, item => {
         return {
           name: titleize(item.name.slice(plugin.alias.length)),
-          id: kebabCase(item.name)
+          href: `waibuAdmin:/${prefix}/${kebabCase(item.name)}/list`
         }
       })
     })
@@ -35,21 +38,9 @@ function modelsMenu () {
   return menu
 }
 
-async function buildAdminMenu (locals, req) {
-  const { getPluginPrefix } = this.app.waibu
-  const menus = modelsMenu.call(this)
-  const dropdown = []
-  dropdown.push('<div><c:accordion no-border text="nowrap" style="margin-top:-5px;margin-bottom:-5px;">')
-  for (const menu of menus) {
-    dropdown.push(`<c:accordion-item t:header="${menu.name}&nbsp;&nbsp;" no-padding narrow-header>`)
-    dropdown.push('<c:list type="group" no-border hover>')
-    for (const child of menu.children) {
-      dropdown.push(`<c:list-item href="waibuAdmin:/${getPluginPrefix(this.name)}/${child.id}/list" t:content="${child.name}" />`)
-    }
-    dropdown.push('</c:list></c:accordion-item>')
-  }
-  dropdown.push('</c:accordion></div>')
-  return dropdown
+async function adminMenu (locals, req) {
+  const { buildAccordionMenu } = this.app.waibuAdmin
+  return buildAccordionMenu(modelsMenu.call(this))
 }
 
-export default buildAdminMenu
+export default adminMenu

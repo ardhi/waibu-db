@@ -1,5 +1,6 @@
 {
-  "Page %d of %d pages": "Hal %d dari %d",
+  "Page %s of %s pages": "Hal %s dari %s",
+  "%s record(s) found": "Ditemukan %s data",
   "recs per page": "data per halaman",
   "Add as New Clone": "Tambah sbg Duplikat",
   "Details": "Detil",
