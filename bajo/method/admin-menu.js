@@ -1,4 +1,4 @@
-function modelsMenu () {
+function modelsMenu (req) {
   const { getPluginPrefix } = this.app.waibu
   const { titleize, pascalCase } = this.app.bajo
   const { getAppTitle } = this.app.waibuMpa
@@ -40,7 +40,7 @@ function modelsMenu () {
 
 async function adminMenu (locals, req) {
   const { buildAccordionMenu } = this.app.waibuAdmin
-  return buildAccordionMenu(modelsMenu.call(this))
+  return buildAccordionMenu(modelsMenu.call(this, locals, req), locals, req)
 }
 
 export default adminMenu
