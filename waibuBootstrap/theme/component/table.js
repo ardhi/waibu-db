@@ -92,8 +92,11 @@ const table = {
         if (prop.type === 'boolean') {
           value = (await this.buildTag({ tag: 'icon', attr: { name: `circle${d[f] ? 'Check' : ''}` } })) +
             ' ' + (this.req.t(d[f] ? 'Yes' : 'No'))
-        }
-        const attr = { dataValue: ['array', 'object'].includes(prop.type) ? escape(JSON.stringify(d[f])) : d[f] }
+        } else value = escape(value)
+        let dataValue = d[f] ?? ''
+        if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
+        if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
+        const attr = { dataValue }
         if (!['object', 'array'].includes(prop.type)) {
           if (isRightAligned(prop.type)) attr.text = 'align:end nowrap'
           else attr.text = 'nowrap'
