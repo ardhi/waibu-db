@@ -10,7 +10,7 @@ async function btnDetails (params = {}) {
   if (isEmpty(params.attr.content)) params.attr.content = this.req.t('Details')
   params.attr.color = params.attr.color ?? 'secondary-outline'
   params.attr.id = generateId('alpha')
-  if (!params.attr.href) params.attr.href = this._buildUrl({ base: 'details' })
+  if (!params.attr.href) params.attr.href = this._buildUrl({ base: 'details', exclude: ['id'] })
   if (params.attr.onList) {
     params.attr.disabled = true
     params.attr['x-ref'] = 'details'
@@ -23,6 +23,8 @@ async function btnDetails (params = {}) {
       else $refs.details.classList.add('disabled')
       $refs.details.href = path + '&id=' + recId
     `
+  } else {
+    params.attr.href += '&id=' + this.req.query.id
   }
   params.html = await this.buildTag({ tag: 'btn', attr: params.attr, html: params.html })
 }
