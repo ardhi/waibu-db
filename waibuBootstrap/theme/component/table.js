@@ -4,7 +4,7 @@ function isRightAligned (type) {
 
 const table = {
   handler: async function (params = {}) {
-    const { escape } = this.plugin.app.bajo
+    const { escape } = this.plugin.app.waibu
     const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
     const { get, omit, set, find, isEmpty, without } = this.plugin.app.bajo.lib._
     const group = groupAttrs(params.attr, ['body', 'head', 'foot'])
