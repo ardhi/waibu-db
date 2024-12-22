@@ -27,7 +27,7 @@ async function btnDelete (params = {}) {
   } else {
     params.attr['x-data'] = `{
       selected: ['${this.req.query.id}'],
-      remove (ids) {
+      remove (modalId, ids) {
         wmpa.postForm({ ids }, '${this._buildUrl({ base: 'delete', exclude: ['id', 'page'] })}')
       }
     }`
