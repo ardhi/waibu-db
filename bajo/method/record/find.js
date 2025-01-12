@@ -2,12 +2,17 @@ import prepCrud from '../../../lib/prep-crud.js'
 
 async function find ({ model, req, reply, options = {} }) {
   const { recordFind, attachmentFind } = this.app.dobo
+  const { cloneDeep } = this.app.bajo.lib._
   const { name, opts } = prepCrud.call(this, { model, req, options, args: ['model'] })
   const { parseFilter } = this.app.waibu
   const cfgWeb = this.app.waibu.config
   opts.bboxLatField = req.query[cfgWeb.qsKey.bboxLatField]
   opts.bboxLngField = req.query[cfgWeb.qsKey.bboxLngField]
   const filter = parseFilter(req)
+  if (options.query) {
+    filter.query = cloneDeep(options.query)
+    delete options.query
+  }
   const ret = await recordFind(name, filter, opts)
   const { attachment, stats, mimeType } = req.query
   if (attachment) {

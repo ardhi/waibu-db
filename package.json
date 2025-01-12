@@ -1,6 +1,6 @@
 {
   "name": "waibu-db",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DB Helper",
   "main": "index.js",
   "scripts": {
@@ -26,9 +26,5 @@
   "bugs": {
     "url": "https://github.com/ardhi/waibu-db/issues"
   },
-  "homepage": "https://github.com/ardhi/waibu-db#readme",
-  "dependencies": {
-    "bootstrap-table": "^1.23.4",
-    "echarts": "^5.5.1"
-  }
+  "homepage": "https://github.com/ardhi/waibu-db#readme"
 }
