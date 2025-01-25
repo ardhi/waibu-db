@@ -66,6 +66,37 @@ async function query () {
                 if (ext) prefix += ext
                 return ':' + prefix + '\\'' + v + '\\''
               },
+              initBuilder () {
+                this.builder = document.getElementById('${id}').value
+                if (_.isEmpty(this.builder)) return
+                const tokens = _.merge({}, this.ops, {
+                  in: ':[',
+                  contains: ':~',
+                  starts: ':~^',
+                  ends: ':~$$',
+                  '!in': ':-[',
+                  '!contains': ':-~',
+                  '!starts': ':-~^',
+                  '!ends': ':-~$$'
+                })
+                for (const part of this.builder.split('+')) {
+                  let [f, opv] = part.split(':')
+                  opv = ':' + opv
+                  this.selected.push(f)
+                  let op
+                  let val
+                  _.each(tokens, (v, k) => {
+                    if (opv.slice(0, v.length) === v) {
+                      op = k
+                      val = opv.slice(v.length).replaceAll('[', '').replaceAll(']', '').replaceAll('\\'', '')
+                    }
+                  })
+                  console.log(op, val)
+                  if (_.isEmpty(op)) continue
+                  this[f + 'Op'] = op
+                  this[f + 'Val'] = val
+                }
+              },
               expandArray (val = '') {
                 return _.map(val.split(','), item => {
                   item = _.trim(item)
@@ -98,14 +129,15 @@ async function query () {
                 if (run) {
                   const url = new URL(window.location.href)
                   const params = new URLSearchParams(url.search)
-                  this.params.set('${qsKey.page}', 1)
-                  this.params.set('${qsKey.query}', this.builder ?? '')
-                  window.location.href = '?' + this.params.toString()
+                  params.set('${qsKey.page}', 1)
+                  params.set('${qsKey.query}', this.builder ?? '')
+                  window.location.href = '?' + params.toString()
                 } else $dispatch('on-query', this.builder)
                 const instance = wbs.getInstance('${upperFirst(container)}', $refs.query)
                 instance.hide()
               }
             }" x-init="
+              initBuilder()
               const ops = _.map(fields, f => (f + 'Op'))
               const vals = _.map(fields, f => (f + 'Val'))
               const watcher = ['selected', ...ops, ...vals].join(',')
@@ -130,9 +162,9 @@ async function query () {
                 const val = document.getElementById('${id}').value ?? ''
                 const url = new URL(window.location.href)
                 const params = new URLSearchParams(url.search)
-                this.params.set('${qsKey.page}', 1)
-                this.params.set('${qsKey.query}', val)
-                window.location.href = '?' + this.params.toString()
+                params.set('${qsKey.page}', 1)
+                params.set('${qsKey.query}', val)
+                window.location.href = '?' + params.toString()
               }
             }" @click="submit" @on-submit.window="submit()" />
           </c:form-input-addon>

@@ -5,7 +5,7 @@ async function echarts () {
 
   return class WdbEcharts extends WdbBase {
     static scripts = [...super.scripts,
-      '^waibuDb.virtual:/echarts/echarts.min.js'
+      '^waibuExtra.virtual:/echarts/echarts.min.js'
     ]
 
     constructor (options) {
@@ -24,7 +24,6 @@ async function echarts () {
       const { defaultsDeep, generateId } = this.plugin.app.bajo
       const { base64JsonDecode, jsonStringify } = this.plugin.app.waibuMpa
       const { cloneDeep } = this.plugin.app.bajo.lib._
-      this._normalizeAttr(this.params, { tag: 'div' })
       this.params.attr.dim = this.params.attr.dim ?? 'width:100 height:100'
       this.params.attr.id = generateId('alpha')
       this.params.attr['x-data'] = `chart${this.params.attr.id}`

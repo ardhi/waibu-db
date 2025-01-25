@@ -46,7 +46,7 @@ async function btnEdit () {
               if (id.slice(-6) === '-split') {
                 const selector = '#' + id.replace('-split', '-menu') + ' a.dropdown-item'
                 const item = document.querySelector(selector)
-                item.href = href.replace('/edit', '/add') + '&mode=clone'
+                item.href = href.replace('edit?&id=', 'add?&id=') + '&mode=clone'
               } else el.href = href
             }
           `
