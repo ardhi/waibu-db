@@ -12,6 +12,5 @@
   "dbModel": {
     "count": false,
     "patchEnabled": false
-  },
-  "dependencies": ["waibu", "dobo"]
+  }
 }
