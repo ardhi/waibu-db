@@ -4,8 +4,17 @@ async function table () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbTable extends WdbBase {
-    isRightAligned (type) {
-      return ['smallint', 'integer', 'float', 'double'].includes(type)
+    isRightAligned (field, schema) {
+      const { get, find } = this.plugin.app.bajo.lib._
+      const type = find(schema.properties, { name: field }).type
+      let value = get(schema, 'view.alignEnd', []).includes(field)
+      if (!value) value = ['smallint', 'integer', 'float', 'double'].includes(type)
+      return value
+    }
+
+    isNoWrap (field, schema) {
+      const { get } = this.plugin.app.bajo.lib._
+      return get(schema, 'view.noWrap', []).includes(field)
     }
 
     async build () {
@@ -54,7 +63,7 @@ async function table () {
           }
           const item = set({ page: 1 }, qsKey.sort, sortItem)
           const href = this.component.buildUrl({ params: item })
-          const attr = this.isRightAligned(prop.type) ? { text: 'align:end' } : {}
+          const attr = this.isRightAligned(f, schema) ? { text: 'align:end' } : {}
           const content = [
             await this.component.buildTag({ tag: 'div', attr, html: req.t(`field.${f}`) }),
             await this.component.buildTag({ tag: 'a', attr: { icon, href }, prepend: '<div class="ms-1">', append: '</div>' })
@@ -62,7 +71,7 @@ async function table () {
           head = await this.component.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
         }
         let text = this.params.attr.headerNowrap ? '' : 'nowrap'
-        if (this.isRightAligned(prop.type)) text += ' align:end'
+        if (this.isRightAligned(f, schema)) text += ' align:end'
         const attr = { dataKey: f, dataType: prop.type, text }
         items.push(await this.component.buildTag({ tag: 'th', attr, html: head }))
       }
@@ -104,9 +113,12 @@ async function table () {
           if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           const attr = { dataValue }
           if (!['object', 'array'].includes(prop.type)) {
-            if (this.isRightAligned(prop.type)) attr.text = 'align:end nowrap'
-            else attr.text = 'nowrap'
+            const noWrap = this.isNoWrap(f, schema) ? 'nowrap' : ''
+            if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
+            else attr.text = noWrap
           }
+          const formatter = get(schema, `formatter.${f}`)
+          if (formatter) value = await this.component.buildSentence(formatter(value, d))
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }
