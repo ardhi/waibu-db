@@ -91,7 +91,6 @@ async function query () {
                       val = opv.slice(v.length).replaceAll('[', '').replaceAll(']', '').replaceAll('\\'', '')
                     }
                   })
-                  console.log(op, val)
                   if (_.isEmpty(op)) continue
                   this[f + 'Op'] = op
                   this[f + 'Val'] = val

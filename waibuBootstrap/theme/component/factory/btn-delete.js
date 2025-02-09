@@ -35,14 +35,14 @@ async function btnDelete () {
         this.params.attr['x-data'] = `{
           selected: ['${req.query.id}'],
           remove (modalId, ids) {
+            ids = JSON.parse(wmpa.fromBase64(ids)).join(',')
             wmpa.postForm({ ids }, '${this.component.buildUrl({ base: 'delete', exclude: ['id', 'page'] })}')
           }
         }`
       }
       const msg = 'You\'re about to remove one or more records. Are you really sure to do this?'
       this.params.attr['@click'] = `
-        const opts = selected.join(',')
-        await wbs.confirmation(\`${req.t(msg)}\`, { ok: '${this.params.attr.id}:remove', close: 'y', opts })
+        await wbs.confirmation(\`${req.t(msg)}\`, { ok: '${this.params.attr.id}:remove', close: 'y', opts: selected })
       `
       this.params.html = await this.component.buildTag({ tag: 'btn', attr: this.params.attr, html: this.params.html })
     }
