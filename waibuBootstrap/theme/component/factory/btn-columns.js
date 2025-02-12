@@ -46,6 +46,7 @@ async function btnColumns () {
       html.push('</form>')
       this.params.attr.autoClose = 'outside'
       this.params.attr.triggerColor = this.params.attr.color
+      this.params.attr.menudir = this.params.attr.menudir ?? 'end'
       this.params.html = await this.component.buildTag({ tag: 'dropdown', attr: this.params.attr, html: html.join('\n') })
       this.params.noTag = true
     }

@@ -6,9 +6,10 @@ async function table () {
   return class WdbTable extends WdbBase {
     isRightAligned (field, schema) {
       const { get, find } = this.plugin.app.bajo.lib._
-      const type = find(schema.properties, { name: field }).type
+      const prop = find(schema.properties, { name: field })
+      if (!prop) return false
       let value = get(schema, 'view.alignEnd', []).includes(field)
-      if (!value) value = ['smallint', 'integer', 'float', 'double'].includes(type)
+      if (!value) value = ['smallint', 'integer', 'float', 'double'].includes(prop.type)
       return value
     }
 
@@ -24,10 +25,12 @@ async function table () {
       const { get, omit, set, find, isEmpty, without } = this.plugin.app.bajo.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
+      const prettyUrl = this.params.attr.prettyUrl
 
       const data = get(this, 'component.locals.list.data', [])
       const schema = get(this, 'component.locals.schema', {})
-      if (schema.view.disabled.includes('find')) {
+      const disableds = get(schema, 'view.disabled', [])
+      if (disableds.includes('find')) {
         this.params.html = ''
         return
       }
@@ -40,8 +43,8 @@ async function table () {
       if (!['-1', '1'].includes(sortDir)) sortDir = '1'
 
       let selection
-      const canDelete = !schema.view.disabled.includes('remove')
-      const canEdit = !schema.view.disabled.includes('update')
+      const canDelete = !disableds.includes('remove')
+      const canEdit = !disableds.includes('update')
       if (canEdit) selection = 'single'
       if (canDelete) selection = 'multi'
       if (selection) this.params.attr.hover = true
@@ -53,7 +56,8 @@ async function table () {
       for (const f of schema.view.fields) {
         if (!fields.includes(f)) continue
         const prop = find(schema.properties, { name: f })
-        let head = req.t(`field.${f}`)
+        if (!prop) continue
+        let head = req.t(get(schema, `view.label.${f}`, `field.${f}`))
         if (!this.params.attr.noSort && (schema.sortables ?? []).includes(f)) {
           let sortItem = `${f}:-1`
           let icon = this.params.attr.sortUpIcon ?? 'caretUp'
@@ -95,11 +99,14 @@ async function table () {
         if (selection) {
           const tag = selection === 'single' ? 'formRadio' : 'formCheck'
           const attr = { 'x-model': 'selected', name: '_rt', value: d.id, noLabel: true, noWrapper: true }
-          lines.push(await this.component.buildTag({ tag, attr, prepend: '<td>', append: '</td>' }))
+          const type = find(schema.properties, { name: 'id' }).type
+          const prepend = `<td data-value="${d.id}" data-key="id" data-type="${type}">`
+          lines.push(await this.component.buildTag({ tag, attr, prepend, append: '</td>' }))
         }
         for (const f of schema.view.fields) {
-          const prop = find(schema.properties, { name: f })
           if (!fields.includes(f)) continue
+          const prop = find(schema.properties, { name: f })
+          if (!prop) continue
           const opts = {}
           if (f === 'lng') opts.longitude = true
           else if (f === 'lat') opts.latitude = true
@@ -111,7 +118,7 @@ async function table () {
           let dataValue = d[f] ?? ''
           if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
           if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
-          const attr = { dataValue }
+          const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!['object', 'array'].includes(prop.type)) {
             const noWrap = this.isNoWrap(f, schema) ? 'nowrap' : ''
             if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
@@ -123,15 +130,15 @@ async function table () {
           lines.push(line)
         }
         const attr = {}
-        if (!schema.view.disabled.includes('update') || !schema.view.disabled.includes('remove')) attr['@click'] = `toggle('${d.id}')`
-        if (!schema.view.disabled.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
+        if (!disableds.includes('update') || !disableds.includes('remove')) attr['@click'] = `toggle('${d.id}')`
+        if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
         items.push(await this.component.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
       }
       html.push(await this.component.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
       this.params.attr = omit(this.params.attr, ['sortUpIcon', 'sortDownIcon', 'noSort', 'selection', 'headerNowrap'])
       const goDetails = `
         goDetails (id) {
-          window.location.href = '${this.component.buildUrl({ base: 'details' })}&id=' + id
+          window.location.href = '${this.component.buildUrl({ base: 'details', prettyUrl })}&id=' + id
         }
       `
       if (selection === 'multi') {

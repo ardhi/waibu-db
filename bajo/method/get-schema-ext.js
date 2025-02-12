@@ -4,6 +4,7 @@ const defReadonly = ['id', 'createdAt', 'updatedAt']
 
 function getCommons (action, schema, ext, opts = {}) {
   const { map, get, set, without, uniq } = this.app.bajo.lib._
+  const label = get(ext, `view.${action}.label`, get(ext, 'common.label', {}))
   const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
   hidden.push(...schema.hidden, ...(opts.hidden ?? []))
   const allFields = without(map(schema.properties, 'name'), ...hidden)
@@ -17,7 +18,7 @@ function getCommons (action, schema, ext, opts = {}) {
   }
   fields = uniq(without(fields, ...hidden))
   if (action !== 'add' && !fields.includes('id')) fields.unshift('id')
-  return { fields, allFields }
+  return { fields, allFields, label }
 }
 
 function autoLayout ({ action, schema, ext, layout, allWidgets }) {
@@ -58,7 +59,7 @@ function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
 
 function applyLayout (action, schema, ext) {
   const { set, get, isEmpty, map, find } = this.app.bajo.lib._
-  const { fields } = getCommons.call(this, action, schema, ext)
+  const { fields, label } = getCommons.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
   const readonly = get(ext, `view.${action}.readonly`, get(ext, 'common.readonly', defReadonly))
   const allWidgets = map(fields, f => {
@@ -89,12 +90,13 @@ function applyLayout (action, schema, ext) {
   else customLayout.call(this, { layout, allWidgets, schema, action, ext, readonly })
   set(schema, 'view.layout', layout)
   set(schema, 'view.fields', fields)
+  set(schema, 'view.label', label)
 }
 
 const handler = {
   list: async function (schema, ext, opts) {
     const { get, set } = this.app.bajo.lib._
-    const { fields } = getCommons.call(this, 'list', schema, ext, opts)
+    const { fields, label } = getCommons.call(this, 'list', schema, ext, opts)
     const qsFields = []
     for (const f of get(schema, 'view.qs.fields', '').split(',')) {
       if (fields.includes(f)) qsFields.push(f)
@@ -102,6 +104,7 @@ const handler = {
     let [col, dir] = get(schema, 'view.qs.sort', '').split(':')
     if (!fields.includes(col) || !col) col = 'id'
     if (!['1', '-1'].includes(dir)) dir = '1'
+    set(schema, 'view.label', label)
     set(schema, 'view.fields', fields)
     set(schema, 'view.qs.fields', qsFields.join(','))
     set(schema, 'view.qs.sort', `${col}:${dir}`)
