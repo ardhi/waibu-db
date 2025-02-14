@@ -20,9 +20,10 @@ async function table () {
 
     async build () {
       const { req } = this.component
+      const { callHandler } = this.plugin.app.bajo
       const { escape } = this.plugin.app.waibu
       const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without } = this.plugin.app.bajo.lib._
+      const { get, omit, set, find, isEmpty, without, isFunction } = this.plugin.app.bajo.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
@@ -69,7 +70,7 @@ async function table () {
           const href = this.component.buildUrl({ params: item })
           const attr = this.isRightAligned(f, schema) ? { text: 'align:end' } : {}
           const content = [
-            await this.component.buildTag({ tag: 'div', attr, html: req.t(`field.${f}`) }),
+            await this.component.buildTag({ tag: 'div', attr, html: head }),
             await this.component.buildTag({ tag: 'a', attr: { icon, href }, prepend: '<div class="ms-1">', append: '</div>' })
           ]
           head = await this.component.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
@@ -125,7 +126,11 @@ async function table () {
             else attr.text = noWrap
           }
           const formatter = get(schema, `formatter.${f}`)
-          if (formatter) value = await this.component.buildSentence(formatter(value, d))
+          if (formatter) {
+            if (isFunction(formatter)) value = await formatter(dataValue, d)
+            else value = await callHandler(formatter, req, dataValue, d)
+            value = await this.component.buildSentence(value)
+          }
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }

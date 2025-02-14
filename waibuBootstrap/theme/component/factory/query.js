@@ -32,9 +32,10 @@ async function query () {
         if (ops.length === 0) continue
         const sels = ops.map(o => `<c:option>${o}</c:option>`)
         models.push(`${f}Op: 'eq'`, `${f}Val: ''`)
+        const label = this.component.req.t(get(schema, `view.label.${f}`, `field.${f}`))
         columns.push(`
           <c:grid-col col="4-md" flex="align-items:center">
-            <c:form-check x-model="selected" t:label="field.${f}" value="${f}" />
+            <c:form-check x-model="selected" t:label="${label}" value="${f}" />
           </c:grid-col>
           <c:grid-col col="3-md">
             <c:form-select x-model="${f}Op">

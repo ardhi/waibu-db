@@ -22,6 +22,7 @@ async function btnDelete () {
         this.params.attr['x-data'] = `{
           selected: [],
           remove (modalId, ids) {
+            ids = JSON.parse(wmpa.fromBase64(ids)).join(',')
             wmpa.postForm({ ids }, '${this.component.buildUrl({ base: 'delete' })}')
           }
         }`
