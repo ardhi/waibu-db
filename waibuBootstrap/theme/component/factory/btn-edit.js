@@ -22,6 +22,7 @@ async function btnEdit () {
         this.params.attr.split = true
         this.params.attr.triggerDisabled = true
         this.params.attr.triggerId = this.params.attr.id
+        this.params.attr.triggerTag = 'a'
         this.params.attr['trigger-x-data'] = `{
           path: '${this.params.attr.href}'
         }`
