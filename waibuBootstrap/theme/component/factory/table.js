@@ -143,7 +143,10 @@ async function table () {
       this.params.attr = omit(this.params.attr, ['sortUpIcon', 'sortDownIcon', 'noSort', 'selection', 'headerNowrap'])
       const goDetails = `
         goDetails (id) {
-          window.location.href = '${this.component.buildUrl({ base: 'details', prettyUrl })}&id=' + id
+          let url = '${this.params.attr.detailsHref ?? this.component.buildUrl({ base: 'details', prettyUrl })}'
+          if (url.indexOf('/:id') > -1) url = url.replace('/:id', '/' + id)
+          else url += '&id=' + id
+          window.location.href = url
         }
       `
       if (selection === 'multi') {
