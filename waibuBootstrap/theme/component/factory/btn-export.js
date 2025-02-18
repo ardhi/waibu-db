@@ -9,12 +9,14 @@ async function btnExport () {
       const { req } = this.component
       this.params.noTag = true
       const schema = get(this, 'component.locals.schema', {})
+      const count = get(this, 'component.locals.list.count', 0)
+      if (count === 0 && this.params.attr.handler === 'list') this.params.attr.triggerDisabled = true
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''
         return
       }
-      if (isEmpty(this.params.attr.launch)) this.params.attr.launch = req.t('Export')
-      this.params.attr.launchColor = this.params.attr.launchColor ?? 'secondary-outline'
+      if (isEmpty(this.params.attr.trigger)) this.params.attr.trigger = req.t('Export')
+      this.params.attr.triggerColor = this.params.attr.triggerColor ?? 'secondary-outline'
       this.params.attr.title = req.t('Data Export')
       const html = await this.component.buildSentence(`
         <c:div x-data="{

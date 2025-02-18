@@ -10,6 +10,8 @@ async function btnColumns () {
       const { req } = this.component
       const qsKey = this.plugin.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
+      const count = get(this, 'component.locals.list.count', 0)
+      if (count === 0) this.params.attr.triggerDisabled = true
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''
         return

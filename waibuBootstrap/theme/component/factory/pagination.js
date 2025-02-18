@@ -26,6 +26,11 @@ async function pagination () {
       }
       let { count, limit, page } = attrToObject(this.params.attr.options)
       count = count ?? get(this, 'component.locals.list.count', 0)
+      if (count === 0) {
+        this.params.noTag = true
+        this.params.html = ''
+        return
+      }
       limit = limit ?? get(this, 'component.locals.list.limit', 25)
       page = page ?? get(this, 'component.locals.list.page', 1)
       const pages = paginationLayout(count, limit, page) ?? []

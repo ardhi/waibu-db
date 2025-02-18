@@ -10,6 +10,7 @@ async function query () {
       const { find, get, without, isEmpty, filter, upperFirst } = this.plugin.app.bajo.lib._
       const qsKey = this.plugin.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
+      const count = get(this, 'component.locals.list.count', 0)
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''
         return
@@ -50,12 +51,12 @@ async function query () {
       this.params.noTag = true
       const container = this.params.attr.modal ? 'modal' : 'drawer'
       this.params.html = await this.component.buildSentence(`
-        <c:form-input type="search" t:placeholder="Query" id="${id}" x-data="{ query: '' }" x-init="
+        <c:form-input ${count === 0 ? 'disabled' : ''} type="search" t:placeholder="Query" id="${id}" x-data="{ query: '' }" x-init="
           const url = new URL(window.location.href)
           query = url.searchParams.get('${qsKey.query}') ?? ''
         " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
           <c:form-input-addon>
-            <c:${container} launch-icon="${this.params.attr.icon ?? 'dotsThree'}" launch-on-end t:title="Query Builder" x-ref="query" x-data="{
+            <c:${container} ${count === 0 ? 'trigger-disabled' : ''} trigger-icon="${this.params.attr.icon ?? 'dotsThree'}" trigger-on-end t:title="Query Builder" x-ref="query" x-data="{
               fields: ${jsonStringify(fields, true)},
               builder: '',
               selected: [],
@@ -157,7 +158,7 @@ async function query () {
             </c:${container}>
           </c:form-input-addon>
           <c:form-input-addon>
-            <c:btn t:content="Submit" x-data="{
+            <c:btn ${count === 0 ? 'disabled' : ''} t:content="Submit" x-data="{
               submit () {
                 const val = document.getElementById('${id}').value ?? ''
                 const url = new URL(window.location.href)

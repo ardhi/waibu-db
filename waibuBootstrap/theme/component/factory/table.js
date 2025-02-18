@@ -29,6 +29,13 @@ async function table () {
       const prettyUrl = this.params.attr.prettyUrl
 
       const data = get(this, 'component.locals.list.data', [])
+      const count = get(this, 'component.locals.list.count', 0)
+      if (count === 0) {
+        const alert = '<c:alert color="warning" t:content="No record found" margin="top-4"/>'
+        this.params.noTag = true
+        this.params.html = await this.component.buildSentence(alert)
+        return
+      }
       const schema = get(this, 'component.locals.schema', {})
       const disableds = get(schema, 'view.disabled', [])
       if (disableds.includes('find')) {
@@ -119,13 +126,18 @@ async function table () {
           let dataValue = d[f] ?? ''
           if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
           if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
-          const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
+          const attr = { dataValue, dataKey: prop.name, dataType: prop.type, style: { cursor: 'pointer' } }
           if (!['object', 'array'].includes(prop.type)) {
             const noWrap = this.isNoWrap(f, schema) ? 'nowrap' : ''
             if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
             else attr.text = noWrap
           }
-          const formatter = get(schema, `formatter.${f}`)
+          const lookup = get(schema, `view.lookup.${f}`)
+          if (lookup) {
+            const item = find(lookup.values, set({}, lookup.id ?? 'id', value))
+            if (item) value = req.t(item[lookup.field ?? 'name'])
+          }
+          const formatter = get(schema, `view.formatter.${f}`)
           if (formatter) {
             if (isFunction(formatter)) value = await formatter(dataValue, d)
             else value = await callHandler(formatter, req, dataValue, d)

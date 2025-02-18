@@ -16,16 +16,17 @@ async function recsInfo () {
       }
       let { count, limit, page, pages } = attrToObject(this.params.attr.options)
       count = count ?? get(this, 'component.locals.list.count', 0)
+      if (count === 0) {
+        this.params.noTag = true
+        this.params.html = ''
+        return
+      }
       page = page ?? get(this, 'component.locals.list.page', 1)
       limit = limit ?? get(this, 'component.locals.list.limit', 25)
       pages = pages ?? get(this, 'component.locals.list.pages', 0)
 
       this.params.tag = 'div'
       this.params.attr.flex = 'justify-center:start align-items:center'
-      if (count === 0) {
-        this.params.html = req.t('No record found')
-        return
-      }
       if (!this.params.attr.dropdown) this.params.attr.dropdown = true
       const group = groupAttrs(this.params.attr, ['dropdown'])
       const html = []
