@@ -4,7 +4,7 @@ async function btnEdit () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbBtnEdit extends WdbBase {
-    async build () {
+    build = async () => {
       const { req } = this.component
       const { generateId } = this.plugin.app.bajo
       const { isEmpty, get } = this.plugin.app.bajo.lib._

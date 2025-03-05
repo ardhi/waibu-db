@@ -18,7 +18,7 @@ async function table () {
       return get(schema, 'view.noWrap', []).includes(field)
     }
 
-    async build () {
+    build = async () => {
       const { req } = this.component
       const { callHandler } = this.plugin.app.bajo
       const { escape } = this.plugin.app.waibu

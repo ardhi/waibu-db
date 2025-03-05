@@ -4,7 +4,7 @@ async function btnClone () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbBtnClone extends WdbBase {
-    async build () {
+    build = async () => {
       const { req } = this.component
       const { isEmpty, get } = this.plugin.app.bajo.lib._
       this.params.noTag = true

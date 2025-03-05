@@ -4,7 +4,7 @@ async function btnBack () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbBtnBack extends WdbBase {
-    async build () {
+    build = async () => {
       const { isEmpty } = this.plugin.app.bajo.lib._
       const { attrToArray } = this.plugin.app.waibuMpa
       const { req } = this.component

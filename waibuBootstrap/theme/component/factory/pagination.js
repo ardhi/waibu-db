@@ -15,7 +15,7 @@ async function pagination () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbPagination extends WdbBase {
-    async build () {
+    build = async () => {
       const { req } = this.component
       const { attrToObject, paginationLayout, groupAttrs } = this.plugin.app.waibuMpa
       const { get, isNumber } = this.plugin.app.bajo.lib._

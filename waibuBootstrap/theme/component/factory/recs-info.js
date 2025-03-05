@@ -5,7 +5,7 @@ async function recsInfo () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbRecsInfo extends WdbBase {
-    async build () {
+    build = async () => {
       const { req } = this.component
       const { attrToObject, groupAttrs, attrToArray } = this.plugin.app.waibuMpa
       const { get, isEmpty, omit, merge } = this.plugin.app.bajo.lib._

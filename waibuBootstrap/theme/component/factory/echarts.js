@@ -20,7 +20,7 @@ async function echarts () {
       }
     }
 
-    async build () {
+    build = async () => {
       const { defaultsDeep, generateId } = this.plugin.app.bajo
       const { base64JsonDecode, jsonStringify } = this.plugin.app.waibuMpa
       const { cloneDeep } = this.plugin.app.bajo.lib._

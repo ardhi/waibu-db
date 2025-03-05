@@ -4,7 +4,7 @@ async function query () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbQuery extends WdbBase {
-    async build () {
+    build = async () => {
       const { generateId } = this.plugin.app.bajo
       const { jsonStringify } = this.plugin.app.waibuMpa
       const { find, get, without, isEmpty, filter, upperFirst } = this.plugin.app.bajo.lib._
