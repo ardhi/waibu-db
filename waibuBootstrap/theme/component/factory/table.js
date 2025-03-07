@@ -4,7 +4,7 @@ async function table () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbTable extends WdbBase {
-    isRightAligned (field, schema) {
+    isRightAligned = (field, schema) => {
       const { get, find } = this.plugin.app.bajo.lib._
       const prop = find(schema.properties, { name: field })
       if (!prop) return false
@@ -13,7 +13,7 @@ async function table () {
       return value
     }
 
-    isNoWrap (field, schema) {
+    isNoWrap = (field, schema) => {
       const { get } = this.plugin.app.bajo.lib._
       return get(schema, 'view.noWrap', []).includes(field)
     }
@@ -140,7 +140,7 @@ async function table () {
           const formatter = get(schema, `view.formatter.${f}`)
           if (formatter) {
             if (isFunction(formatter)) value = await formatter(dataValue, d)
-            else value = await callHandler(formatter, req, dataValue, d)
+            else value = await callHandler(this.plugin.app[schema.ns], formatter, req, dataValue, d)
             value = await this.component.buildSentence(value)
           }
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
