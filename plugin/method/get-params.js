@@ -1,5 +1,5 @@
 function getParams (req, ...items) {
-  const { map, trim, get } = this.app.bajo.lib._
+  const { map, trim, get } = this.lib._
   let fields
   req.query = req.query ?? {}
   req.params = req.params ?? {}

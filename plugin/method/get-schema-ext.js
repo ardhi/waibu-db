@@ -3,7 +3,7 @@ import path from 'path'
 const defReadonly = ['id', 'createdAt', 'updatedAt']
 
 function getCommons (action, schema, ext, opts = {}) {
-  const { map, get, set, without, uniq } = this.app.bajo.lib._
+  const { map, get, set, without, uniq } = this.lib._
   const label = get(ext, `view.${action}.label`, get(ext, 'common.label', {}))
   const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
   hidden.push(...schema.hidden, ...(opts.hidden ?? []))
@@ -37,7 +37,7 @@ function autoLayout ({ action, schema, ext, layout, allWidgets }) {
 }
 
 function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
-  const { find, omit, merge, isString } = this.app.bajo.lib._
+  const { find, omit, merge, isString } = this.lib._
   const items = [...layout]
   layout.splice(0, layout.length)
   for (const item of items) {
@@ -58,7 +58,7 @@ function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
 }
 
 function applyLayout (action, schema, ext) {
-  const { set, get, isEmpty, map, find } = this.app.bajo.lib._
+  const { set, get, isEmpty, map, find } = this.lib._
   const { fields, label } = getCommons.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
   const readonly = get(ext, `view.${action}.readonly`, get(ext, 'common.readonly', defReadonly))
@@ -95,7 +95,7 @@ function applyLayout (action, schema, ext) {
 
 const handler = {
   list: async function (schema, ext, opts) {
-    const { get, set } = this.app.bajo.lib._
+    const { get, set } = this.lib._
     const { fields, label } = getCommons.call(this, 'list', schema, ext, opts)
     const qsFields = []
     for (const f of get(schema, 'view.qs.fields', '').split(',')) {
@@ -123,7 +123,7 @@ const handler = {
 async function getSchemaExt (model, view, opts) {
   const { readConfig } = this.app.bajo
   const { getSchema } = this.app.dobo
-  const { pick } = this.app.bajo.lib._
+  const { pick } = this.lib._
 
   let schema = getSchema(model)
   const base = path.basename(schema.file, path.extname(schema.file))

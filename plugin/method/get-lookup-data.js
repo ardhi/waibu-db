@@ -1,5 +1,5 @@
 async function getLookupData ({ model, req, data, id = 'id', field, query }) {
-  const { set, map } = this.app.bajo.lib._
+  const { set, map } = this.lib._
   const $in = map(data, id)
   const q = query ?? set({}, field, { $in })
   const options = {

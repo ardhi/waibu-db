@@ -2,7 +2,7 @@ function modelsMenu (req) {
   const { getPluginPrefix } = this.app.waibu
   const { titleize, pascalCase } = this.app.bajo
   const { getAppTitle } = this.app.waibuMpa
-  const { map, pick, groupBy, keys, kebabCase, filter, get } = this.app.bajo.lib._
+  const { map, pick, groupBy, keys, kebabCase, filter, get } = this.lib._
 
   const prefix = getPluginPrefix(this.name)
   const schemas = filter(this.app.dobo.schemas, s => {
