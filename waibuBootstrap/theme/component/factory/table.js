@@ -23,7 +23,7 @@ async function table () {
       const { callHandler } = this.plugin.app.bajo
       const { escape } = this.plugin.app.waibu
       const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without, isFunction } = this.plugin.app.bajo.lib._
+      const { get, omit, set, find, isEmpty, without, isFunction, merge } = this.plugin.app.bajo.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
@@ -127,6 +127,8 @@ async function table () {
           if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
           if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type, style: { cursor: 'pointer' } }
+          const cellFormatter = get(schema, `view.cellFormatter.${f}`)
+          if (cellFormatter) merge(attr, await cellFormatter(dataValue, d))
           if (!['object', 'array'].includes(prop.type)) {
             const noWrap = this.isNoWrap(f, schema) ? 'nowrap' : ''
             if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
@@ -140,13 +142,13 @@ async function table () {
           const formatter = get(schema, `view.formatter.${f}`)
           if (formatter) {
             if (isFunction(formatter)) value = await formatter(dataValue, d)
-            else value = await callHandler(this.plugin.app[schema.ns], formatter, req, dataValue, d)
+            else value = await callHandler(formatter, req, dataValue, d)
             value = await this.component.buildSentence(value)
           }
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }
-        const attr = {}
+        const attr = { id: `rec-${d.id}` }
         if (!disableds.includes('update') || !disableds.includes('remove')) attr['@click'] = `toggle('${d.id}')`
         if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
         items.push(await this.component.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
