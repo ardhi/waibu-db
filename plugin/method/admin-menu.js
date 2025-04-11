@@ -1,8 +1,8 @@
-function modelsMenu (req) {
+function modelsMenu (locals, req) {
   const { getPluginPrefix } = this.app.waibu
-  const { titleize, pascalCase } = this.app.bajo
+  const { pascalCase } = this.app.bajo
   const { getAppTitle } = this.app.waibuMpa
-  const { map, pick, groupBy, keys, kebabCase, filter, get } = this.lib._
+  const { camelCase, map, pick, groupBy, keys, kebabCase, filter, get } = this.lib._
 
   const prefix = getPluginPrefix(this.name)
   const schemas = filter(this.app.dobo.schemas, s => {
@@ -29,7 +29,7 @@ function modelsMenu (req) {
       name: k,
       children: map(items, item => {
         return {
-          name: titleize(item.name.slice(plugin.alias.length)),
+          name: req.t(camelCase(item.name.slice(plugin.alias.length))),
           href: `waibuAdmin:/${prefix}/${kebabCase(item.name)}/list`
         }
       })
