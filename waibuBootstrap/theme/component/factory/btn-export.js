@@ -15,9 +15,9 @@ async function btnExport () {
         this.params.html = ''
         return
       }
-      if (isEmpty(this.params.attr.trigger)) this.params.attr.trigger = req.t('Export')
+      if (isEmpty(this.params.attr.trigger)) this.params.attr.trigger = req.t('export')
       this.params.attr.triggerColor = this.params.attr.triggerColor ?? 'secondary-outline'
-      this.params.attr.title = req.t('Data Export')
+      this.params.attr.title = req.t('dataExport')
       const html = await this.component.buildSentence(`
         <c:div x-data="{
           delivery: 'clipboard',
@@ -105,28 +105,28 @@ async function btnExport () {
         ">
           <c:grid-row gutter="2">
             <c:grid-col col="6-md">
-              <c:fieldset t:legend="Delivery" legend-type="6">
-                <c:form-radio x-model="delivery" value="file" t:label="Save as File" />
-                <c:form-radio x-model="delivery" value="clipboard" t:label="Copy to Clipboard" />
+              <c:fieldset t:legend="delivery" legend-type="6">
+                <c:form-radio x-model="delivery" value="file" t:label="saveAsFile" />
+                <c:form-radio x-model="delivery" value="clipboard" t:label="copyToClipboard" />
               </c:fieldset>
-              <c:fieldset t:legend="Options" legend-type="6" margin="top-2">
-                <c:form-check x-ref="fkey" x-model="options" value="fkey" t:label="Formatted Field" />
-                <c:form-check x-ref="fvalue" x-model="options" value="fvalue" t:label="Formatted Value" />
-                <c:form-check x-ref="zip" x-model="options" value="zip" t:label="Zipped" />
+              <c:fieldset t:legend="options" legend-type="6" margin="top-2">
+                <c:form-check x-ref="fkey" x-model="options" value="fkey" t:label="formattedField" />
+                <c:form-check x-ref="fvalue" x-model="options" value="fvalue" t:label="formattedValue" />
+                <c:form-check x-ref="zip" x-model="options" value="zip" t:label="zipped" />
               </c:fieldset>
             </c:grid-col>
             <c:grid-col col="6-md">
-              <c:fieldset t:legend="File Type" legend-type="6">
-                <c:form-radio x-ref="xlsx" x-model="ftype" value="xlsx" t:label="Excel XLSX" />
-                <c:form-radio x-ref="csv" x-model="ftype" value="csv" t:label="CSV" />
-                <c:form-radio x-ref="xml" x-model="ftype" value="xml" t:label="XML" />
-                <c:form-radio x-ref="json" x-model="ftype" value="json" t:label="JSON" />
+              <c:fieldset t:legend="fileType" legend-type="6">
+                <c:form-radio x-ref="xlsx" x-model="ftype" value="xlsx" t:label="excelXlsx" />
+                <c:form-radio x-ref="csv" x-model="ftype" value="csv" t:label="csv" />
+                <c:form-radio x-ref="xml" x-model="ftype" value="xml" t:label="xml" />
+                <c:form-radio x-ref="json" x-model="ftype" value="json" t:label="json" />
               </c:fieldset />
             </c:grid-col>
           </c:grid-row>
           <c:div flex="justify-content:end" margin="top-3">
-            <c:btn color="secondary" t:content="Close" dismiss />
-            <c:btn color="primary" t:content="Submit" margin="start-2" @click="await submit()" />
+            <c:btn color="secondary" t:content="close" dismiss />
+            <c:btn color="primary" t:content="submit" margin="start-2" @click="await submit()" />
           </c:div>
         </c:div>
       `)

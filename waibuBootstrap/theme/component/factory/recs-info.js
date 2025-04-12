@@ -30,10 +30,10 @@ async function recsInfo () {
       if (!this.params.attr.dropdown) this.params.attr.dropdown = true
       const group = groupAttrs(this.params.attr, ['dropdown'])
       const html = []
-      if (this.params.attr.count) html.push(req.t('%s record(s) found', req.format(count, 'integer')))
+      if (this.params.attr.count) html.push(req.t('recsFound%s', req.format(count, 'integer')))
       if (this.params.attr.pages) {
         if (!isEmpty(html)) html[html.length - 1] += '.'
-        html.push(req.t('Page %s of %s pages', req.format(page, 'integer'), req.format(pages, 'integer')))
+        html.push(req.t('pageOfPages%s%s', req.format(page, 'integer'), req.format(pages, 'integer')))
       }
       if (this.params.attr.recsPerPage) {
         this.params.attr.recsPerPageValues = this.params.attr.recsPerPageValues ?? '10 25 50'
@@ -48,7 +48,7 @@ async function recsInfo () {
         attr.content = limit + ''
         attr.color = attr.color ?? 'secondary-outline'
         html.push(await this.component.buildTag({ tag: 'dropdown', attr, html: items.join('\n') }))
-        html.push(' ', req.t('recs per page'))
+        html.push(' ', req.t('recsPerPage'))
       }
       this.params.attr = omit(this.params.attr, ['count', 'pages', 'recsPerPage', 'dropdown', 'recsPerPageValues'])
       this.params.html = html.map(h => `<div class="me-1">${h}</div>`).join('\n')

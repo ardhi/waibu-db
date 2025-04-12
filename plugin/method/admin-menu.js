@@ -26,10 +26,10 @@ function modelsMenu (locals, req) {
     const items = omenu[k]
     const plugin = this.app[items[0].ns]
     menu.push({
-      name: k,
+      title: k,
       children: map(items, item => {
         return {
-          name: req.t(camelCase(item.name.slice(plugin.alias.length))),
+          title: camelCase(item.name.slice(plugin.alias.length)),
           href: `waibuAdmin:/${prefix}/${kebabCase(item.name)}/list`
         }
       })

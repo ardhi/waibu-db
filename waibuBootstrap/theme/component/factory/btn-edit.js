@@ -14,7 +14,7 @@ async function btnEdit () {
         this.params.html = ''
         return
       }
-      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('Edit')
+      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('edit')
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
       this.params.attr.id = generateId('alpha')
       if (!this.params.attr.href) this.params.attr.href = this.component.buildUrl({ base: 'edit', exclude: ['id'] })
@@ -52,7 +52,7 @@ async function btnEdit () {
             }
           `
           const html = [
-            await this.component.buildTag({ tag: 'dropdownItem', attr: { content: req.t('Add as New Clone') } })
+            await this.component.buildTag({ tag: 'dropdownItem', attr: { content: req.t('addAsNewClone') } })
           ]
           this.params.attr.triggerColor = this.params.attr.color
           this.params.html = await this.component.buildTag({ tag: 'dropdown', attr: this.params.attr, html: html.join('\n') })

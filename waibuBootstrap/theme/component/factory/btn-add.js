@@ -13,7 +13,7 @@ async function btnAdd () {
         this.params.html = ''
         return
       }
-      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('Add')
+      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('add')
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
       if (!this.params.attr.href) this.params.attr.href = this.component.buildUrl({ base: 'add' })
       this.params.html = await this.component.buildTag({ tag: 'btn', attr: this.params.attr, html: this.params.html })

@@ -20,7 +20,7 @@ async function btnColumns () {
       if (isEmpty(fields)) fields = schema.view.fields
       const items = []
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
-      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('Columns')
+      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('columns')
       for (const f of schema.view.fields) {
         if (f === 'id') {
           items.push(await this.component.buildTag({ tag: 'formCheck', attr: { checked: true, label: req.t('ID'), value: f, disabled: true } }))
@@ -44,7 +44,7 @@ async function btnColumns () {
       ">`)
       html.push(...items)
       const attr = { size: 'sm', 'x-ref': 'apply', margin: 'top-2', color: this.params.attr.applyColor ?? 'primary', icon: this.params.attr.applyIcon ?? 'arrowsStartEnd', href }
-      html.push(await this.component.buildTag({ tag: 'btn', attr, html: req.t('Apply') }))
+      html.push(await this.component.buildTag({ tag: 'btn', attr, html: req.t('apply') }))
       html.push('</form>')
       this.params.attr.autoClose = 'outside'
       this.params.attr.triggerColor = this.params.attr.color

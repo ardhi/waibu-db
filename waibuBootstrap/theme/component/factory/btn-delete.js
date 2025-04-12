@@ -14,7 +14,7 @@ async function btnDelete () {
         this.params.html = ''
         return
       }
-      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('Delete')
+      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('delete')
       this.params.attr.color = this.params.attr.color ?? 'danger-outline'
       this.params.attr.id = generateId('alpha')
       if (this.params.attr.onList) {
@@ -41,7 +41,7 @@ async function btnDelete () {
           }
         }`
       }
-      const msg = 'You\'re about to remove one or more records. Are you really sure to do this?'
+      const msg = 'aboutToRemoveRecord'
       this.params.attr['@click'] = `
         await wbs.confirmation(\`${req.t(msg)}\`, { ok: '${this.params.attr.id}:remove', close: 'y', opts: selected })
       `

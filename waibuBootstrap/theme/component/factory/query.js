@@ -51,12 +51,12 @@ async function query () {
       this.params.noTag = true
       const container = this.params.attr.modal ? 'modal' : 'drawer'
       this.params.html = await this.component.buildSentence(`
-        <c:form-input ${count === 0 ? 'disabled' : ''} type="search" t:placeholder="Query" id="${id}" x-data="{ query: '' }" x-init="
+        <c:form-input ${count === 0 ? 'disabled' : ''} type="search" t:placeholder="query" id="${id}" x-data="{ query: '' }" x-init="
           const url = new URL(window.location.href)
           query = url.searchParams.get('${qsKey.query}') ?? ''
         " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
           <c:form-input-addon>
-            <c:${container} ${count === 0 ? 'trigger-disabled' : ''} trigger-icon="${this.params.attr.icon ?? 'dotsThree'}" trigger-on-end t:title="Query Builder" x-ref="query" x-data="{
+            <c:${container} ${count === 0 ? 'trigger-disabled' : ''} trigger-icon="${this.params.attr.icon ?? 'dotsThree'}" trigger-on-end t:title="queryBuilder" x-ref="query" x-data="{
               fields: ${jsonStringify(fields, true)},
               builder: '',
               selected: [],
@@ -151,14 +151,14 @@ async function query () {
                 ${columns.join('\n')}
               </c:grid-row>
               <c:div flex="justify-content:end" margin="top-3">
-                <c:btn color="secondary" t:content="Close" dismiss="${container}" />
-                <c:btn color="primary" t:content="Apply" margin="start-2" @click="submit()" />
-                <c:btn color="primary" t:content="Submit Query" margin="start-2" @click="submit(true)" />
+                <c:btn color="secondary" t:content="close" dismiss="${container}" />
+                <c:btn color="primary" t:content="apply" margin="start-2" @click="submit()" />
+                <c:btn color="primary" t:content="submitQuery" margin="start-2" @click="submit(true)" />
               </c:div>
             </c:${container}>
           </c:form-input-addon>
           <c:form-input-addon>
-            <c:btn ${count === 0 ? 'disabled' : ''} t:content="Submit" x-data="{
+            <c:btn ${count === 0 ? 'disabled' : ''} t:content="submit" x-data="{
               submit () {
                 const val = document.getElementById('${id}').value ?? ''
                 const url = new URL(window.location.href)

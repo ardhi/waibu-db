@@ -14,7 +14,7 @@ async function btnDetails () {
         this.params.html = ''
         return
       }
-      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('Details')
+      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('details')
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
       this.params.attr.id = generateId('alpha')
       if (!this.params.attr.href) this.params.attr.href = this.component.buildUrl({ base: 'details', exclude: ['id'] })

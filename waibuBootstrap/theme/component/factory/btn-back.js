@@ -9,7 +9,7 @@ async function btnBack () {
       const { attrToArray } = this.plugin.app.waibuMpa
       const { req } = this.component
       this.params.noTag = true
-      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('Back')
+      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('back')
       if (isEmpty(this.params.attr.icon)) this.params.attr.icon = 'arrowStart'
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
       this.params.attr.excludeQs = ['mode', 'id', ...attrToArray(this.params.attr.excludeQs ?? '')]

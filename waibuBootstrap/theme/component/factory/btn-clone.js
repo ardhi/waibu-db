@@ -13,7 +13,7 @@ async function btnClone () {
         this.params.html = ''
         return
       }
-      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('Clone')
+      if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('clone')
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
       if (!this.params.attr.href) this.params.attr.href = this.component.buildUrl({ base: 'add', exclude: ['id'] }) + '&mode=clone'
       if (this.params.attr.onList) {

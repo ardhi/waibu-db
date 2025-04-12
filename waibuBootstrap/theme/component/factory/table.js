@@ -31,7 +31,7 @@ async function table () {
       const data = get(this, 'component.locals.list.data', [])
       const count = get(this, 'component.locals.list.count', 0)
       if (count === 0) {
-        const alert = '<c:alert color="warning" t:content="No record found" margin="top-4"/>'
+        const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
         this.params.noTag = true
         this.params.html = await this.component.buildSentence(alert)
         return
