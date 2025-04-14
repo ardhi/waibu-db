@@ -1,12 +1,12 @@
 import prepCrud from '../../../lib/prep-crud.js'
 
 async function get ({ model, req, reply, id, options = {} }) {
-  const { recordGet, attachmentFind } = this.app.dobo
-  const { parseFilter } = this.app.waibu
-  const { name, recId, opts, attachment, stats, mimeType } = prepCrud.call(this, { model, req, reply, id, options, args: ['model', 'id'] })
-  opts.filter = parseFilter(req)
-  const ret = await recordGet(name, recId, opts)
-  if (attachment) ret.data._attachment = await attachmentFind(name, id, { stats, mimeType })
+  const { recordFindOne, attachmentFind } = this.app.dobo
+  const { name, filter, opts, attachment, stats, mimeType } = prepCrud.call(this, { model, req, reply, id, options, args: ['model', 'id'] })
+  filter.query = { $and: [filter.query ?? {}, { id: id ?? req.params.id }] }
+  opts.dataOnly = true
+  const ret = await recordFindOne(name, filter, opts)
+  if (attachment) ret.data._attachment = await attachmentFind(name, ret.id, { stats, mimeType })
   return ret
 }
 

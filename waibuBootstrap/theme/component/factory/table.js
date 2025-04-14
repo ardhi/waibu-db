@@ -29,6 +29,7 @@ async function table () {
       const prettyUrl = this.params.attr.prettyUrl
 
       const data = get(this, 'component.locals.list.data', [])
+      const filter = get(this, 'component.locals.list.filter', {})
       const count = get(this, 'component.locals.list.count', 0)
       if (count === 0) {
         const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
@@ -45,7 +46,11 @@ async function table () {
       const qsKey = this.plugin.app.waibu.config.qsKey
       let fields = without(get(this, `component.locals._meta.query.${qsKey.fields}`, '').split(','), '')
       if (isEmpty(fields)) fields = schema.view.fields
-      const sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(this, `component.locals._meta.query.${qsKey.sort}`, '')
+      let sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(this, `component.locals._meta.query.${qsKey.sort}`, '')
+      if (isEmpty(sort)) {
+        const keys = Object.keys(filter.sort)
+        if (keys.length > 0) sort = `${keys[0]}:${filter.sort[keys[0]]}`
+      }
 
       let [sortCol, sortDir] = sort.split(':')
       if (!['-1', '1'].includes(sortDir)) sortDir = '1'
@@ -63,7 +68,8 @@ async function table () {
       // head
       for (const f of schema.view.fields) {
         if (!fields.includes(f)) continue
-        const prop = find(schema.properties, { name: f })
+        let prop = find(schema.properties, { name: f })
+        if (!prop) prop = find(schema.view.calcFields, { name: f })
         if (!prop) continue
         let head = req.t(get(schema, `view.label.${f}`, `field.${f}`))
         if (!this.params.attr.noSort && (schema.sortables ?? []).includes(f)) {
@@ -113,7 +119,8 @@ async function table () {
         }
         for (const f of schema.view.fields) {
           if (!fields.includes(f)) continue
-          const prop = find(schema.properties, { name: f })
+          let prop = find(schema.properties, { name: f })
+          if (!prop) prop = find(schema.view.calcFields, { name: f })
           if (!prop) continue
           const opts = {}
           if (f === 'lng') opts.longitude = true
@@ -124,8 +131,14 @@ async function table () {
               ' ' + (req.t(d[f] ? 'Yes' : 'No'))
           } else value = escape(value)
           let dataValue = d[f] ?? ''
+          if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
           if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
           if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
+          const vf = get(schema, `view.valueFormatter.${f}`)
+          if (vf) {
+            if (isFunction(vf)) dataValue = escape(await vf(d[f], d))
+            else dataValue = await callHandler(vf, req, d[f], d)
+          }
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type, style: { cursor: 'pointer' } }
           const cellFormatter = get(schema, `view.cellFormatter.${f}`)
           if (cellFormatter) merge(attr, await cellFormatter(dataValue, d))
@@ -158,6 +171,7 @@ async function table () {
       const goDetails = `
         goDetails (id) {
           let url = '${this.params.attr.detailsHref ?? this.component.buildUrl({ base: 'details', prettyUrl })}'
+          if (url === '#') return
           if (url.indexOf('/:id') > -1) url = url.replace('/:id', '/' + id)
           else url += '&id=' + id
           window.location.href = url

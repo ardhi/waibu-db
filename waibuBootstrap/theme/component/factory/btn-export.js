@@ -4,6 +4,10 @@ async function btnExport () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbBtnExport extends WdbBase {
+    static scripts = [...super.scripts,
+      'waibuMpa.virtual:/json2csv/json2csv.js'
+    ]
+
     build = async () => {
       const { isEmpty, get } = this.plugin.app.bajo.lib._
       const { req } = this.component
@@ -71,8 +75,15 @@ async function btnExport () {
             for (const el of els) {
               let data = []
               _.each(el.children, (v, i) => {
-                if ((i + '') === '0' && checker) return undefined
-                data.push(this.options.includes('fvalue') ? v.innerText : wmpa.parseValue(v.dataset.value, types[parseInt(i - 1)]))
+                i = i + ''
+                if (i === '0' && checker) return undefined
+                if (this.options.includes('fvalue')) data.push(v.innerText)
+                else {
+                  const type = types[parseInt(i)]
+                  let val = wmpa.parseValue(v.dataset.value, type)
+                  if (['datetime', 'date', 'time'].includes(type)) val = val.toISOString()
+                  data.push(val)
+                }
               })
               const item = {}
               for (const i in keys) {
@@ -107,7 +118,7 @@ async function btnExport () {
             <c:grid-col col="6-md">
               <c:fieldset t:legend="delivery" legend-type="6">
                 <c:form-radio x-model="delivery" value="file" t:label="saveAsFile" />
-                <c:form-radio x-model="delivery" value="clipboard" t:label="copyToClipboard" />
+                <c:form-radio x-model="delivery" value="clipboard" t:label="copyClipboard" />
               </c:fieldset>
               <c:fieldset t:legend="options" legend-type="6" margin="top-2">
                 <c:form-check x-ref="fkey" x-model="options" value="fkey" t:label="formattedField" />
