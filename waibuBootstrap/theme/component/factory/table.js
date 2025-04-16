@@ -13,7 +13,8 @@ async function table () {
       return value
     }
 
-    isNoWrap = (field, schema) => {
+    isNoWrap = (field, schema, bodyNowrap) => {
+      if (bodyNowrap) return true
       const { get } = this.plugin.app.bajo.lib._
       return get(schema, 'view.noWrap', []).includes(field)
     }
@@ -46,6 +47,7 @@ async function table () {
       const qsKey = this.plugin.app.waibu.config.qsKey
       let fields = without(get(this, `component.locals._meta.query.${qsKey.fields}`, '').split(','), '')
       if (isEmpty(fields)) fields = schema.view.fields
+      if (!isEmpty(schema.view.hidden)) fields = without(fields, ...schema.view.hidden)
       let sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(this, `component.locals._meta.query.${qsKey.sort}`, '')
       if (isEmpty(sort)) {
         const keys = Object.keys(filter.sort)
@@ -99,7 +101,8 @@ async function table () {
           const attr = { 'x-model': 'toggleAll', name: '_rtm', noWrapper: true, noLabel: true }
           item = await this.component.buildTag({ tag: 'formCheck', attr, prepend: '<th>', append: '</th>' })
         } else {
-          const attr = { name: 'remove', '@click': 'selected = \'\'', style: { cursor: 'pointer' } }
+          const attr = { name: 'remove', '@click': 'selected = \'\'' }
+          if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           item = await this.component.buildTag({ tag: 'icon', attr, prepend: '<th>', append: '</th>' })
         }
         items.unshift(item)
@@ -139,11 +142,12 @@ async function table () {
             if (isFunction(vf)) dataValue = escape(await vf(d[f], d))
             else dataValue = await callHandler(vf, req, d[f], d)
           }
-          const attr = { dataValue, dataKey: prop.name, dataType: prop.type, style: { cursor: 'pointer' } }
+          const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
+          if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const cellFormatter = get(schema, `view.cellFormatter.${f}`)
           if (cellFormatter) merge(attr, await cellFormatter(dataValue, d))
           if (!['object', 'array'].includes(prop.type)) {
-            const noWrap = this.isNoWrap(f, schema) ? 'nowrap' : ''
+            const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
             if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
             else attr.text = noWrap
           }
