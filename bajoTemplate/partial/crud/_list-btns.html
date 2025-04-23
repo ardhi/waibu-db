@@ -1,0 +1,16 @@
+<c:grid-row gutter="3">
+  <c:grid-col col="4-lg">
+    <c:wdb-query />
+  </c:grid-col>
+  <c:grid-col col="8-lg" flex="justify-content:end-lg">
+    <c:btn-group margin="end-2">
+      <c:wdb-btn-add text="nowrap"/>
+      <c:wdb-btn-edit on-list menu="end"/>
+    </c:btn-group>
+    <c:wdb-btn-delete on-list margin="end-2" />
+    <c:btn-group>
+      <c:wdb-btn-export selector="#main-table" handler="list"/>
+      <c:wdb-btn-columns menu="end"/>
+    </c:btn-group>
+  </c:grid-col>
+</c:grid-row>

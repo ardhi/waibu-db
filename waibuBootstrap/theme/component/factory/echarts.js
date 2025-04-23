@@ -18,6 +18,7 @@ async function echarts () {
           right: 0
         }
       }
+      this.params.tag = 'div'
     }
 
     build = async () => {

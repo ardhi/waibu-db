@@ -1,0 +1,15 @@
+<c:grid-row gutter="2">
+  <c:grid-col col="6-lg">
+    <c:wdb-btn-back />
+    <c:btn-group margin="start-1">
+      <c:wdb-btn-details />
+      <c:wdb-btn-clone/>
+      <c:wdb-btn-export selector="#main-form" handler="edit" launch-on-end/>
+    </c:btn-group>
+  </c:grid-col>
+  <c:grid-col col="6-lg" flex="justify-content:end-lg align-items:center">
+    <c:wdb-btn-delete/>
+    <c:btn type="reset" color="secondary" t:content="reset" margin="start-2"/>
+    <c:btn type="submit" color="primary" t:content="submit" margin="start-2"/>
+  </c:grid-col>
+</c:grid-row>

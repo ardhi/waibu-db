@@ -5,6 +5,7 @@ const defReadonly = ['id', 'createdAt', 'updatedAt']
 function getCommons (action, schema, ext, opts = {}) {
   const { map, get, set, without, uniq } = this.lib._
   const label = get(ext, `view.${action}.label`, get(ext, 'common.label', {}))
+  const card = get(ext, `view.${action}.card`, get(ext, 'common.card', true))
   const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
   hidden.push(...schema.hidden, ...(opts.hidden ?? []))
   const allFields = without(map(schema.properties, 'name'), ...hidden)
@@ -18,7 +19,7 @@ function getCommons (action, schema, ext, opts = {}) {
   }
   fields = uniq(without(fields, ...hidden))
   if (action !== 'add' && !fields.includes('id')) fields.unshift('id')
-  return { fields, allFields, label }
+  return { fields, allFields, label, card }
 }
 
 function autoLayout ({ action, schema, ext, layout, allWidgets }) {
@@ -37,15 +38,18 @@ function autoLayout ({ action, schema, ext, layout, allWidgets }) {
 }
 
 function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
-  const { find, omit, merge, isString } = this.lib._
+  const { find, omit, merge, isString, isEmpty } = this.lib._
   const items = [...layout]
   layout.splice(0, layout.length)
   for (const item of items) {
     const widgets = []
     for (let f of item.fields) {
       if (isString(f)) {
-        const [name, col, label] = f.split(':')
-        f = { name, col, label }
+        const [name, col, label, component] = f.split(':')
+        f = { name }
+        f.label = isEmpty(label) ? `field.${name}` : label
+        if (!isEmpty(col)) f.col = col
+        if (!isEmpty(component)) f.component = component
       }
       const widget = find(allWidgets, { name: f.name })
       if (!widget && !f.component) continue
@@ -59,7 +63,7 @@ function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
 
 function applyLayout (action, schema, ext) {
   const { set, get, isEmpty, map, find } = this.lib._
-  const { fields, label } = getCommons.call(this, action, schema, ext)
+  const { fields, label, card } = getCommons.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
   const readonly = get(ext, `view.${action}.readonly`, get(ext, 'common.readonly', defReadonly))
   const allWidgets = map(fields, f => {
@@ -91,6 +95,7 @@ function applyLayout (action, schema, ext) {
   set(schema, 'view.layout', layout)
   set(schema, 'view.fields', fields)
   set(schema, 'view.label', label)
+  set(schema, 'view.card', card)
 }
 
 const handler = {
@@ -121,13 +126,15 @@ const handler = {
 }
 
 async function getSchemaExt (model, view, opts) {
-  const { readConfig } = this.app.bajo
+  const { readConfig, defaultsDeep } = this.app.bajo
   const { getSchema } = this.app.dobo
   const { pick } = this.lib._
 
   let schema = getSchema(model)
   const base = path.basename(schema.file, path.extname(schema.file))
-  const ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true })
+  let ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true })
+  const over = await readConfig(`main:/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true })
+  ext = defaultsDeep(over, ext)
   await handler[view].call(this, schema, ext, opts)
   schema = pick(schema, ['name', 'properties', 'indexes', 'disabled', 'attachment', 'sortables', 'view'])
   return { schema, ext }
