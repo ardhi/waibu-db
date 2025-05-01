@@ -91,6 +91,7 @@ async function table () {
           head = await this.component.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
         }
         let text = this.params.attr.headerNowrap ? '' : 'nowrap'
+        if (text === '' && this.isNoWrap(f, schema, group.body.nowrap)) text = 'nowrap'
         if (this.isRightAligned(f, schema)) text += ' align:end'
         const attr = { dataKey: f, dataType: prop.type, text }
         items.push(await this.component.buildTag({ tag: 'th', attr, html: head }))
@@ -146,11 +147,9 @@ async function table () {
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const cellFormatter = get(schema, `view.cellFormatter.${f}`)
           if (cellFormatter) merge(attr, await cellFormatter(dataValue, d))
-          if (!['object', 'array'].includes(prop.type)) {
-            const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
-            if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
-            else attr.text = noWrap
-          }
+          const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
+          if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
+          else attr.text = noWrap
           const lookup = get(schema, `view.lookup.${f}`)
           if (lookup) {
             const item = find(lookup.values, set({}, lookup.id ?? 'id', value))

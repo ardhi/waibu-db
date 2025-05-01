@@ -10,7 +10,7 @@ async function btnDelete () {
       const { isEmpty, get } = this.plugin.app.bajo.lib._
       this.params.noTag = true
       const schema = get(this, 'component.locals.schema', {})
-      if (schema.view.disabled.includes('delete')) {
+      if (schema.view.disabled.includes('remove')) {
         this.params.html = ''
         return
       }

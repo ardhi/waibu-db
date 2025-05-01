@@ -7,11 +7,13 @@ function getCommons (action, schema, ext, opts = {}) {
   const label = get(ext, `view.${action}.label`, get(ext, 'common.label', {}))
   const card = get(ext, `view.${action}.card`, get(ext, 'common.card', true))
   const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
+  const disabled = get(ext, `view.${action}.disabled`, get(ext, 'common.disabled', []))
+  const aggregate = get(ext, `view.${action}.stat.aggregate`, get(ext, 'common.stat.aggregate', []))
   hidden.push(...schema.hidden, ...(opts.hidden ?? []))
   const allFields = without(map(schema.properties, 'name'), ...hidden)
   const forFields = get(ext, `view.${action}.fields`, get(ext, 'common.fields', allFields))
-  set(schema, 'view.stat.aggregate', get(ext, `view.${action}.stat.aggregate`, get(ext, 'common.stat.aggregate', [])))
-  set(schema, 'view.disabled', get(ext, 'disabled', []))
+  set(schema, 'view.stat.aggregate', aggregate)
+  set(schema, 'view.disabled', disabled)
   if (schema.disabled.length > 0) schema.view.disabled.push(...schema.disabled)
   let fields = []
   for (const f of forFields) {
@@ -19,6 +21,10 @@ function getCommons (action, schema, ext, opts = {}) {
   }
   fields = uniq(without(fields, ...hidden))
   if (action !== 'add' && !fields.includes('id')) fields.unshift('id')
+  let noWrap = get(ext, `view.${action}.noWrap`, get(ext, 'common.noWrap', true))
+  if (noWrap === true) noWrap = fields
+  else if (noWrap === false) noWrap = []
+  set(schema, 'view.noWrap', noWrap)
   return { fields, allFields, label, card }
 }
 
