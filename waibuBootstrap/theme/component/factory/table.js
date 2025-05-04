@@ -171,7 +171,7 @@ async function table () {
       }
       html.push(await this.component.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
       this.params.attr = omit(this.params.attr, ['sortUpIcon', 'sortDownIcon', 'noSort', 'selection', 'headerNowrap'])
-      const goDetails = `
+      let xData = `
         goDetails (id) {
           let url = '${this.params.attr.detailsHref ?? this.component.buildUrl({ base: 'details', prettyUrl })}'
           if (url === '#') return
@@ -180,8 +180,15 @@ async function table () {
           window.location.href = url
         }
       `
+      const xDataView = get(schema, 'view.x.data', '')
+      if (!isEmpty(xDataView)) xData += `, ${xDataView}`
+      let xInit = ''
+      const xInitView = get(schema, 'view.x.init', '')
+      if (!isEmpty(xInitView)) xInit += `${xInitView}\n`
+
       if (selection === 'multi') {
-        this.params.attr['x-data'] = `{
+        xData = `{
+          ${xData},
           toggleAll: false,
           selected: [],
           toggle (id) {
@@ -189,10 +196,10 @@ async function table () {
               const idx = this.selected.indexOf(id)
               this.selected.splice(idx, 1)
             } else this.selected.push(id)
-          },
-          ${goDetails}
+          }
         }`
-        this.params.attr['x-init'] = `
+        xInit = `
+          ${xInit}
           $watch('toggleAll', val => {
             if (val) {
               const els = document.getElementsByName('_rt')
@@ -203,21 +210,24 @@ async function table () {
           $watch('selected', val => $dispatch('on-selection', val))
         `
       } else if (selection === 'single') {
-        this.params.attr['x-data'] = `{
+        xData = `{
+          ${xData},
           selected: '',
           toggle (id) {
             this.selected = id
-          },
-          ${goDetails}
+          }
         }`
-        this.params.attr['x-init'] = `
+        xInit = `
+          ${xInit}
           $watch('selected', val => $dispatch('on-selection', [val]))
         `
       } else {
-        this.params.attr['x-data'] = `{
-          ${goDetails}
+        xData = `{
+          ${xData}
         }`
       }
+      this.params.attr['x-data'] = xData
+      this.params.attr['x-init'] = xInit
       this.params.html = await this.component.buildTag({ tag: 'table', attr: this.params.attr, html: html.join('\n') })
     }
   }

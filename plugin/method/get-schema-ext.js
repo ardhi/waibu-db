@@ -8,12 +8,14 @@ function getCommons (action, schema, ext, opts = {}) {
   const card = get(ext, `view.${action}.card`, get(ext, 'common.card', true))
   const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
   const disabled = get(ext, `view.${action}.disabled`, get(ext, 'common.disabled', []))
+  const x = get(ext, `view.${action}.x`, get(ext, 'common.x', {}))
   const aggregate = get(ext, `view.${action}.stat.aggregate`, get(ext, 'common.stat.aggregate', []))
   hidden.push(...schema.hidden, ...(opts.hidden ?? []))
   const allFields = without(map(schema.properties, 'name'), ...hidden)
   const forFields = get(ext, `view.${action}.fields`, get(ext, 'common.fields', allFields))
   set(schema, 'view.stat.aggregate', aggregate)
   set(schema, 'view.disabled', disabled)
+  set(schema, 'view.x', x)
   if (schema.disabled.length > 0) schema.view.disabled.push(...schema.disabled)
   let fields = []
   for (const f of forFields) {
@@ -59,8 +61,11 @@ function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
       }
       const widget = find(allWidgets, { name: f.name })
       if (!widget && !f.component) continue
-      widget.attr = merge({}, widget.attr, omit(f, ['component']))
-      if (f.component && !readonly.includes(f.name) && action !== 'details') widget.component = f.component
+      widget.attr = merge({}, widget.attr, omit(f, ['component', 'componentOpts']))
+      if (f.component && !readonly.includes(f.name) && action !== 'details') {
+        widget.component = f.component
+        widget.componentOpts = f.componentOpts
+      }
       widgets.push(widget)
     }
     if (widgets.length > 0) layout.push({ name: item.name, widgets })
@@ -85,7 +90,7 @@ function applyLayout (action, schema, ext) {
     } else {
       if (prop.type === 'boolean') {
         result.component = 'form-select'
-        result.attr.options = 'false:No true:Yes'
+        result.attr.options = 'false|No true|Yes'
       }
       if (prop.values) {
         result.component = 'form-select'
@@ -112,13 +117,16 @@ const handler = {
     for (const f of get(schema, 'view.qs.fields', '').split(',')) {
       if (fields.includes(f)) qsFields.push(f)
     }
-    let [col, dir] = get(schema, 'view.qs.sort', '').split(':')
-    if (!fields.includes(col) || !col) col = 'id'
-    if (!['1', '-1'].includes(dir)) dir = '1'
+    const sort = get(schema, 'view.qs.sort')
+    if (sort) {
+      let [col, dir] = get(schema, 'view.qs.sort', '').split(':')
+      if (!fields.includes(col) || !col) col = 'id'
+      if (!['1', '-1'].includes(dir)) dir = '1'
+      set(schema, 'view.qs.sort', `${col}:${dir}`)
+    }
     set(schema, 'view.label', label)
     set(schema, 'view.fields', fields)
     set(schema, 'view.qs.fields', qsFields.join(','))
-    set(schema, 'view.qs.sort', `${col}:${dir}`)
   },
   details: async function (schema, ext, opts) {
     applyLayout.call(this, 'details', schema, ext, opts)
@@ -138,8 +146,8 @@ async function getSchemaExt (model, view, opts) {
 
   let schema = getSchema(model)
   const base = path.basename(schema.file, path.extname(schema.file))
-  let ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true })
-  const over = await readConfig(`main:/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true })
+  let ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true, opts })
+  const over = await readConfig(`main:/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true, opts })
   ext = defaultsDeep(over, ext)
   await handler[view].call(this, schema, ext, opts)
   schema = pick(schema, ['name', 'properties', 'indexes', 'disabled', 'attachment', 'sortables', 'view'])
