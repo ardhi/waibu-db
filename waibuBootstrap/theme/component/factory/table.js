@@ -126,39 +126,38 @@ async function table () {
           let prop = find(schema.properties, { name: f })
           if (!prop) prop = find(schema.view.calcFields, { name: f })
           if (!prop) continue
+          let dataValue = d[f] ?? ''
+          if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
+          if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
+          if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           const opts = {}
-          if (f === 'lng') opts.longitude = true
-          else if (f === 'lat') opts.latitude = true
           let value = req.format(d[f], prop.type, opts)
           if (prop.type === 'boolean') {
             value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${d[f] ? 'Check' : ''}` } })) +
               ' ' + (req.t(d[f] ? 'Yes' : 'No'))
           } else value = escape(value)
-          let dataValue = d[f] ?? ''
-          if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
-          if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
-          if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           const vf = get(schema, `view.valueFormatter.${f}`)
           if (vf) {
-            if (isFunction(vf)) dataValue = escape(await vf(d[f], d))
+            if (isFunction(vf)) dataValue = escape(await vf.call(req, d[f], d))
             else dataValue = await callHandler(vf, req, d[f], d)
+            value = dataValue
           }
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const cellFormatter = get(schema, `view.cellFormatter.${f}`)
-          if (cellFormatter) merge(attr, await cellFormatter(dataValue, d))
+          if (cellFormatter) merge(attr, await cellFormatter.call(req, dataValue, d))
           const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
           if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
           else attr.text = noWrap
           const lookup = get(schema, `view.lookup.${f}`)
           if (lookup) {
-            const item = find(lookup.values, set({}, lookup.id ?? 'id', value))
+            const item = find(lookup.values, set({}, lookup.id ?? 'id', d[f]))
             if (item) value = req.t(item[lookup.field ?? 'name'])
           }
           const formatter = get(schema, `view.formatter.${f}`)
           if (formatter) {
-            if (isFunction(formatter)) value = await formatter(dataValue, d)
-            else value = await callHandler(formatter, req, dataValue, d)
+            if (isFunction(formatter)) value = await formatter.call(req, d[f], d)
+            else value = await callHandler(formatter, req, d[f], d)
             value = await this.component.buildSentence(value)
           }
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })

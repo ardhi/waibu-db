@@ -2,8 +2,38 @@ import path from 'path'
 
 const defReadonly = ['id', 'createdAt', 'updatedAt']
 
+const defFormatter = {
+  lat: function (val, rec) {
+    const format = this.format ?? this.app.bajo.format
+    return format(val, 'double', { latitude: true })
+  },
+  lng: function (val, rec) {
+    const format = this.format ?? this.app.bajo.format
+    return format(val, 'double', { longitude: true })
+  },
+  speed: function (val, rec) {
+    const format = this.format ?? this.app.bajo.format
+    return format(val, 'float', { speed: true, withType: true })
+  },
+  course: function (val, rec) {
+    const format = this.format ?? this.app.bajo.format
+    return format(val, 'float', { degree: true })
+  },
+  heading: function (val, rec) {
+    const format = this.format ?? this.app.bajo.format
+    return format(val, 'float', { degree: true })
+  },
+  distance: function (val, rec) {
+    const format = this.format ?? this.app.bajo.format
+    return format(val, 'float', { distance: true })
+  }
+}
+
 function getCommons (action, schema, ext, opts = {}) {
-  const { map, get, set, without, uniq } = this.lib._
+  const { merge, map, get, set, without, uniq } = this.lib._
+  const calcFields = get(ext, `view.${action}.calcFields`, get(ext, 'common.calcFields', []))
+  const valueFormatter = get(ext, `view.${action}.valueFormatter`, get(ext, 'common.valueFormatter', {}))
+  const formatter = get(ext, `view.${action}.formatter`, get(ext, 'common.formatter', {}))
   const label = get(ext, `view.${action}.label`, get(ext, 'common.label', {}))
   const card = get(ext, `view.${action}.card`, get(ext, 'common.card', true))
   const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
@@ -13,15 +43,19 @@ function getCommons (action, schema, ext, opts = {}) {
   hidden.push(...schema.hidden, ...(opts.hidden ?? []))
   const allFields = without(map(schema.properties, 'name'), ...hidden)
   const forFields = get(ext, `view.${action}.fields`, get(ext, 'common.fields', allFields))
+  set(schema, 'view.calcFields', calcFields)
+  set(schema, 'view.valueFormatter', valueFormatter)
+  set(schema, 'view.formatter', merge({}, defFormatter, formatter))
   set(schema, 'view.stat.aggregate', aggregate)
   set(schema, 'view.disabled', disabled)
   set(schema, 'view.x', x)
   if (schema.disabled.length > 0) schema.view.disabled.push(...schema.disabled)
   let fields = []
   for (const f of forFields) {
-    if (allFields.includes(f)) fields.push(f)
+    if (allFields.includes(f) || map(calcFields, 'name').includes(f)) fields.push(f)
   }
   fields = uniq(without(fields, ...hidden))
+
   if (action !== 'add' && !fields.includes('id')) fields.unshift('id')
   let noWrap = get(ext, `view.${action}.noWrap`, get(ext, 'common.noWrap', true))
   if (noWrap === true) noWrap = fields
