@@ -2,36 +2,12 @@ import path from 'path'
 
 const defReadonly = ['id', 'createdAt', 'updatedAt']
 
-const defFormatter = {
-  lat: function (val, rec) {
-    const format = this.format ?? this.app.bajo.format
-    return format(val, 'double', { latitude: true })
-  },
-  lng: function (val, rec) {
-    const format = this.format ?? this.app.bajo.format
-    return format(val, 'double', { longitude: true })
-  },
-  speed: function (val, rec) {
-    const format = this.format ?? this.app.bajo.format
-    return format(val, 'float', { speed: true, withType: true })
-  },
-  course: function (val, rec) {
-    const format = this.format ?? this.app.bajo.format
-    return format(val, 'float', { degree: true })
-  },
-  heading: function (val, rec) {
-    const format = this.format ?? this.app.bajo.format
-    return format(val, 'float', { degree: true })
-  },
-  distance: function (val, rec) {
-    const format = this.format ?? this.app.bajo.format
-    return format(val, 'float', { distance: true })
-  }
-}
+const defFormatter = {}
 
 function getCommons (action, schema, ext, opts = {}) {
   const { merge, map, get, set, without, uniq } = this.lib._
   const calcFields = get(ext, `view.${action}.calcFields`, get(ext, 'common.calcFields', []))
+  const noEscape = get(ext, `view.${action}.noEscape`, get(ext, 'common.noEscape', []))
   const valueFormatter = get(ext, `view.${action}.valueFormatter`, get(ext, 'common.valueFormatter', {}))
   const formatter = get(ext, `view.${action}.formatter`, get(ext, 'common.formatter', {}))
   const label = get(ext, `view.${action}.label`, get(ext, 'common.label', {}))
@@ -44,6 +20,7 @@ function getCommons (action, schema, ext, opts = {}) {
   const allFields = without(map(schema.properties, 'name'), ...hidden)
   const forFields = get(ext, `view.${action}.fields`, get(ext, 'common.fields', allFields))
   set(schema, 'view.calcFields', calcFields)
+  set(schema, 'view.noEscape', noEscape)
   set(schema, 'view.valueFormatter', valueFormatter)
   set(schema, 'view.formatter', merge({}, defFormatter, formatter))
   set(schema, 'view.stat.aggregate', aggregate)
