@@ -50,7 +50,7 @@ async function table () {
       if (isEmpty(fields)) fields = schema.view.fields
       if (!isEmpty(schema.view.hidden)) fields = without(fields, ...schema.view.hidden)
       let sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(this, `component.locals._meta.query.${qsKey.sort}`, '')
-      if (isEmpty(sort)) {
+      if (isEmpty(sort) && filter.sort) {
         const keys = Object.keys(filter.sort)
         if (keys.length > 0) sort = `${keys[0]}:${filter.sort[keys[0]]}`
       }
@@ -130,9 +130,11 @@ async function table () {
           if (!prop) prop = find(schema.view.calcFields, { name: f })
           if (!prop) continue
           let dataValue = d[f] ?? ''
-          if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
-          if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
-          if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
+          if (!isEmpty(dataValue)) {
+            if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
+            if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
+            if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
+          }
           let value = fd[f]
           if (prop.type === 'boolean') {
             value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${d[f] ? 'Check' : ''}` } })) +
