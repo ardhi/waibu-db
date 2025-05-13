@@ -24,22 +24,13 @@ async function echarts () {
     build = async () => {
       const { generateId } = this.plugin.app.bajo
       const { base64JsonDecode, jsonStringify } = this.plugin.app.waibuMpa
-      const { merge, cloneDeep } = this.plugin.app.bajo.lib._
+      const { merge, cloneDeep, omit } = this.plugin.app.bajo.lib._
       this.params.attr.id = generateId('alpha')
       this.params.attr['x-data'] = `chart${this.params.attr.id}`
-      this.params.attr['@resize.window.debounce.500ms'] = `
-        if (chart) {
-          chart.resize()
-        }
-      `
+      this.params.attr['x-bind'] = 'resize'
       let option = cloneDeep(this.defOption)
       if (this.params.attr.option === true) this.params.attr.option = 'e30='
       if (this.params.attr.option) option = merge(option, base64JsonDecode(this.params.attr.option))
-      this.params.attr['x-init'] = `
-        $watch('option', val => {
-          if (chart) chart.setOption(val)
-        })
-      `
       this.params.append = `
         <script>
           document.addEventListener('alpine:init', () => {
@@ -50,9 +41,19 @@ async function echarts () {
                   const el = document.getElementById('${this.params.attr.id}')
                   chart = echarts.init(el, null, { renderer: 'canvas' })
                   chart.setOption(this.option)
+                  this.$watch('option', val => {
+                    chart.setOption(val)
+                  })
                 },
                 get chart () {
                   return chart
+                },
+                resize: {
+                  ['@resize.window.debounce.500ms']() {
+                    if (chart) {
+                      chart.resize()
+                    }
+                  }
                 },
                 option: ${jsonStringify(option, true)}
               }
@@ -60,6 +61,7 @@ async function echarts () {
           })
         </script>
       `
+      this.params.attr = omit(this.params.attr, ['option'])
     }
   }
 }
