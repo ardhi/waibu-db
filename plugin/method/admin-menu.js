@@ -39,8 +39,7 @@ function modelsMenu (locals, req) {
 }
 
 async function adminMenu (locals, req) {
-  const { buildAccordionMenu } = this.app.waibuAdmin
-  return buildAccordionMenu(modelsMenu.call(this, locals, req), locals, req)
+  return modelsMenu.call(this, locals, req)
 }
 
 export default adminMenu

@@ -1,9 +1,10 @@
 {
   "waibu": {
     "prefix": "db",
-    "title": "Model Database"
+    "title": "dbModels"
   },
   "waibuAdmin": {
+    "menuCollapsible": true,
     "menuHandler": "waibuDb:adminMenu"
   },
   "waibuMpa": {
