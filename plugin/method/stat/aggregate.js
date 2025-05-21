@@ -7,6 +7,7 @@ async function aggregate ({ model, req, reply, options = {} }) {
   for (const item of ['group', 'aggregate']) {
     opts[item] = options[item] ?? req.params[item] ?? req.query[item]
   }
+  opts.aggregate = opts.aggregate ?? 'count'
   return await statAggregate(name, parseFilter(req), opts)
 }
 

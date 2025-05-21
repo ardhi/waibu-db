@@ -7,6 +7,7 @@ async function histogram ({ model, req, reply, options = {} }) {
   for (const item of ['type', 'group', 'aggregate']) {
     opts[item] = options[item] ?? req.params[item] ?? req.query[item]
   }
+  opts.aggregate = opts.aggregate ?? 'count'
   return await statHistogram(name, parseFilter(req), opts)
 }
 
