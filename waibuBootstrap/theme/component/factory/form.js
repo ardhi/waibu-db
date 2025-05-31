@@ -13,8 +13,11 @@ async function form () {
       const xOns = get(schema, 'view.x.on', [])
       for (const l of schema.view.layout) {
         body.push(`<c:fieldset ${schema.view.card === false ? '' : 'card'} ${l.name[0] !== '_' ? ('t:legend="' + l.name + '"') : ''} grid-gutter="2">`)
-        for (const w of l.widgets) {
-          const prop = find(schema.properties, { name: w.name })
+        for (const f of l.fields) {
+          const w = schema.view.widget[f]
+          let prop = find(schema.properties, { name: f })
+          if (!prop) prop = find(schema.view.calcFields, { name: f })
+          if (!prop) continue
           const attr = [`x-ref="${w.name}"`]
           if (xModels.includes(w.name)) attr.push(`x-model="${w.name}"`)
           forOwn(w.attr, (v, k) => {

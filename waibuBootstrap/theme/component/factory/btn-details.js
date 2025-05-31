@@ -31,7 +31,8 @@ async function btnDetails () {
           $refs.details.href = path + '&id=' + recId
         `
       } else {
-        this.params.attr.href += '&id=' + req.query.id
+        const prefix = this.params.attr.href.includes('?') ? '' : '?'
+        this.params.attr.href += prefix + '&id=' + req.query.id
       }
       this.params.html = await this.component.buildTag({ tag: 'btn', attr: this.params.attr, html: this.params.html })
     }

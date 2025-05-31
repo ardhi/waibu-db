@@ -5,32 +5,40 @@ const defReadonly = ['id', 'createdAt', 'updatedAt']
 const defFormatter = {}
 
 function getCommons (action, schema, ext, opts = {}) {
-  const { merge, map, get, set, without, uniq } = this.lib._
+  const { defaultsDeep } = this.app.bajo
+  const { merge, map, get, set, without, uniq, pull } = this.lib._
   const calcFields = get(ext, `view.${action}.calcFields`, get(ext, 'common.calcFields', []))
+  const forceVisible = get(ext, `view.${action}.forceVisible`, get(ext, 'common.forceVisible', []))
+  const widget = defaultsDeep(get(ext, `view.${action}.widget`), get(ext, 'common.widget', {}))
   const noEscape = get(ext, `view.${action}.noEscape`, get(ext, 'common.noEscape', []))
-  const valueFormatter = get(ext, `view.${action}.valueFormatter`, get(ext, 'common.valueFormatter', {}))
-  const formatter = get(ext, `view.${action}.formatter`, get(ext, 'common.formatter', {}))
-  const label = get(ext, `view.${action}.label`, get(ext, 'common.label', {}))
+  const control = defaultsDeep(get(ext, `view.${action}.control`), get(ext, 'common.control', {}))
+  const valueFormatter = defaultsDeep(get(ext, `view.${action}.valueFormatter`), get(ext, 'common.valueFormatter', {}))
+  const formatter = defaultsDeep(get(ext, `view.${action}.formatter`), get(ext, 'common.formatter', {}))
   const card = get(ext, `view.${action}.card`, get(ext, 'common.card', true))
-  const hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
+  let hidden = get(ext, `view.${action}.hidden`, get(ext, 'common.hidden', []))
   const disabled = get(ext, `view.${action}.disabled`, get(ext, 'common.disabled', []))
-  const x = get(ext, `view.${action}.x`, get(ext, 'common.x', {}))
+  const x = defaultsDeep(get(ext, `view.${action}.x`), get(ext, 'common.x', {}))
   const aggregate = get(ext, `view.${action}.stat.aggregate`, get(ext, 'common.stat.aggregate', []))
-  hidden.push(...schema.hidden, ...(opts.hidden ?? []))
+  hidden.push('siteId', ...schema.hidden, ...(opts.hidden ?? []))
+  hidden = uniq(hidden)
+  pull(hidden, ...forceVisible)
   const allFields = without(map(schema.properties, 'name'), ...hidden)
   const forFields = get(ext, `view.${action}.fields`, get(ext, 'common.fields', allFields))
   set(schema, 'view.calcFields', calcFields)
   set(schema, 'view.noEscape', noEscape)
+  set(schema, 'view.widget', widget)
   set(schema, 'view.valueFormatter', valueFormatter)
   set(schema, 'view.formatter', merge({}, defFormatter, formatter))
   set(schema, 'view.stat.aggregate', aggregate)
   set(schema, 'view.disabled', disabled)
+  set(schema, 'view.control', control)
   set(schema, 'view.x', x)
   if (schema.disabled.length > 0) schema.view.disabled.push(...schema.disabled)
   let fields = []
   for (const f of forFields) {
-    if (allFields.includes(f) || map(calcFields, 'name').includes(f)) fields.push(f)
+    if (allFields.includes(f)) fields.push(f)
   }
+  if (calcFields.length > 0) fields.push(...map(calcFields, 'name'))
   fields = uniq(without(fields, ...hidden))
 
   if (action !== 'add' && !fields.includes('id')) fields.unshift('id')
@@ -38,59 +46,58 @@ function getCommons (action, schema, ext, opts = {}) {
   if (noWrap === true) noWrap = fields
   else if (noWrap === false) noWrap = []
   set(schema, 'view.noWrap', noWrap)
-  return { fields, allFields, label, card }
+  return { fields, allFields, card, calcFields }
 }
 
-function autoLayout ({ action, schema, ext, layout, allWidgets }) {
+function autoLayout ({ action, schema, ext, layout }) {
+  const { forOwn, keys } = this.lib._
   const matches = ['id', 'createdAt', 'updatedAt']
   const meta = []
   const general = []
-  for (const w of allWidgets) {
-    if (matches.includes(w.name)) meta.push(w)
-    else general.push(w)
-  }
-  if (meta.length <= 1) layout.push({ name: '_common', widgets: allWidgets })
+  forOwn(schema.view.widget, (w, f) => {
+    if (matches.includes(f)) meta.push(f)
+    else general.push(f)
+  })
+  if (meta.length <= 1) layout.push({ name: '_common', fields: keys(schema.view.widget) })
   else {
-    layout.push({ name: 'Meta', widgets: meta })
-    layout.push({ name: 'General', widgets: general })
+    layout.push({ name: 'Meta', fields: meta })
+    layout.push({ name: 'General', fields: general })
   }
 }
 
-function customLayout ({ action, schema, ext, layout, allWidgets, readonly }) {
-  const { find, omit, merge, isString, isEmpty } = this.lib._
+function customLayout ({ action, schema, ext, layout, readonly }) {
+  const { defaultsDeep } = this.app.bajo
+  const { isEmpty } = this.lib._
   const items = [...layout]
-  layout.splice(0, layout.length)
   for (const item of items) {
-    const widgets = []
-    for (let f of item.fields) {
-      if (isString(f)) {
-        const [name, col, label, component] = f.split(':')
-        f = { name }
-        f.label = isEmpty(label) ? `field.${name}` : label
-        if (!isEmpty(col)) f.col = col
-        if (!isEmpty(component)) f.component = component
-      }
-      const widget = find(allWidgets, { name: f.name })
-      if (!widget && !f.component) continue
-      widget.attr = merge({}, widget.attr, omit(f, ['component', 'componentOpts']))
-      if (f.component && !readonly.includes(f.name) && action !== 'details') {
-        widget.component = f.component
-        widget.componentOpts = f.componentOpts
-      }
-      widgets.push(widget)
+    for (const idx in item.fields) {
+      const f = item.fields[idx]
+      const [name, col, label, component] = f.split(':')
+      item.fields[idx] = name
+      const w = { name, attr: {} }
+      w.attr.label = isEmpty(label) ? `field.${name}` : label
+      if (!isEmpty(col)) w.attr.col = col
+      if (!isEmpty(component)) w.component = component
+      schema.view.widget[name] = defaultsDeep(w, schema.view.widget[w.name])
     }
-    if (widgets.length > 0) layout.push({ name: item.name, widgets })
   }
 }
 
 function applyLayout (action, schema, ext) {
-  const { set, get, isEmpty, map, find } = this.lib._
-  const { fields, label, card } = getCommons.call(this, action, schema, ext)
+  const { defaultsDeep } = this.app.bajo
+  const { set, get, isEmpty, find } = this.lib._
+  const { fields, card, calcFields } = getCommons.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
   const readonly = get(ext, `view.${action}.readonly`, get(ext, 'common.readonly', defReadonly))
-  const allWidgets = map(fields, f => {
-    const prop = find(schema.properties, { name: f })
-    const result = { name: f, component: 'form-input', attr: { col: '4-md' } }
+  const widget = {}
+  for (const f of fields) {
+    let prop = find(schema.properties, { name: f })
+    if (!prop) prop = find(calcFields, { name: f })
+    if (!prop) continue
+    const result = schema.view.widget[f] ?? {}
+    result.name = result.name ?? f
+    result.component = result.component ?? 'form-input'
+    result.attr = defaultsDeep(result.attr, { col: '4-md', label: `field.${f}` })
     if (['array', 'object', 'text'].includes(prop.type)) {
       result.attr.col = '12'
       result.component = 'form-textarea'
@@ -110,20 +117,20 @@ function applyLayout (action, schema, ext) {
       if (['string', 'text'].includes(prop.type) && prop.maxLength) set(result, 'attr.maxlength', prop.maxLength)
       if (readonly.includes(f)) result.component = 'form-plaintext'
     }
-    return result
-  })
-  if (isEmpty(layout)) autoLayout.call(this, { layout, allWidgets, schema, action, ext })
-  else customLayout.call(this, { layout, allWidgets, schema, action, ext, readonly })
+    widget[f] = result
+  }
+  set(schema, 'view.widget', widget)
+  if (isEmpty(layout)) autoLayout.call(this, { layout, schema, action, ext })
+  else customLayout.call(this, { layout, schema, action, ext, readonly })
   set(schema, 'view.layout', layout)
   set(schema, 'view.fields', fields)
-  set(schema, 'view.label', label)
   set(schema, 'view.card', card)
 }
 
 const handler = {
   list: async function (schema, ext, opts) {
     const { get, set } = this.lib._
-    const { fields, label } = getCommons.call(this, 'list', schema, ext, opts)
+    const { fields } = getCommons.call(this, 'list', schema, ext, opts)
     const qsFields = []
     for (const f of get(schema, 'view.qs.fields', '').split(',')) {
       if (fields.includes(f)) qsFields.push(f)
@@ -135,7 +142,6 @@ const handler = {
       if (!['1', '-1'].includes(dir)) dir = '1'
       set(schema, 'view.qs.sort', `${col}:${dir}`)
     }
-    set(schema, 'view.label', label)
     set(schema, 'view.fields', fields)
     set(schema, 'view.qs.fields', qsFields.join(','))
   },
@@ -159,7 +165,7 @@ async function getSchemaExt (model, view, opts) {
   const base = path.basename(schema.file, path.extname(schema.file))
   let ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true, opts })
   const over = await readConfig(`main:/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true, opts })
-  ext = defaultsDeep(over, ext)
+  ext = defaultsDeep(opts.schema ?? {}, over, ext)
   await handler[view].call(this, schema, ext, opts)
   schema = pick(schema, ['name', 'properties', 'indexes', 'disabled', 'attachment', 'sortables', 'view'])
   return { schema, ext }

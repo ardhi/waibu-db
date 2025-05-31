@@ -1,15 +1,27 @@
 <c:grid-row gutter="2">
   <c:grid-col col="6-lg">
-    <c:wdb-btn-back />
+    <% if (!schema.view.control.noBackBtn) { %>
+    <c:wdb-btn-back href="<%= schema.view.control.backHref ?? 'undefined' %>"/>
+    <% } %>
     <c:btn-group margin="start-1">
-      <c:wdb-btn-details />
-      <c:wdb-btn-clone/>
+      <% if (!schema.view.control.noDetailsBtn) { %>
+      <c:wdb-btn-details href="<%= schema.view.control.detailsHref ?? 'undefined' %>" />
+      <% } %>
+      <% if (!schema.view.control.noCloneBtn) { %>
+      <c:wdb-btn-clone href="<%= schema.view.control.cloneHref ?? 'undefined' %>" />
+      <% } %>
       <c:wdb-btn-export selector="#main-form" handler="edit" launch-on-end/>
     </c:btn-group>
   </c:grid-col>
   <c:grid-col col="6-lg" flex="justify-content:end-lg align-items:center">
-    <c:wdb-btn-delete/>
+    <% if (!schema.view.control.noDeleteBtn) { %>
+    <c:wdb-btn-delete href="<%= schema.view.control.deleteHref ?? 'undefined' %>"/>
+    <% } %>
+    <% if (!schema.view.control.noResetBtn) { %>
     <c:btn type="reset" color="secondary" t:content="reset" margin="start-2"/>
+    <% } %>
+    <% if (!schema.view.control.noSubmitBtn) { %>
     <c:btn type="submit" color="primary" t:content="submit" margin="start-2"/>
+    <% } %>
   </c:grid-col>
 </c:grid-row>

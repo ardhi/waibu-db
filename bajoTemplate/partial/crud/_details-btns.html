@@ -1,17 +1,29 @@
 <c:grid-row gutter="2">
   <c:grid-col col="6-lg">
-    <c:wdb-btn-back />
+    <% if (!schema.view.control.noBackBtn) { %>
+    <c:wdb-btn-back href="<%= schema.view.control.backHref ?? 'undefined' %>" />
+    <% } %>
     <% if (schema.disabled.includes('remove') && schema.disabled.includes('update')) { %>
-    <c:wdb-btn-export selector="#main-form" handler="details" launch-margin="start-1"/>
+      <% if (!schema.view.control.noExportBtn) { %>
+      <c:wdb-btn-export selector="#main-form" handler="details" launch-margin="start-1" />
+      <% } %>
     <% } else { %>
     <c:btn-group margin="start-1">
-      <c:wdb-btn-edit />
-      <c:wdb-btn-clone />
+      <% if (!schema.view.control.noEditBtn) { %>
+      <c:wdb-btn-edit href="<%= schema.view.control.editHref ?? 'undefined' %>" />
+      <% } %>
+      <% if (!schema.view.control.noCloneBtn) { %>
+      <c:wdb-btn-clone href="<%= schema.view.control.cloneHref ?? 'undefined' %>" />
+      <% } %>
+      <% if (!schema.view.control.noExportBtn) { %>
       <c:wdb-btn-export selector="#main-form" handler="details" launch-on-end/>
+      <% } %>
     </c:btn-group>
     <% } %>
   </c:grid-col>
   <c:grid-col col="6-lg" flex="justify-content:end-lg align-items:center">
-    <c:wdb-btn-delete/>
+    <% if (!schema.view.control.noDeleteBtn) { %>
+    <c:wdb-btn-delete href="<%= schema.view.control.deleteHref ?? 'undefined' %>" />
+    <% } %>
   </c:grid-col>
 </c:grid-row>
