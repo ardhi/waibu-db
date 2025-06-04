@@ -1,0 +1,3 @@
+<c:fieldset id="attachment" <%= schema.view.card === false ? '' : 'card' %> t:legend="attachment" grid-gutter="3">
+  <c:form-file name="file" multiple no-label <%= _.isString(schema.view.attachment) ? ('accept="' + schema.view.attachment + '"') : '' %> />
+</c:fieldset>

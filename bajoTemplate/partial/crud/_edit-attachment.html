@@ -1,0 +1,43 @@
+<c:fieldset id="attachment" t:legend="attachment" grid-gutter="3"
+  x-data="{
+    selected: [],
+    checkAll (check = true) {
+      if (!check) {
+        this.selected = []
+        return
+      }
+      const all = document.querySelectorAll('#attachment input[type=checkbox]')
+      this.selected = _.map(all, item => item.value)
+    },
+    toggleBtn () {
+      const el = this.$refs.removeatt
+      if (this.selected.length > 0) el.classList.remove('disabled')
+      else el.classList.add('disabled')
+    },
+    remove () {
+      this.$refs.action.value = 'removeatt'
+      this.$refs.value.value = JSON.stringify(this.selected)
+      document.getElementById('main-form').submit()
+    }
+  }"
+  x-init="$watch('selected', val => toggleBtn())"
+  <%= schema.view.card === false ? '' : 'card' %>
+>
+  <input x-ref="action" type="hidden" name="_action" />
+  <input x-ref="value" type="hidden" name="_value" />
+  <c:grid-col col="12">
+    <c:grid-row gutter="3">
+      <c:grid-col col="8-md 12-sm">
+        <c:form-file name="file" multiple no-label <%= _.isString(schema.view.attachment) ? ('accept="' + schema.view.attachment + '"') : '' %> />
+      </c:grid-col>
+      <c:grid-col col="4-md 12-sm" flex="align-items:center">
+        <c:btn-group margin="end-2">
+          <c:btn size="sm" color="secondary-outline" t:content="checkAll" @click="checkAll()"/>
+          <c:btn size="sm" color="secondary-outline" t:content="uncheckAll" @click="checkAll(false)"/>
+        </c:btn-group>
+        <c:btn margin="end-2" size="sm" class="disabled" x-ref="removeatt" color="danger-outline" t:content="Remove" @click="remove()"/>
+      </c:grid-col>
+    </c:grid-row>
+  </c:grid-col>
+  <!-- include waibuDb.partial:/crud/_list-attachment.html -->
+</c:fieldset>

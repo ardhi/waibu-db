@@ -1,4 +1,7 @@
 <c:wdb-form id="main-form" method="POST" enctype="multipart/form-data">
+  <% if (schema.view.attachment) { %>
+  <!-- include waibuDb.partial:/crud/_edit-attachment.html -->
+  <% } %>
   <!-- include waibuDb.partial:/crud/_edit-btns.html -->
 </c:wdb-form>
 <!-- include waibuDb.partial:/crud/_addons.html -->

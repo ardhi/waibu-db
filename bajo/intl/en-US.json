@@ -29,6 +29,9 @@
   "clonePrevious": "Clone previous",
   "actionPermanentlyDisabled%s": "Sorry, action '%s' is permanently disabled at database level. For more information, please contact your Admin immediately, thank you!",
   "dbModels": "Database Models",
+  "checkAll": "Check All",
+  "uncheckAll": "Uncheck All",
+  "attachment": "Attachment",
   "op": {
     "equals": "Equals",
     "notEquals": "Not Equals",
