@@ -159,7 +159,7 @@ const handler = {
   }
 }
 
-async function getSchemaExt (model, view, opts) {
+async function getSchemaExt (model, view, opts = {}) {
   const { readConfig, defaultsDeep } = this.app.bajo
   const { getSchema } = this.app.dobo
   const { pick } = this.lib._
