@@ -1,6 +1,6 @@
 function modelsMenu (locals, req) {
   const { getPluginPrefix } = this.app.waibu
-  const { pascalCase } = this.app.bajo
+  const { pascalCase } = this.lib.aneka
   const { getAppTitle } = this.app.waibuMpa
   const { camelCase, map, pick, groupBy, keys, kebabCase, filter, get } = this.lib._
 

@@ -5,7 +5,7 @@ const defReadonly = ['id', 'createdAt', 'updatedAt']
 const defFormatter = {}
 
 function getCommons (action, schema, ext, opts = {}) {
-  const { defaultsDeep } = this.app.bajo
+  const { defaultsDeep } = this.lib.aneka
   const { merge, map, get, set, without, uniq, pull } = this.lib._
   const calcFields = get(ext, `view.${action}.calcFields`, get(ext, 'common.calcFields', []))
   const forceVisible = get(ext, `view.${action}.forceVisible`, get(ext, 'common.forceVisible', []))
@@ -69,7 +69,7 @@ function autoLayout ({ action, schema, ext, layout }) {
 }
 
 function customLayout ({ action, schema, ext, layout, readonly }) {
-  const { defaultsDeep } = this.app.bajo
+  const { defaultsDeep } = this.lib.aneka
   const { isEmpty } = this.lib._
   const items = [...layout]
   for (const item of items) {
@@ -87,7 +87,7 @@ function customLayout ({ action, schema, ext, layout, readonly }) {
 }
 
 function applyLayout (action, schema, ext) {
-  const { defaultsDeep } = this.app.bajo
+  const { defaultsDeep } = this.lib.aneka
   const { set, get, isEmpty, find } = this.lib._
   const { fields, card, calcFields } = getCommons.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
@@ -160,7 +160,8 @@ const handler = {
 }
 
 async function getSchemaExt (model, view, opts = {}) {
-  const { readConfig, defaultsDeep } = this.app.bajo
+  const { readConfig } = this.app.bajo
+  const { defaultsDeep } = this.lib.aneka
   const { getSchema } = this.app.dobo
   const { pick } = this.lib._
 
