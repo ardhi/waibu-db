@@ -1,4 +1,4 @@
-import prepCrud from '../../../lib/prep-crud.js'
+import prepCrud from '../../lib/prep-crud.js'
 
 async function update ({ model, req, reply, id, body, options = {} }) {
   const { recordUpdate, attachmentFind } = this.app.dobo

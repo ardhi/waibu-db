@@ -1,4 +1,4 @@
-import prepCrud from '../../../lib/prep-crud.js'
+import prepCrud from '../../lib/prep-crud.js'
 
 async function aggregate ({ model, req, reply, options = {} }) {
   const { statAggregate } = this.app.dobo

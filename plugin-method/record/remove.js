@@ -1,4 +1,4 @@
-import prepCrud from '../../../lib/prep-crud.js'
+import prepCrud from '../../lib/prep-crud.js'
 
 async function remove ({ model, req, reply, id, options = {} }) {
   const { recordRemove } = this.app.dobo

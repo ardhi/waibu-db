@@ -1,4 +1,4 @@
-import prepCrud from '../../../lib/prep-crud.js'
+import prepCrud from '../../lib/prep-crud.js'
 
 async function count ({ model, req, reply, options = {} }) {
   const { recordCount } = this.app.dobo
