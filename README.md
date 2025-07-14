@@ -18,6 +18,10 @@ $ npm install waibu-db
 
 Now open your ```<bajo-data-dir>/config/.plugins``` and put ```waibu-db``` in it
 
+## Configuration
+
+- ```modelRestApi```: set to ```true``` to enable the auto creation of model's rest API. default: ```false```
+
 ## License
 
 [MIT](LICENSE)

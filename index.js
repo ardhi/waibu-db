@@ -21,7 +21,8 @@ async function factory (pkgName) {
         dbModel: {
           count: false,
           patchEnabled: false
-        }
+        },
+        modelRestApi: false
       }
     }
   }
