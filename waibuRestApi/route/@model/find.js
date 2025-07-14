@@ -1,0 +1,14 @@
+async function find (req, reply) {
+  const { isSet } = this.lib.aneka
+  const { parseObject } = this.app.bajo
+  let { fields, count } = this.getParams(req)
+  let rels = []
+  const headers = parseObject(req.headers, { parseValue: true })
+  if (isSet(headers['x-count'])) count = headers['x-count']
+  if (isSet(headers['x-rels'])) rels = headers['x-rels']
+  if (typeof rels === 'string' && !['*', 'all'].includes(rels)) rels = [rels]
+  const options = { fields, count, rels }
+  return await this.recordFind({ req, reply, options })
+}
+
+export default find
