@@ -16,7 +16,7 @@
       <c:wdb-btn-clone href="<%= schema.view.control.cloneHref ?? 'undefined' %>" />
       <% } %>
       <% if (!schema.view.control.noExportBtn) { %>
-      <c:wdb-btn-export selector="#main-form" handler="details" launch-on-end/>
+      <c:wdb-btn-export selector="#main-form" handler="details" launch-on-end no-save/>
       <% } %>
     </c:btn-group>
     <% } %>

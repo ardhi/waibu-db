@@ -32,6 +32,9 @@
   "checkAll": "Cek Semua",
   "uncheckAll": "Uncheck Semua",
   "attachment": "Attachment",
+  "exportInQueue": "Ekspor data sedang dalam antrian. Silahkan cek daftar unduh Anda untuk perkembangan terakhir",
+  "tsv": "TSV",
+  "ndjson": "NDJSON",
   "op": {
     "equals": "Sama Dengan",
     "notEquals": "Tidak Sama Dengan",

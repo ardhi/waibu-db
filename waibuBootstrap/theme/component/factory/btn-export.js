@@ -29,15 +29,22 @@ async function btnExport () {
           ftype: 'json',
           toggle (val) {
             if (val === 'clipboard') {
+              $refs.fkey.removeAttribute('disabled')
+              $refs.fvalue.removeAttribute('disabled')
               $refs.zip.setAttribute('disabled', '')
               $refs.xlsx.setAttribute('disabled', '')
-              $refs.xml.setAttribute('disabled', '')
+              $refs.tsv.setAttribute('disabled', '')
+              $refs.ndjson.setAttribute('disabled', '')
               _.pull(this.options, 'zip')
               if (!['json', 'csv'].includes(this.ftype)) this.ftype = 'json'
             } else {
+              $refs.fkey.setAttribute('disabled', '')
+              $refs.fvalue.setAttribute('disabled', '')
               $refs.zip.removeAttribute('disabled')
               $refs.xlsx.removeAttribute('disabled')
-              $refs.xml.removeAttribute('disabled')
+              $refs.tsv.removeAttribute('disabled')
+              $refs.ndjson.removeAttribute('disabled')
+              _.pull(this.options, 'fkey', 'fvalue')
             }
           },
           extractForm (selector) {
@@ -117,8 +124,8 @@ async function btnExport () {
           <c:grid-row gutter="2">
             <c:grid-col col="6-md">
               <c:fieldset t:legend="delivery" legend-type="6">
-                <c:form-radio x-model="delivery" value="file" t:label="saveAsFile" />
                 <c:form-radio x-model="delivery" value="clipboard" t:label="copyClipboard" />
+                <c:form-radio x-model="delivery" value="file" t:label="saveAsFile" ${this.params.attr.noSave ? 'disabled' : ''} />
               </c:fieldset>
               <c:fieldset t:legend="options" legend-type="6" margin="top-2">
                 <c:form-check x-ref="fkey" x-model="options" value="fkey" t:label="formattedField" />
@@ -130,8 +137,9 @@ async function btnExport () {
               <c:fieldset t:legend="fileType" legend-type="6">
                 <c:form-radio x-ref="xlsx" x-model="ftype" value="xlsx" t:label="excelXlsx" />
                 <c:form-radio x-ref="csv" x-model="ftype" value="csv" t:label="csv" />
-                <c:form-radio x-ref="xml" x-model="ftype" value="xml" t:label="xml" />
+                <c:form-radio x-ref="tsv" x-model="ftype" value="tsv" t:label="tsv" />
                 <c:form-radio x-ref="json" x-model="ftype" value="json" t:label="json" />
+                <c:form-radio x-ref="ndjson" x-model="ftype" value="ndjson" t:label="ndjson" />
               </c:fieldset />
             </c:grid-col>
           </c:grid-row>

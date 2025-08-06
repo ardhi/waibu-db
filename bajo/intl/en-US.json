@@ -32,6 +32,9 @@
   "checkAll": "Check All",
   "uncheckAll": "Uncheck All",
   "attachment": "Attachment",
+  "exportInQueue": "Data export in queue. Please check your download list for progress",
+  "tsv": "TSV",
+  "ndjson": "NDJSON",
   "op": {
     "equals": "Equals",
     "notEquals": "Not Equals",

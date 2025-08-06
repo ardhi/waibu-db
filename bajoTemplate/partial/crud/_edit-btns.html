@@ -10,7 +10,7 @@
       <% if (!schema.view.control.noCloneBtn) { %>
       <c:wdb-btn-clone href="<%= schema.view.control.cloneHref ?? 'undefined' %>" />
       <% } %>
-      <c:wdb-btn-export selector="#main-form" handler="edit" launch-on-end/>
+      <c:wdb-btn-export selector="#main-form" handler="edit" launch-on-end no-save />
     </c:btn-group>
   </c:grid-col>
   <c:grid-col col="6-lg" flex="justify-content:end-lg align-items:center">

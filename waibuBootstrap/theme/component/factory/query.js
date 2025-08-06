@@ -10,7 +10,6 @@ async function query () {
       const { find, get, without, isEmpty, filter, upperFirst } = this.plugin.app.bajo.lib._
       const qsKey = this.plugin.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
-      const count = get(this, 'component.locals.list.count', 0)
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''
         return
@@ -21,7 +20,6 @@ async function query () {
       const id = generateId('alpha')
       const columns = []
       const models = []
-      const selects = ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'in', 'contains', 'starts', 'ends', '!in', '!contains', '!starts', '!ends']
       for (const f of schema.view.fields) {
         if (!fields.includes(f)) continue
         const prop = find(schema.properties, { name: f })
@@ -29,7 +27,7 @@ async function query () {
         if (['float', 'double', 'integer', 'smallint'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte')
         else if (['datetime', 'date', 'time'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte')
         else if (['boolean'].includes(prop.type)) ops.push('eq', 'neq')
-        else ops.push(...selects)
+        else ops.push('eq', 'neq', 'in', 'contains', 'starts', 'ends', '!in', '!contains', '!starts', '!ends')
         if (ops.length === 0) continue
         const sels = ops.map(o => `<c:option>${o}</c:option>`)
         models.push(`${f}Op: 'eq'`, `${f}Val: ''`)
@@ -51,12 +49,12 @@ async function query () {
       this.params.noTag = true
       const container = this.params.attr.modal ? 'modal' : 'drawer'
       this.params.html = await this.component.buildSentence(`
-        <c:form-input ${count === 0 ? 'disabled' : ''} type="search" t:placeholder="query" id="${id}" x-data="{ query: '' }" x-init="
+        <c:form-input type="search" t:placeholder="query" id="${id}" x-data="{ query: '' }" x-init="
           const url = new URL(window.location.href)
           query = url.searchParams.get('${qsKey.query}') ?? ''
         " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
           <c:form-input-addon>
-            <c:${container} ${count === 0 ? 'trigger-disabled' : ''} trigger-icon="${this.params.attr.icon ?? 'dotsThree'}" trigger-on-end t:title="queryBuilder" x-ref="query" x-data="{
+            <c:${container} trigger-icon="${this.params.attr.icon ?? 'dotsThree'}" trigger-on-end t:title="queryBuilder" x-ref="query" x-data="{
               fields: ${jsonStringify(fields, true)},
               builder: '',
               selected: [],
@@ -70,6 +68,7 @@ async function query () {
               },
               initBuilder () {
                 this.builder = document.getElementById('${id}').value
+                if (!this.builder.includes(':')) this.builder = ''
                 if (_.isEmpty(this.builder)) return
                 const tokens = _.merge({}, this.ops, {
                   in: ':[',
@@ -158,7 +157,7 @@ async function query () {
             </c:${container}>
           </c:form-input-addon>
           <c:form-input-addon>
-            <c:btn ${count === 0 ? 'disabled' : ''} t:content="submit" x-data="{
+            <c:btn t:content="submit" x-data="{
               submit () {
                 const val = document.getElementById('${id}').value ?? ''
                 const url = new URL(window.location.href)
