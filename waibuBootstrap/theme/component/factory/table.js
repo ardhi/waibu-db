@@ -19,19 +19,33 @@ async function table () {
       return get(schema, 'view.noWrap', []).includes(field)
     }
 
+    _defFormatter = async ({ req, key, value, data, schema }) => {
+      const { get, find } = this.plugin.lib._
+      const { escape } = this.plugin.app.waibu
+      const prop = find(schema.properties, { name: key })
+      if (!prop) return value
+      if (prop.type === 'boolean') {
+        value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${data[key] ? 'Check' : ''}` } })) +
+          ' ' + (req.t(data[key] ? 'Yes' : 'No'))
+      } else if (['string', 'text'].includes(prop.type)) {
+        if (!get(schema, 'view.noEscape', []).includes(key)) value = escape(value)
+      }
+      return value
+    }
+
     build = async () => {
       const { req } = this.component
       const { escape } = this.plugin.app.waibu
       const { formatRecord } = this.plugin.app.waibuDb
       const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without, merge } = this.plugin.app.bajo.lib._
+      const { get, omit, set, find, isEmpty, without, merge } = this.plugin.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
 
       const schema = get(this, 'component.locals.schema', {})
       const data = get(this, 'component.locals.list.data', [])
-      const fdata = await formatRecord.call(this.plugin, { data, req, schema, component: this.component })
+      const fdata = await formatRecord.call(this.plugin, { data, req, schema })
       const filter = get(this, 'component.locals.list.filter', {})
       const count = get(this, 'component.locals.list.count', 0)
       if (count === 0) {
@@ -136,16 +150,10 @@ async function table () {
             if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           }
           let value = fd[f]
-          if (prop.type === 'boolean') {
-            value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${d[f] ? 'Check' : ''}` } })) +
-              ' ' + (req.t(d[f] ? 'Yes' : 'No'))
-          } else {
-            if (!get(schema, 'view.noEscape', []).includes(f)) value = escape(value)
-          }
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const cellFormatter = get(schema, `view.cellFormatter.${f}`)
-          if (cellFormatter) merge(attr, await cellFormatter.call(req, dataValue, d))
+          if (cellFormatter) merge(attr, await cellFormatter.call(this, dataValue, d))
           const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
           if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
           else attr.text = noWrap
@@ -154,6 +162,9 @@ async function table () {
             const item = find(lookup.values, set({}, lookup.id ?? 'id', d[f]))
             if (item) value = req.t(item[lookup.field ?? 'name'])
           }
+          const formatter = get(schema, `view.formatter.${f}`)
+          if (formatter) value = await formatter.call(this, value, d)
+          else value = await this._defFormatter({ req, key: f, schema, value, data: d })
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }

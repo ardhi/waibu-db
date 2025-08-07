@@ -1,4 +1,4 @@
-async function formatRow ({ data, req, component, schema, options = {} }) {
+async function formatRow ({ data, req, schema, options = {} }) {
   const { get, find, isFunction, cloneDeep } = this.lib._
   const { format, callHandler } = this.app.bajo
   const fields = get(schema, 'view.fields', Object.keys(schema.properties))
@@ -19,25 +19,19 @@ async function formatRow ({ data, req, component, schema, options = {} }) {
     rec[f] = format(data[f], prop.type, opts)
     const vf = get(schema, `view.valueFormatter.${f}`)
     if (vf) {
-      if (isFunction(vf)) rec[f] = await vf.call(req ?? this, data[f], data)
-      else rec[f] = await callHandler(vf, req, data[f], data)
-    }
-    const formatter = get(schema, `view.formatter.${f}`)
-    if (formatter && component) {
-      if (isFunction(formatter)) rec[f] = await formatter.call(req ?? this, data[f], data)
-      else rec[f] = await callHandler(formatter, req, data[f], data)
-      rec[f] = await component.buildSentence(rec[f])
+      if (isFunction(vf)) rec[f] = await vf.call(this, data[f], data)
+      else rec[f] = await callHandler(vf, { req, value: data[f], data })
     }
   }
   return rec
 }
 
-async function formatRecord ({ data, req, schema, component, options = {} }) {
+async function formatRecord ({ data, req, schema, options = {} }) {
   const { isArray } = this.lib._
-  if (!isArray(data)) return await formatRow.call(this, { data, req, schema, component, options })
+  if (!isArray(data)) return await formatRow.call(this, { data, req, schema, options })
   const items = []
   for (const d of data) {
-    const item = await formatRow.call(this, { data: d, req, schema, component, options })
+    const item = await formatRow.call(this, { data: d, req, schema, options })
     items.push(item)
   }
   return items
