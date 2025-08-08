@@ -1,6 +1,7 @@
 async function formatRow ({ data, req, schema, options = {} }) {
   const { get, find, isFunction, cloneDeep } = this.lib._
   const { format, callHandler } = this.app.bajo
+  const { escape } = this.app.waibu
   const fields = get(schema, 'view.fields', Object.keys(schema.properties))
   const rec = cloneDeep(data)
   for (const f of fields) {
@@ -21,7 +22,7 @@ async function formatRow ({ data, req, schema, options = {} }) {
     if (vf) {
       if (isFunction(vf)) rec[f] = await vf.call(this, data[f], data)
       else rec[f] = await callHandler(vf, { req, value: data[f], data })
-    }
+    } else if (['string', 'text'].includes(prop.type)) rec[f] = escape(rec[f])
   }
   return rec
 }
