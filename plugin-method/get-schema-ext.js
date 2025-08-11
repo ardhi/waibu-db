@@ -4,7 +4,7 @@ const defReadonly = ['id', 'createdAt', 'updatedAt']
 
 const defFormatter = {}
 
-function getCommons (action, schema, ext, opts = {}) {
+function getCommons (action, schema, ext, options = {}) {
   const { defaultsDeep } = this.lib.aneka
   const { merge, map, get, set, without, uniq, pull } = this.lib._
   const calcFields = get(ext, `view.${action}.calcFields`, get(ext, 'common.calcFields', []))
@@ -21,7 +21,7 @@ function getCommons (action, schema, ext, opts = {}) {
   const aggregate = get(ext, `view.${action}.stat.aggregate`, get(ext, 'common.stat.aggregate', []))
   let attachment = get(ext, `view.${action}.attachment`, get(ext, 'common.attachment', false))
   if (!schema.attachment || action === 'list') attachment = false
-  hidden.push('siteId', ...schema.hidden, ...(opts.hidden ?? []))
+  hidden.push('siteId', ...schema.hidden, ...(options.hidden ?? []))
   hidden = uniq(hidden)
   pull(hidden, ...forceVisible)
   const allFields = without(map(schema.properties, 'name'), ...hidden)
@@ -44,7 +44,8 @@ function getCommons (action, schema, ext, opts = {}) {
   if (calcFields.length > 0) fields.push(...map(calcFields, 'name'))
   fields = uniq(without(fields, ...hidden))
 
-  if (action !== 'add' && !fields.includes('id')) fields.unshift('id')
+  options.forceShowId = options.forceShowId ?? true
+  if (options.forceShowId && action !== 'add' && !fields.includes('id')) fields.unshift('id')
   let noWrap = get(ext, `view.${action}.noWrap`, get(ext, 'common.noWrap', true))
   if (noWrap === true) noWrap = fields
   else if (noWrap === false) noWrap = []
@@ -131,9 +132,9 @@ function applyLayout (action, schema, ext) {
 }
 
 const handler = {
-  list: async function (schema, ext, opts) {
+  list: async function (schema, ext, options) {
     const { get, set } = this.lib._
-    const { fields } = getCommons.call(this, 'list', schema, ext, opts)
+    const { fields } = getCommons.call(this, 'list', schema, ext, options)
     const qsFields = []
     for (const f of get(schema, 'view.qs.fields', '').split(',')) {
       if (fields.includes(f)) qsFields.push(f)
@@ -148,18 +149,18 @@ const handler = {
     set(schema, 'view.fields', fields)
     set(schema, 'view.qs.fields', qsFields.join(','))
   },
-  details: async function (schema, ext, opts) {
-    applyLayout.call(this, 'details', schema, ext, opts)
+  details: async function (schema, ext, options) {
+    applyLayout.call(this, 'details', schema, ext, options)
   },
-  add: async function (schema, ext, opts) {
-    applyLayout.call(this, 'add', schema, ext, opts)
+  add: async function (schema, ext, options) {
+    applyLayout.call(this, 'add', schema, ext, options)
   },
-  edit: async function (schema, ext, opts) {
-    applyLayout.call(this, 'edit', schema, ext, opts)
+  edit: async function (schema, ext, options) {
+    applyLayout.call(this, 'edit', schema, ext, options)
   }
 }
 
-async function getSchemaExt (model, view, opts = {}) {
+async function getSchemaExt (model, view, options = {}) {
   const { readConfig } = this.app.bajo
   const { defaultsDeep } = this.lib.aneka
   const { getSchema } = this.app.dobo
@@ -167,10 +168,10 @@ async function getSchemaExt (model, view, opts = {}) {
 
   let schema = getSchema(model)
   const base = path.basename(schema.file, path.extname(schema.file))
-  let ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true, opts })
-  const over = await readConfig(`main:/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true, opts })
-  ext = defaultsDeep(opts.schema ?? {}, over, ext)
-  await handler[view].call(this, schema, ext, opts)
+  let ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true, options })
+  const over = await readConfig(`main:/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true, options })
+  ext = defaultsDeep(options.schema ?? {}, over, ext)
+  await handler[view].call(this, schema, ext, options)
   schema = pick(schema, ['name', 'properties', 'indexes', 'disabled', 'attachment', 'sortables', 'view'])
   return { schema, ext }
 }
