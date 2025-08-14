@@ -89,7 +89,7 @@ function customLayout ({ action, schema, ext, layout, readonly }) {
 
 function applyLayout (action, schema, ext) {
   const { defaultsDeep } = this.lib.aneka
-  const { set, get, isEmpty, find } = this.lib._
+  const { set, get, isEmpty, find, kebabCase } = this.lib._
   const { fields, card, calcFields } = getCommons.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
   const readonly = get(ext, `view.${action}.readonly`, get(ext, 'common.readonly', defReadonly))
@@ -120,6 +120,13 @@ function applyLayout (action, schema, ext) {
       }
       if (['string', 'text'].includes(prop.type) && prop.maxLength) set(result, 'attr.maxlength', prop.maxLength)
       if (readonly.includes(f)) result.component = 'form-plaintext'
+    }
+    for (const k in result.attr ?? {}) {
+      const newKey = kebabCase(k)
+      if (k !== newKey) {
+        result.attr[newKey] = result.attr[k]
+        delete result.attr[k]
+      }
     }
     widget[f] = result
   }
