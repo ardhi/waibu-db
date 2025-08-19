@@ -38,10 +38,10 @@ function getCommons (action, schema, ext, options = {}) {
   set(schema, 'view.x', x)
   if (schema.disabled.length > 0) schema.view.disabled.push(...schema.disabled)
   let fields = []
+  const calcFieldNames = map(calcFields, 'name')
   for (const f of forFields) {
-    if (allFields.includes(f)) fields.push(f)
+    if (calcFieldNames.includes(f) || allFields.includes(f)) fields.push(f)
   }
-  if (calcFields.length > 0) fields.push(...map(calcFields, 'name'))
   fields = uniq(without(fields, ...hidden))
 
   options.forceShowId = options.forceShowId ?? true
