@@ -42,6 +42,7 @@ async function factory (pkgName) {
         ensureDir: true,
         fields
       }
+      options.filter.sort = 'id:1'
       const dmodel = 'SumbaDownload'
       try {
         await recordUpdate(dmodel, id, { status: 'PROCESSING' })
