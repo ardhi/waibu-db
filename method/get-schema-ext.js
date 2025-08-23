@@ -175,8 +175,8 @@ async function getSchemaExt (model, view, options = {}) {
 
   let schema = getSchema(model)
   const base = path.basename(schema.file, path.extname(schema.file))
-  let ext = await readConfig(`${schema.ns}:/waibuDb/schema/${base}.*`, { ignoreError: true, options })
-  const over = await readConfig(`main:/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true, options })
+  let ext = await readConfig(`${schema.ns}:/extend/waibuDb/schema/${base}.*`, { ignoreError: true, options })
+  const over = await readConfig(`main:/extend/waibuDb/extend/${schema.ns}/schema/${base}.*`, { ignoreError: true, options })
   ext = defaultsDeep(options.schema ?? {}, over, ext)
   await handler[view].call(this, schema, ext, options)
   schema = pick(schema, ['name', 'properties', 'indexes', 'disabled', 'attachment', 'sortables', 'view'])
