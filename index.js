@@ -1,11 +1,12 @@
 async function factory (pkgName) {
   const me = this
 
-  return class WaibuDb extends this.lib.Plugin {
+  class WaibuDb extends this.lib.Plugin {
+    static alias = 'wdb'
+    static dependencies = ['dobo', 'waibu', 'bajo-queue', 'dobo-extra']
+
     constructor () {
       super(pkgName, me.app)
-      this.alias = 'wdb'
-      this.dependencies = ['dobo', 'waibu', 'bajo-queue', 'dobo-extra']
       this.config = {
         waibu: {
           prefix: 'db',
@@ -94,6 +95,8 @@ async function factory (pkgName) {
       return menu
     }
   }
+
+  return WaibuDb
 }
 
 export default factory
