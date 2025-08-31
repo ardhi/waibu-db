@@ -6,7 +6,7 @@ async function btnClone () {
   return class WdbBtnClone extends WdbBase {
     build = async () => {
       const { req } = this.component
-      const { isEmpty, get } = this.plugin.app.bajo.lib._
+      const { isEmpty, get } = this.app.lib._
       this.params.noTag = true
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('create')) {

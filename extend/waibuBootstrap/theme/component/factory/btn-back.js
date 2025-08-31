@@ -5,7 +5,7 @@ async function btnBack () {
 
   return class WdbBtnBack extends WdbBase {
     build = async () => {
-      const { isEmpty } = this.plugin.app.bajo.lib._
+      const { isEmpty } = this.app.lib._
       const { attrToArray } = this.plugin.app.waibuMpa
       const { req } = this.component
       this.params.noTag = true

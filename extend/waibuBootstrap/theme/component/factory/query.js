@@ -7,7 +7,7 @@ async function query () {
     build = async () => {
       const { generateId } = this.plugin.app.bajo
       const { jsonStringify } = this.plugin.app.waibuMpa
-      const { find, get, without, isEmpty, filter, upperFirst } = this.plugin.app.bajo.lib._
+      const { find, get, without, isEmpty, filter, upperFirst } = this.app.lib._
       const qsKey = this.plugin.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('find')) {

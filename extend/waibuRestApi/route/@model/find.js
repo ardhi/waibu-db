@@ -1,5 +1,5 @@
 async function find (req, reply) {
-  const { isSet } = this.lib.aneka
+  const { isSet } = this.app.lib.aneka
   const { parseObject } = this.app.bajo
   let { fields, count } = this.getParams(req)
   let rels = []

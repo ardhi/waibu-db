@@ -5,7 +5,7 @@ async function table () {
 
   return class WdbTable extends WdbBase {
     isRightAligned = (field, schema) => {
-      const { get, find } = this.plugin.app.bajo.lib._
+      const { get, find } = this.app.lib._
       const prop = find(schema.properties, { name: field })
       if (!prop) return false
       let value = get(schema, 'view.alignEnd', []).includes(field)
@@ -15,12 +15,12 @@ async function table () {
 
     isNoWrap = (field, schema, bodyNowrap) => {
       if (bodyNowrap) return true
-      const { get } = this.plugin.app.bajo.lib._
+      const { get } = this.app.lib._
       return get(schema, 'view.noWrap', []).includes(field)
     }
 
     _defFormatter = async ({ req, key, value, data, schema }) => {
-      const { get, find } = this.plugin.lib._
+      const { get, find } = this.app.lib._
       const { escape } = this.plugin.app.waibu
       const prop = find(schema.properties, { name: key })
       if (!prop) return value
@@ -38,7 +38,7 @@ async function table () {
       const { escape } = this.plugin.app.waibu
       const { formatRecord } = this.plugin.app.waibuDb
       const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without, merge } = this.plugin.lib._
+      const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl

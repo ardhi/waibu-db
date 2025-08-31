@@ -5,7 +5,7 @@ async function btnColumns () {
 
   return class WdbBtnColumns extends WdbBase {
     build = async () => {
-      const { get, isEmpty, without } = this.plugin.app.bajo.lib._
+      const { get, isEmpty, without } = this.app.lib._
       const { jsonStringify } = this.plugin.app.waibuMpa
       const { req } = this.component
       const qsKey = this.plugin.app.waibu.config.qsKey

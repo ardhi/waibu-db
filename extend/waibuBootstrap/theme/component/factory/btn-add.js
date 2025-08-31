@@ -5,7 +5,7 @@ async function btnAdd () {
 
   return class WdbBtnAdd extends WdbBase {
     build = async () => {
-      const { isEmpty, get } = this.plugin.app.bajo.lib._
+      const { isEmpty, get } = this.app.lib._
       const { req } = this.component
       this.params.noTag = true
       const schema = get(this, 'component.locals.schema', {})

@@ -1,5 +1,5 @@
 async function formatRow ({ data, req, schema, options = {} }) {
-  const { get, find, isFunction, cloneDeep } = this.lib._
+  const { get, find, isFunction, cloneDeep } = this.app.lib._
   const { format, callHandler } = this.app.bajo
   const { escape } = this.app.waibu
   const fields = get(schema, 'view.fields', Object.keys(schema.properties))
@@ -28,7 +28,7 @@ async function formatRow ({ data, req, schema, options = {} }) {
 }
 
 async function formatRecord ({ data, req, schema, options = {} }) {
-  const { isArray } = this.lib._
+  const { isArray } = this.app.lib._
   if (!isArray(data)) return await formatRow.call(this, { data, req, schema, options })
   const items = []
   for (const d of data) {

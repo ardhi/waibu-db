@@ -5,7 +5,7 @@ async function form () {
 
   return class WdbForm extends WdbBase {
     build = async () => {
-      const { get, find, filter, forOwn, isEmpty } = this.plugin.lib._
+      const { get, find, filter, forOwn, isEmpty } = this.app.lib._
       const { base64JsonEncode } = this.plugin.app.waibuMpa
       const schema = get(this, 'component.locals.schema', {})
       const body = []

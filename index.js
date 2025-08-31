@@ -1,7 +1,7 @@
 async function factory (pkgName) {
   const me = this
 
-  class WaibuDb extends this.lib.Plugin {
+  class WaibuDb extends this.app.pluginClass.base {
     static alias = 'wdb'
     static dependencies = ['dobo', 'waibu', 'bajo-queue', 'dobo-extra']
 
@@ -29,8 +29,8 @@ async function factory (pkgName) {
 
     exportData = async (params) => {
       const { getPlugin } = this.app.bajo
-      const { get } = this.lib._
-      const { fs } = this.lib
+      const { get } = this.app.lib._
+      const { fs } = this.app.lib
       const { recordUpdate } = this.app.dobo
       const { exportTo } = this.app.doboExtra
       const { downloadDir } = getPlugin('sumba')
@@ -57,9 +57,9 @@ async function factory (pkgName) {
 
     adminMenu = async (locals, req) => {
       const { getPluginPrefix } = this.app.waibu
-      const { pascalCase } = this.lib.aneka
+      const { pascalCase } = this.app.lib.aneka
       const { getAppTitle } = this.app.waibuMpa
-      const { camelCase, map, pick, groupBy, keys, kebabCase, filter, get } = this.lib._
+      const { camelCase, map, pick, groupBy, keys, kebabCase, filter, get } = this.app.lib._
 
       const prefix = getPluginPrefix(this.name)
       const schemas = filter(this.app.dobo.schemas, s => {

@@ -8,7 +8,7 @@ async function recsInfo () {
     build = async () => {
       const { req } = this.component
       const { attrToObject, groupAttrs, attrToArray } = this.plugin.app.waibuMpa
-      const { get, isEmpty, omit, merge } = this.plugin.app.bajo.lib._
+      const { get, isEmpty, omit, merge } = this.app.lib._
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''

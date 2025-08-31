@@ -1,7 +1,7 @@
 import wdbBase from '../wdb-base.js'
 
 export function getUrlOpts (params = {}) {
-  const { get } = this.plugin.app.bajo.lib._
+  const { get } = this.app.lib._
   return {
     params,
     excludes: [
@@ -18,7 +18,7 @@ async function pagination () {
     build = async () => {
       const { req } = this.component
       const { attrToObject, paginationLayout, groupAttrs } = this.plugin.app.waibuMpa
-      const { get, isNumber } = this.plugin.app.bajo.lib._
+      const { get, isNumber } = this.app.lib._
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''

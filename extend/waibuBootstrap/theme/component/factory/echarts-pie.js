@@ -6,7 +6,7 @@ async function echartsPie () {
   return class WdbEchartsPie extends WdbEcharts {
     build = async () => {
       const { jsonStringify } = this.plugin.app.waibuMpa
-      const { merge } = this.plugin.lib._
+      const { merge } = this.app.lib._
       merge(this.setting, {
         tooltip: {
           trigger: 'item'

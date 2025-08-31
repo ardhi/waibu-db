@@ -5,8 +5,8 @@ const defReadonly = ['id', 'createdAt', 'updatedAt']
 const defFormatter = {}
 
 function getCommons (action, schema, ext, options = {}) {
-  const { defaultsDeep } = this.lib.aneka
-  const { merge, map, get, set, without, uniq, pull } = this.lib._
+  const { defaultsDeep } = this.app.lib.aneka
+  const { merge, map, get, set, without, uniq, pull } = this.app.lib._
   const calcFields = get(ext, `view.${action}.calcFields`, get(ext, 'common.calcFields', []))
   const forceVisible = get(ext, `view.${action}.forceVisible`, get(ext, 'common.forceVisible', []))
   const widget = defaultsDeep(get(ext, `view.${action}.widget`), get(ext, 'common.widget', {}))
@@ -54,7 +54,7 @@ function getCommons (action, schema, ext, options = {}) {
 }
 
 function autoLayout ({ action, schema, ext, layout }) {
-  const { forOwn, keys } = this.lib._
+  const { forOwn, keys } = this.app.lib._
   const matches = ['id', 'createdAt', 'updatedAt']
   const meta = []
   const general = []
@@ -70,8 +70,8 @@ function autoLayout ({ action, schema, ext, layout }) {
 }
 
 function customLayout ({ action, schema, ext, layout, readonly }) {
-  const { defaultsDeep } = this.lib.aneka
-  const { isEmpty } = this.lib._
+  const { defaultsDeep } = this.app.lib.aneka
+  const { isEmpty } = this.app.lib._
   const items = [...layout]
   for (const item of items) {
     for (const idx in item.fields) {
@@ -88,8 +88,8 @@ function customLayout ({ action, schema, ext, layout, readonly }) {
 }
 
 function applyLayout (action, schema, ext) {
-  const { defaultsDeep } = this.lib.aneka
-  const { set, get, isEmpty, find, kebabCase } = this.lib._
+  const { defaultsDeep } = this.app.lib.aneka
+  const { set, get, isEmpty, find, kebabCase } = this.app.lib._
   const { fields, card, calcFields } = getCommons.call(this, action, schema, ext)
   const layout = get(ext, `view.${action}.layout`, get(ext, 'common.layout', []))
   const readonly = get(ext, `view.${action}.readonly`, get(ext, 'common.readonly', defReadonly))
@@ -140,7 +140,7 @@ function applyLayout (action, schema, ext) {
 
 const handler = {
   list: async function (schema, ext, options) {
-    const { get, set } = this.lib._
+    const { get, set } = this.app.lib._
     const { fields } = getCommons.call(this, 'list', schema, ext, options)
     const qsFields = []
     for (const f of get(schema, 'view.qs.fields', '').split(',')) {
@@ -169,9 +169,9 @@ const handler = {
 
 async function getSchemaExt (model, view, options = {}) {
   const { readConfig } = this.app.bajo
-  const { defaultsDeep } = this.lib.aneka
+  const { defaultsDeep } = this.app.lib.aneka
   const { getSchema } = this.app.dobo
-  const { pick } = this.lib._
+  const { pick } = this.app.lib._
 
   let schema = getSchema(model)
   const base = path.basename(schema.file, path.extname(schema.file))

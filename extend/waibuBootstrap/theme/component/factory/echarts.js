@@ -28,7 +28,7 @@ async function echarts () {
 
     _build = ({ setting = {}, onLoad = [] } = {}) => {
       const { jsonStringify } = this.plugin.app.waibuMpa
-      const { merge, isArray } = this.plugin.app.bajo.lib._
+      const { merge, isArray } = this.app.lib._
       if (!isArray(onLoad)) onLoad = [onLoad]
       const option = merge({}, this.defSetting, this.setting, setting)
       this.component.addScriptBlock('alpineInit', `
