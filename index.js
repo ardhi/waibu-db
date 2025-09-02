@@ -61,7 +61,7 @@ async function factory (pkgName) {
       const { getAppTitle } = this.app.waibuMpa
       const { camelCase, map, pick, groupBy, keys, kebabCase, filter, get } = this.app.lib._
 
-      const prefix = getPluginPrefix(this.name)
+      const prefix = getPluginPrefix(this.ns)
       const schemas = filter(this.app.dobo.schemas, s => {
         const byModelFind = !s.disabled.includes('find')
         let modelDisabled = get(this, `app.${s.ns}.config.waibuAdmin.modelDisabled`)
