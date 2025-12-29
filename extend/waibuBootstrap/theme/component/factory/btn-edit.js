@@ -6,7 +6,7 @@ async function btnEdit () {
   return class WdbBtnEdit extends WdbBase {
     build = async () => {
       const { req } = this.component
-      const { generateId } = this.plugin.app.bajo
+      const { generateId } = this.app.lib.aneka
       const { isEmpty, get } = this.app.lib._
       this.params.noTag = true
       const schema = get(this, 'component.locals.schema', {})

@@ -5,7 +5,7 @@ async function echartsBar () {
 
   return class WdbEchartsBar extends WdbEcharts {
     build = async () => {
-      const { jsonStringify } = this.plugin.app.waibuMpa
+      const { jsonStringify } = this.app.waibuMpa
       const { merge } = this.app.lib._
       merge(this.setting, {
         tooltip: {

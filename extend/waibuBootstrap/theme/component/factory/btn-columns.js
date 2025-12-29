@@ -6,9 +6,9 @@ async function btnColumns () {
   return class WdbBtnColumns extends WdbBase {
     build = async () => {
       const { get, isEmpty, without } = this.app.lib._
-      const { jsonStringify } = this.plugin.app.waibuMpa
+      const { jsonStringify } = this.app.waibuMpa
       const { req } = this.component
-      const qsKey = this.plugin.app.waibu.config.qsKey
+      const qsKey = this.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
       const count = get(this, 'component.locals.list.count', 0)
       if (count === 0) this.params.attr.triggerDisabled = true

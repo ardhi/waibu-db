@@ -10,7 +10,7 @@ async function echarts () {
 
     constructor (options) {
       super(options)
-      const { generateId } = this.plugin.app.bajo
+      const { generateId } = this.app.lib.aneka
       this.defSetting = {
         grid: {
           top: 8,
@@ -27,7 +27,7 @@ async function echarts () {
     }
 
     _build = ({ setting = {}, onLoad = [] } = {}) => {
-      const { jsonStringify } = this.plugin.app.waibuMpa
+      const { jsonStringify } = this.app.waibuMpa
       const { merge, isArray } = this.app.lib._
       if (!isArray(onLoad)) onLoad = [onLoad]
       const option = merge({}, this.defSetting, this.setting, setting)

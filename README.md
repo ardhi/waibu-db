@@ -14,7 +14,7 @@ First, go to your ```{app-dir}``` and run the following command in your terminal
 $ npm install waibu-db dobo bajo-queue dobo-extra waibu
 ```
 
-Next, open the file located at ```{data-dir}/config/.plugins``` and add ```waibu-db``` , ```dobo```, ```bajo-queue```, ```dobo-extra``` and ```waibu```
+Next, open the file located at ```{data-dir}/config/.plugins``` and add ```waibu-db``` , ```dobo```, ```dobo-extra``` and ```waibu```
 
 ## Documentations
 

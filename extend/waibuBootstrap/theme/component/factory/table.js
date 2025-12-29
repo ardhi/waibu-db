@@ -21,7 +21,7 @@ async function table () {
 
     _defFormatter = async ({ req, key, value, data, schema }) => {
       const { get, find } = this.app.lib._
-      const { escape } = this.plugin.app.waibu
+      const { escape } = this.app.waibu
       const prop = find(schema.properties, { name: key })
       if (!prop) return value
       if (prop.type === 'boolean') {
@@ -35,9 +35,9 @@ async function table () {
 
     build = async () => {
       const { req } = this.component
-      const { escape } = this.plugin.app.waibu
-      const { formatRecord } = this.plugin.app.waibuDb
-      const { attrToArray, groupAttrs } = this.plugin.app.waibuMpa
+      const { escape } = this.app.waibu
+      const { formatRecord } = this.app.waibuDb
+      const { attrToArray, groupAttrs } = this.app.waibuMpa
       const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
@@ -59,7 +59,7 @@ async function table () {
         this.params.html = ''
         return
       }
-      const qsKey = this.plugin.app.waibu.config.qsKey
+      const qsKey = this.app.waibu.config.qsKey
       let fields = without(get(this, `component.locals._meta.query.${qsKey.fields}`, '').split(','), '')
       if (isEmpty(fields)) fields = schema.view.fields
       if (!isEmpty(schema.view.hidden)) fields = without(fields, ...schema.view.hidden)

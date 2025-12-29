@@ -5,10 +5,10 @@ async function query () {
 
   return class WdbQuery extends WdbBase {
     build = async () => {
-      const { generateId } = this.plugin.app.bajo
-      const { jsonStringify } = this.plugin.app.waibuMpa
+      const { generateId } = this.app.lib.aneka
+      const { jsonStringify } = this.app.waibuMpa
       const { find, get, without, isEmpty, filter, upperFirst } = this.app.lib._
-      const qsKey = this.plugin.app.waibu.config.qsKey
+      const qsKey = this.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''

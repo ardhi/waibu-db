@@ -17,7 +17,7 @@ async function pagination () {
   return class WdbPagination extends WdbBase {
     build = async () => {
       const { req } = this.component
-      const { attrToObject, paginationLayout, groupAttrs } = this.plugin.app.waibuMpa
+      const { attrToObject, paginationLayout, groupAttrs } = this.app.waibuMpa
       const { get, isNumber } = this.app.lib._
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('find')) {
