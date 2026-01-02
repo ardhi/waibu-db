@@ -25,7 +25,7 @@ async function table () {
       const prop = find(schema.properties, { name: key })
       if (!prop) return value
       if (prop.type === 'boolean') {
-        value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${data[key] ? 'Check' : ''}` } })) +
+        value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${data[key] ? 'Check' : 'Cross'}` } })) +
           ' ' + (req.t(data[key] ? 'Yes' : 'No'))
       } else if (['string', 'text'].includes(prop.type)) {
         if (!get(schema, 'view.noEscape', []).includes(key)) value = escape(value)
@@ -101,7 +101,7 @@ async function table () {
           const attr = this.isRightAligned(f, schema) ? { text: 'align:end' } : {}
           const content = [
             await this.component.buildTag({ tag: 'div', attr, html: head }),
-            await this.component.buildTag({ tag: 'a', attr: { icon, href }, prepend: '<div class="ms-1">', append: '</div>' })
+            await this.component.buildTag({ tag: 'a', attr: { icon, href, noIconLink: true }, prepend: '<div class="ms-1">', append: '</div>' })
           ]
           head = await this.component.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
         }
