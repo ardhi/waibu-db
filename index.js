@@ -100,19 +100,17 @@ async function factory (pkgName) {
       const { getPluginPrefix } = this.app.waibu
       const { pascalCase } = this.app.lib.aneka
       const { getAppTitle } = this.app.waibuMpa
-      const { camelCase, map, groupBy, keys, kebabCase, filter, get } = this.app.lib._
+      const { camelCase, map, groupBy, keys, kebabCase, filter, get, isArray } = this.app.lib._
 
       const prefix = getPluginPrefix(this.ns)
-      const models = filter(this.app.dobo.models, s => {
+      const allModels = this.app.dobo.models
+      const models = filter(allModels, s => {
         const byModelFind = !s.disabled.includes('find')
-        let modelDisabled = map(get(this, `app.${s.plugin.ns}.config.waibuAdmin.modelDisabled`, []), m => pascalCase(`${this.app[s.plugin.ns].constructor.alias} ${m}`))
-        if (modelDisabled.length === 0) {
-          const allModels = map(filter(this.app.dobo.models, m => m.plugin.ns === s.ns), 'name')
-          if (['*', 'all'].includes(modelDisabled)) modelDisabled = allModels
-          else modelDisabled = map(modelDisabled, m => pascalCase(`${this.app[s.plugin.ns].constructor.alias} ${m}`))
-        }
+        const disabled = get(this, `app.${s.plugin.ns}.config.waibuAdmin.modelDisabled`, [])
+        let modelDisabled = []
+        if (['*', 'all'].includes(disabled)) modelDisabled = map(filter(allModels, m => m.plugin.ns === s.plugin.ns), 'name')
+        else if (isArray(disabled)) modelDisabled = map(disabled, m => pascalCase(`${this.app[s.plugin.ns].constructor.alias} ${m}`))
         const byDbDisabled = !modelDisabled.includes(s.name)
-        console.log(s.name, byDbDisabled, byModelFind, modelDisabled)
         return byModelFind && byDbDisabled
       })
       const omenu = groupBy(map(models, s => {
