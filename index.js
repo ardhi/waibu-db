@@ -24,9 +24,6 @@ async function factory (pkgName) {
    * @class
    */
   class WaibuDb extends this.app.baseClass.Base {
-    static alias = 'wdb'
-    static dependencies = ['dobo', 'waibu', 'dobo-extra']
-
     constructor () {
       super(pkgName, me.app)
       this.config = {

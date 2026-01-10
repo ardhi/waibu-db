@@ -9,7 +9,13 @@
   },
   "type": "module",
   "bajo": {
-    "type": "plugin"
+    "type": "plugin",
+    "alias": "wdb",
+    "dependencies": [
+      "dobo",
+      "waibu",
+      "dobo-extra"
+    ]
   },
   "repository": {
     "type": "git",
