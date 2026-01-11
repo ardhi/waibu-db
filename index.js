@@ -106,7 +106,7 @@ async function factory (pkgName) {
         const disabled = get(this, `app.${s.plugin.ns}.config.waibuAdmin.modelDisabled`, [])
         let modelDisabled = []
         if (['*', 'all'].includes(disabled)) modelDisabled = map(filter(allModels, m => m.plugin.ns === s.plugin.ns), 'name')
-        else if (isArray(disabled)) modelDisabled = map(disabled, m => pascalCase(`${this.app[s.plugin.ns].constructor.alias} ${m}`))
+        else if (isArray(disabled)) modelDisabled = map(disabled, m => pascalCase(`${this.app[s.plugin.ns].alias} ${m}`))
         const byDbDisabled = !modelDisabled.includes(s.name)
         return byModelFind && byDbDisabled
       })
@@ -123,7 +123,7 @@ async function factory (pkgName) {
           title: k,
           children: map(items, item => {
             return {
-              title: camelCase(item.name.slice(plugin.constructor.alias.length)),
+              title: camelCase(item.name.slice(plugin.alias.length)),
               href: `waibuAdmin:/${prefix}/${kebabCase(item.name)}/list`
             }
           })
