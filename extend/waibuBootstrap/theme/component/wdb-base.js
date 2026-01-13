@@ -1,5 +1,5 @@
 async function wdbBase () {
-  return class WdbBase extends this.baseFactory {
+  return class WdbBase extends this.app.baseClass.MpaWidget {
   }
 }
 
