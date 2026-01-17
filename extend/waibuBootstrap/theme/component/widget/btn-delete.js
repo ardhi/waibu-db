@@ -43,7 +43,13 @@ async function btnDelete () {
       }
       const msg = 'aboutToRemoveRecord'
       this.params.attr['@click'] = `
-        await wbs.confirmation(\`${req.t(msg)}\`, { ok: '${this.params.attr.id}:remove', close: 'y', opts: selected })
+        await wbs.confirmation(\`${req.t(msg)}\`, {
+          ok: '${this.params.attr.id}:remove',
+          close: 'y',
+          opts: selected,
+          theme: '${this.component.theme.name}',
+          iconset: '${this.component.iconset.name}'
+        })
       `
       this.params.html = await this.component.buildTag({ tag: 'btn', attr: this.params.attr, html: this.params.html })
     }
