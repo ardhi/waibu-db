@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-01-19
+
+- [2.1.6] Bug fix on app title
+- [2.1.6] Add some missing translations
+
 ## 2026-01-17
 
 - [2.1.4] Bug fix

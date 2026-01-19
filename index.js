@@ -120,7 +120,7 @@ async function factory (pkgName) {
         const items = omenu[k]
         const plugin = this.app[items[0].ns]
         menu.push({
-          title: k,
+          title: req.t(k),
           children: map(items, item => {
             return {
               title: camelCase(item.name.slice(plugin.alias.length)),

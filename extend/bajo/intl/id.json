@@ -1,4 +1,5 @@
 {
+  "waibuDb": "DB",
   "pageOfPages%s%s": "Hal %s dari %s",
   "recsFound%s": "Ditemukan %s data",
   "recsPerPage": "data per halaman",

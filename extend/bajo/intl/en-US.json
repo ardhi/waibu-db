@@ -1,4 +1,5 @@
 {
+  "waibuDb": "DB",
   "pageOfPages%s%s": "Page %s of %s pages",
   "recsFound%s": "%s record(s) found",
   "recsPerPage": "recs per page",
