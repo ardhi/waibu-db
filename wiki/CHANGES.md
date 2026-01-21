@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-01-21
+
+- [2.1.7] Bug fix on page titles
+
 ## 2026-01-19
 
 - [2.1.6] Bug fix on app title

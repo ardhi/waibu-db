@@ -96,7 +96,7 @@ async function factory (pkgName) {
     adminMenu = async (locals, req) => {
       const { getPluginPrefix } = this.app.waibu
       const { pascalCase } = this.app.lib.aneka
-      const { getAppTitle } = this.app.waibuMpa
+      const { getPluginTitle } = this.app.waibuMpa
       const { camelCase, map, groupBy, keys, kebabCase, filter, get, isArray } = this.app.lib._
 
       const prefix = getPluginPrefix(this.ns)
@@ -112,7 +112,7 @@ async function factory (pkgName) {
       })
       const omenu = groupBy(map(models, s => {
         const item = { name: s.name, ns: s.plugin.ns }
-        item.nsTitle = getAppTitle(s.plugin.ns)
+        item.nsTitle = getPluginTitle(s.plugin.ns)
         return item
       }), 'nsTitle')
       const menu = []
