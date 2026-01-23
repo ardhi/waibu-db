@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-01-24
+
+- [2.2.0] Model's option can now be sent through ```modelOpts``` object in ```options``` handler
+- [2.2.0] ```prepCrud()``` now accept model instance or model name only
+- [2.2.0] ```getSchemaExt``` now accept model instance or model name only
+
 ## 2026-01-21
 
 - [2.1.7] Bug fix on page titles
