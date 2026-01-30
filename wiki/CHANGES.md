@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-01-30
+
+- [2.3.0] Record ID that passed to ```getRecord()```, ```removeRecord()```, ```updateRecord()``` now get screened first against auto query produced by ```req``` object
+
 ## 2026-01-24
 
 - [2.2.2] Remove annoying console.log trap
