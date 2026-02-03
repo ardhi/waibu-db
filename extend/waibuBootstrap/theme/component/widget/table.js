@@ -62,7 +62,6 @@ async function table () {
       const qsKey = this.app.waibu.config.qsKey
       let fields = without(get(this, `component.locals._meta.query.${qsKey.fields}`, '').split(','), '')
       if (isEmpty(fields)) fields = schema.view.fields
-      if (!isEmpty(schema.view.hidden)) fields = without(fields, ...schema.view.hidden)
       let sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(this, `component.locals._meta.query.${qsKey.sort}`, '')
       if (isEmpty(sort) && filter.sort) {
         const keys = Object.keys(filter.sort)

@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-02-03
+
+- [2.3.1] Bug fix on widget menu direction
+- [2.3.1] Bug fix on widget's fields visibility
+
 ## 2026-01-30
 
 - [2.3.0] Record ID that passed to ```getRecord()```, ```removeRecord()```, ```updateRecord()``` now get screened first against auto query produced by ```req``` object

@@ -178,18 +178,21 @@ async function factory (pkgName) {
       const { escape } = this.app.waibu
       const fields = get(schema, 'view.fields', Object.keys(schema.properties))
       const rec = cloneDeep(data)
+      const lang = get(req, 'lang')
+      const unitSys = get(req, 'site.setting.sumba.unitSys')
       for (const f of fields) {
         if (f === '_rel') continue
         let prop = find(schema.properties, { name: f })
         if (!prop) prop = find(schema.view.calcFields, { name: f })
         if (!prop) continue
         const opts = {
-          lang: options.lang ?? (req ? req.lang : undefined),
+          lang: options.lang ?? lang,
           longitude: ['lng', 'longitude'].includes(f),
           latitude: ['lat', 'latitude'].includes(f),
           speed: ['speed'].includes(f),
           degree: ['course', 'heading'].includes(f),
-          distance: ['distance'].includes(f)
+          distance: ['distance'].includes(f),
+          unitSys: options.unitSys ?? unitSys
         }
         rec[f] = format(data[f], prop.type, opts)
         const vf = get(schema, `view.valueFormatter.${f}`)

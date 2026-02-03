@@ -5,7 +5,7 @@ async function btnColumns () {
 
   return class WdbBtnColumns extends WdbBase {
     build = async () => {
-      const { get, isEmpty, without } = this.app.lib._
+      const { find, get, isEmpty, without } = this.app.lib._
       const { jsonStringify } = this.app.waibuMpa
       const { req } = this.component
       const qsKey = this.app.waibu.config.qsKey
@@ -22,6 +22,10 @@ async function btnColumns () {
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
       if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('columns')
       for (const f of schema.view.fields) {
+        if (!fields.includes(f)) continue
+        let prop = find(schema.properties, { name: f })
+        if (!prop) prop = find(schema.view.calcFields, { name: f })
+        if (!prop) continue
         if (f === 'id') {
           items.push(await this.component.buildTag({ tag: 'formCheck', attr: { checked: true, label: req.t('ID'), value: f, disabled: true } }))
           continue
@@ -31,24 +35,27 @@ async function btnColumns () {
         items.push(await this.component.buildTag({ tag: 'formCheck', attr }))
       }
       const href = this.component.buildUrl({ exclude: [qsKey.fields] })
-      const html = ['<form class="mt-1 mb-2 mx-3" ']
-      html.push(`x-data="{
+      const menuPrepend = ['<form class="mt-2 mb-3 mx-3" ']
+      menuPrepend.push(`x-data="{
         selected: ${jsonStringify(fields, true)},
         all: ${jsonStringify(schema.view.fields, true)}
       }"`)
-      html.push(`x-init="
+      menuPrepend.push(`x-init="
         $refs.apply.href = '${href}&${qsKey.fields}=' + selected.join(',')
         $watch('selected', v => {
           $refs.apply.href = '${href}&${qsKey.fields}=' + v.join(',')
         })
       ">`)
-      html.push(...items)
+      this.params.attr.menuPrepend = Buffer.from(menuPrepend.join('\n')).toString('base64')
       const attr = { size: 'sm', 'x-ref': 'apply', margin: 'top-2', color: this.params.attr.applyColor ?? 'primary', icon: this.params.attr.applyIcon ?? 'arrowsStartEnd', href }
-      html.push(await this.component.buildTag({ tag: 'btn', attr, html: req.t('apply') }))
-      html.push('</form>')
+      let menuAppend = await this.component.buildTag({ tag: 'btn', attr, html: req.t('apply') })
+      menuAppend += '\n</form>'
+      this.params.attr.menuAppend = Buffer.from(menuAppend).toString('base64')
       this.params.attr.autoClose = 'outside'
       this.params.attr.triggerColor = this.params.attr.color
-      this.params.attr.menudir = this.params.attr.menudir ?? 'end'
+      this.params.attr.menuDir = this.params.attr.menuDir ?? 'end'
+      this.params.attr.menuMax = this.params.attr.menuMax ?? '10'
+      const html = [...items]
       this.params.html = await this.component.buildTag({ tag: 'dropdown', attr: this.params.attr, html: html.join('\n') })
       this.params.noTag = true
     }
