@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-02-04
+
+- [2.3.2] Bug fix on ```detailsHandler()```
+- [2.3.2] Bug fix on ```getOneRecord()```
+
 ## 2026-02-03
 
 - [2.3.1] Bug fix on widget menu direction
