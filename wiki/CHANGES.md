@@ -4,6 +4,7 @@
 
 - [2.3.2] Bug fix on ```detailsHandler()```
 - [2.3.2] Bug fix on ```getOneRecord()```
+- [2.3.3] Bug fix on calling ```getOneRecord()``` without scope
 
 ## 2026-02-03
 
