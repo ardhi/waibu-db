@@ -180,6 +180,7 @@ async function factory (pkgName) {
       const rec = cloneDeep(data)
       const lang = get(req, 'lang')
       const unitSys = get(req, 'site.setting.sumba.unitSys')
+      const timeZone = get(req, 'site.setting.sumba.timeZone', this.app.bajo.config.intl.format.datetime.timeZone)
       for (const f of fields) {
         if (f === '_rel') continue
         let prop = find(schema.properties, { name: f })
@@ -192,7 +193,10 @@ async function factory (pkgName) {
           speed: ['speed'].includes(f),
           degree: ['course', 'heading'].includes(f),
           distance: ['distance'].includes(f),
-          unitSys: options.unitSys ?? unitSys
+          unitSys: options.unitSys ?? unitSys,
+          datetime: options.datetime ?? { timeZone },
+          date: options.date ?? { timeZone },
+          time: options.time ?? { timeZone }
         }
         rec[f] = format(data[f], prop.type, opts)
         const vf = get(schema, `view.valueFormatter.${f}`)
