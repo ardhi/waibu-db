@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-02-15
+
+- [2.5.0] Add ```findAllRecord()```
+
 ## 2026-02-08
 
 - [2.4.0] Add ```timeZone``` options in ```formatRow()```

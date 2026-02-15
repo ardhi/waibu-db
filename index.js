@@ -8,6 +8,7 @@ import getSchemaExt from './lib/method/get-schema-ext.js'
 import getRecord from './lib/method/get-record.js'
 import removeRecord from './lib/method/remove-record.js'
 import updateRecord from './lib/method/update-record.js'
+import findAllRecord from './lib/method/find-all-record.js'
 
 /**
  * Plugin factory
@@ -62,7 +63,8 @@ async function factory (pkgName) {
         'getSchemaExt',
         'getRecord',
         'removeRecord',
-        'updateRecord'
+        'updateRecord',
+        'findAllRecord'
       ])
     }
 
@@ -214,6 +216,7 @@ async function factory (pkgName) {
     createRecord = createRecord
     findOneRecord = findOneRecord
     findRecord = findRecord
+    findAllRecord = findAllRecord
     getSchemaExt = getSchemaExt
     getRecord = getRecord
     removeRecord = removeRecord
