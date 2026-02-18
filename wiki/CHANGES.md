@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-02-18
+
+- [2.6.0] Update attribute functions from ```waibu```
+- [2.6.0] Bug fix on ```getSchemaExt()```'s ```applyLayout()```
+
 ## 2026-02-15
 
 - [2.5.0] Add ```findAllRecord()```

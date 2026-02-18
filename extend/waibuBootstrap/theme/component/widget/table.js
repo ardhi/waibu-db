@@ -35,9 +35,9 @@ async function table () {
 
     build = async () => {
       const { req } = this.component
-      const { escape } = this.app.waibu
+      const { escape, attrToArray } = this.app.waibu
       const { formatRecord } = this.app.waibuDb
-      const { attrToArray, groupAttrs } = this.app.waibuMpa
+      const { groupAttrs } = this.app.waibuMpa
       const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._

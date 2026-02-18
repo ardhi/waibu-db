@@ -7,7 +7,8 @@ async function recsInfo () {
   return class WdbRecsInfo extends WdbBase {
     build = async () => {
       const { req } = this.component
-      const { attrToObject, groupAttrs, attrToArray } = this.app.waibuMpa
+      const { groupAttrs } = this.app.waibuMpa
+      const { attrToObject, attrToArray } = this.app.waibu
       const { get, isEmpty, omit, merge } = this.app.lib._
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('find')) {
