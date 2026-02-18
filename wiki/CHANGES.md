@@ -4,6 +4,7 @@
 
 - [2.6.0] Update attribute functions from ```waibu```
 - [2.6.0] Bug fix on ```getSchemaExt()```'s ```applyLayout()```
+- [2.6.1] Bug fix on ```getSchemaExt()```
 
 ## 2026-02-15
 
