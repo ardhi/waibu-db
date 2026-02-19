@@ -1,5 +1,13 @@
 # Changes
 
+## 2026-02-20
+
+- [2.7.0] Update ```WdbBtnColumns``` to allow untick ID field too
+- [2.7.0] Bug fix on theme & iconset resolver
+- [2.7.0] Add capability to set value from ```prop.values``` in ```WdbTable```
+- [2.7.0] Bug fix on query builder
+- [2.7.0] Add capability to handle value from ```prop.values``` in ```getSchemaExt()```
+
 ## 2026-02-18
 
 - [2.6.0] Update attribute functions from ```waibu```

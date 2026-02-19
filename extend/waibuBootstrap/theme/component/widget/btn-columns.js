@@ -26,10 +26,12 @@ async function btnColumns () {
         let prop = find(schema.properties, { name: f })
         if (!prop) prop = find(schema.view.calcFields, { name: f })
         if (!prop) continue
+        /*
         if (f === 'id') {
           items.push(await this.component.buildTag({ tag: 'formCheck', attr: { checked: true, label: req.t('ID'), value: f, disabled: true } }))
           continue
         }
+        */
         const attr = { 'x-model': 'selected', label: req.t(get(schema, `view.label.${f}`, `field.${f}`)), value: f }
         if (fields.includes(f)) attr.checked = true
         items.push(await this.component.buildTag({ tag: 'formCheck', attr }))

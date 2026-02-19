@@ -47,8 +47,8 @@ async function btnDelete () {
           ok: '${this.params.attr.id}:remove',
           close: 'y',
           opts: selected,
-          theme: '${this.component.theme.name}',
-          iconset: '${this.component.iconset.name}'
+          theme: '${get(this, 'component.theme.name', 'default')}',
+          iconset: '${get(this, 'component.iconset.name', 'default')}'
         })
       `
       this.params.html = await this.component.buildTag({ tag: 'btn', attr: this.params.attr, html: this.params.html })

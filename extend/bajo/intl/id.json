@@ -36,6 +36,7 @@
   "exportInQueue": "Ekspor data sedang dalam antrian. Silahkan cek daftar unduh Anda untuk perkembangan terakhir",
   "tsv": "TSV",
   "ndjson": "NDJSON",
+  "dataValue": "Nilai data",
   "op": {
     "equals": "Sama Dengan",
     "notEquals": "Tidak Sama Dengan",

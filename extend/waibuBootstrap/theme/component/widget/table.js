@@ -4,6 +4,8 @@ async function table () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbTable extends WdbBase {
+    propValues = {}
+
     isRightAligned = (field, schema) => {
       const { get, find } = this.app.lib._
       const prop = find(schema.properties, { name: field })
@@ -20,13 +22,19 @@ async function table () {
     }
 
     _defFormatter = async ({ req, key, value, data, schema }) => {
-      const { get, find } = this.app.lib._
+      const { get, find, camelCase, isEmpty } = this.app.lib._
       const { escape } = this.app.waibu
       const prop = find(schema.properties, { name: key })
       if (!prop) return value
       if (prop.type === 'boolean') {
         value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${data[key] ? 'Check' : 'Cross'}` } })) +
           ' ' + (req.t(data[key] ? 'Yes' : 'No'))
+      } else if (prop.values) {
+        const values = typeof prop.values === 'string' ? this.propValues[key] : prop.values
+        const item = find(values, { value }) ?? {}
+        const ttext = camelCase(`${prop.name} ${item.text}`)
+        value = escape(req.format(!isEmpty(item) ? (req.te(ttext) ? req.t(ttext) : item.text) : value, prop.type))
+        if (item) value += ` <sup><a href="#" title="${req.t('dataValue')}: ${data[key]}">*</a></sup>`
       } else if (['string', 'text'].includes(prop.type)) {
         if (!get(schema, 'view.noEscape', []).includes(key)) value = escape(value)
       }
@@ -34,6 +42,7 @@ async function table () {
     }
 
     build = async () => {
+      const { callHandler } = this.app.bajo
       const { req } = this.component
       const { escape, attrToArray } = this.app.waibu
       const { formatRecord } = this.app.waibuDb
@@ -48,6 +57,10 @@ async function table () {
       const fdata = await formatRecord.call(this.plugin, { data, req, schema })
       const filter = get(this, 'component.locals.list.filter', {})
       const count = get(this, 'component.locals.list.count', 0)
+      // collect prop.values for later use
+      for (const prop of schema.properties) {
+        if (typeof prop.values === 'string') this.propValues[prop.name] = await callHandler(prop.values)
+      }
       if (count === 0) {
         const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
         this.params.noTag = true
