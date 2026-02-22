@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-02-22
+
+- [2.7.1] Bug fix on query parser
+
 ## 2026-02-20
 
 - [2.7.0] Update ```WdbBtnColumns``` to allow untick ID field too
