@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-03-05
+
+- [2.8.0] Add dobo's transaction support
+
 ## 2026-02-22
 
 - [2.7.1] Bug fix on query parser
