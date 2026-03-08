@@ -3,6 +3,8 @@
 ## 2026-03-08
 
 - [2.8.1] Bug fix in ```build-params.js```
+- [2.8.2] Bug fixes for record not found
+- [2.8.3] Compine all helpers into one single file ```helper.js```
 
 ## 2026-03-05
 
