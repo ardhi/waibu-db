@@ -1,26 +1,30 @@
 # Changes
 
+## 2026-03-08
+
+- [2.8.1] Bug fix in ```build-params.js```
+
 ## 2026-03-05
 
 - [2.8.0] Add dobo's transaction support
 
 ## 2026-02-22
 
-- [2.7.1] Bug fix on query parser
+- [2.7.1] Bug fix in query parser
 
 ## 2026-02-20
 
 - [2.7.0] Update ```WdbBtnColumns``` to allow untick ID field too
-- [2.7.0] Bug fix on theme & iconset resolver
+- [2.7.0] Bug fix in theme & iconset resolver
 - [2.7.0] Add capability to set value from ```prop.values``` in ```WdbTable```
-- [2.7.0] Bug fix on query builder
+- [2.7.0] Bug fix in query builder
 - [2.7.0] Add capability to handle value from ```prop.values``` in ```getSchemaExt()```
 
 ## 2026-02-18
 
 - [2.6.0] Update attribute functions from ```waibu```
-- [2.6.0] Bug fix on ```getSchemaExt()```'s ```applyLayout()```
-- [2.6.1] Bug fix on ```getSchemaExt()```
+- [2.6.0] Bug fix in ```getSchemaExt()```'s ```applyLayout()```
+- [2.6.1] Bug fix in ```getSchemaExt()```
 
 ## 2026-02-15
 
@@ -32,14 +36,14 @@
 
 ## 2026-02-04
 
-- [2.3.2] Bug fix on ```detailsHandler()```
-- [2.3.2] Bug fix on ```getOneRecord()```
-- [2.3.3] Bug fix on calling ```getOneRecord()``` without scope
+- [2.3.2] Bug fix in ```detailsHandler()```
+- [2.3.2] Bug fix in ```getOneRecord()```
+- [2.3.3] Bug fix in calling ```getOneRecord()``` without scope
 
 ## 2026-02-03
 
-- [2.3.1] Bug fix on widget menu direction
-- [2.3.1] Bug fix on widget's fields visibility
+- [2.3.1] Bug fix in widget menu direction
+- [2.3.1] Bug fix in widget's fields visibility
 
 ## 2026-01-30
 
@@ -57,11 +61,11 @@
 
 ## 2026-01-21
 
-- [2.1.7] Bug fix on page titles
+- [2.1.7] Bug fix in page titles
 
 ## 2026-01-19
 
-- [2.1.6] Bug fix on app title
+- [2.1.6] Bug fix in app title
 - [2.1.6] Add some missing translations
 
 ## 2026-01-17
@@ -71,11 +75,11 @@
 
 ## 2026-01-16
 
-- [2.1.2] Bug fix on model references
+- [2.1.2] Bug fix in model references
 
 ## 2026-01-13
 
-- [2.1.1] Bug fix on waibuMpa's widgeting system
+- [2.1.1] Bug fix in waibuMpa's widgeting system
 
 ## 2025-12-28
 

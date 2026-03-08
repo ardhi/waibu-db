@@ -114,7 +114,7 @@ async function factory (pkgName) {
       })
       const omenu = groupBy(map(models, s => {
         const item = { name: s.name, ns: s.plugin.ns }
-        item.nsTitle = getPluginTitle(s.plugin.ns)
+        item.nsTitle = getPluginTitle(s.plugin.ns, req)
         return item
       }), 'nsTitle')
       const menu = []
