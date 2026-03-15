@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-03-15
+
+- [2.9.0] Add ability to overwrite ```base``` through ```options```
+- [2.9.0] Bug fix in ```wdb-btn-columns``` widget
+- [2.9.0] Bug fix in ```wdb-table``` widget
+
 ## 2026-03-08
 
 - [2.8.1] Bug fix in ```build-params.js```
