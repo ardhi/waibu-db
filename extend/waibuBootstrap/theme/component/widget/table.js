@@ -21,7 +21,7 @@ async function table () {
       return get(schema, 'view.noWrap', []).includes(field)
     }
 
-    _defFormatter = async ({ req, key, value, data, schema }) => {
+    _defFormatter = async ({ req, key, value, data, schema, params }) => {
       const { get, find, camelCase, isEmpty } = this.app.lib._
       const { escape } = this.app.waibu
       const prop = find(schema.properties, { name: key })
@@ -34,7 +34,7 @@ async function table () {
         const item = find(values, { value }) ?? {}
         const ttext = camelCase(`${prop.name} ${item.text}`)
         value = escape(req.format(!isEmpty(item) ? (req.te(ttext) ? req.t(ttext) : item.text) : value, prop.type))
-        if (item) value += ` <sup><a href="#" title="${req.t('dataValue')}: ${data[key]}">*</a></sup>`
+        if (item && !params.attr.noDataValueRef) value += ` <sup><a href="#" title="${req.t('dataValue')}: ${data[key]}">*</a></sup>`
       } else if (['string', 'text'].includes(prop.type)) {
         if (!get(schema, 'view.noEscape', []).includes(key)) value = escape(value)
       }
@@ -175,8 +175,8 @@ async function table () {
             if (item) value = req.t(item[lookup.field ?? 'name'])
           }
           const formatter = get(schema, `view.formatter.${f}`)
-          if (formatter) value = await formatter.call(this, value, d)
-          else value = await this._defFormatter({ req, key: f, schema, value, data: d })
+          if (formatter) value = await formatter.call(this, value, d, { params: this.params })
+          else value = await this._defFormatter({ req, key: f, schema, value, data: d, params: this.params })
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }

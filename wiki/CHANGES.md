@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-03-19
+
+- [2.10.0] Data value tooltip can now be turned off with ```no-data-value-ref```
+
 ## 2026-03-15
 
 - [2.9.0] Add ability to overwrite ```base``` through ```options```
