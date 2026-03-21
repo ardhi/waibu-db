@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-03-22
+
+- [2.10.1] Bug fix in reference records
+
 ## 2026-03-19
 
 - [2.10.0] Data value tooltip can now be turned off with ```no-data-value-ref```

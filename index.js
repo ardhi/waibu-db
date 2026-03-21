@@ -184,7 +184,7 @@ async function factory (pkgName) {
       const unitSys = get(req, 'site.setting.sumba.unitSys')
       const timeZone = get(req, 'site.setting.sumba.timeZone', this.app.bajo.config.intl.format.datetime.timeZone)
       for (const f of fields) {
-        if (f === '_rel') continue
+        if (f === '_ref') continue
         let prop = find(schema.properties, { name: f })
         if (!prop) prop = find(schema.view.calcFields, { name: f })
         if (!prop) continue
