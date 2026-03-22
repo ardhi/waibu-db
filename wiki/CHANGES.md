@@ -3,6 +3,7 @@
 ## 2026-03-22
 
 - [2.10.1] Bug fix in reference records
+- [2.10.2] Bug fix in ```wdb-btn-edit``` widget
 
 ## 2026-03-19
 
