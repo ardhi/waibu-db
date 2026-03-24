@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-03-25
+
+- [2.10.13] Bug fix in ```getOneRecord()```
+
 ## 2026-03-22
 
 - [2.10.1] Bug fix in reference records
