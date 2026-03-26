@@ -37,6 +37,7 @@
   "tsv": "TSV",
   "ndjson": "NDJSON",
   "dataValue": "Data value",
+  "suppressedError": "Error occured and suppressed. Please check error log for details",
   "op": {
     "equals": "Equals",
     "notEquals": "Not Equals",

@@ -1,8 +1,12 @@
 # Changes
 
+## 2026-03-26
+
+- [2.11.0] Adding ```suppressError``` to model options
+
 ## 2026-03-25
 
-- [2.10.13] Bug fix in ```getOneRecord()```
+- [2.10.3] Bug fix in ```getOneRecord()```
 
 ## 2026-03-22
 

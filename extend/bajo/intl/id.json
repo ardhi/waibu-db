@@ -37,6 +37,7 @@
   "tsv": "TSV",
   "ndjson": "NDJSON",
   "dataValue": "Nilai data",
+  "suppressedError": "Kesalahan terjadi dan tidak ditampilkan. Silahkan cek log kesalahan untuk detilnya",
   "op": {
     "equals": "Sama Dengan",
     "notEquals": "Tidak Sama Dengan",
