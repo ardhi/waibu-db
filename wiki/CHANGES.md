@@ -3,6 +3,8 @@
 ## 2026-03-26
 
 - [2.11.0] Adding ```suppressError``` to model options
+- [2.12.0] ```suppressError``` can now be either one or more actions. If set to ```true```, it assumed to be all actions
+- [2.12.0] Print error log even in ```suppressError```
 
 ## 2026-03-25
 
