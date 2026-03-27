@@ -165,7 +165,7 @@ async function table () {
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const cellFormatter = get(schema, `view.cellFormatter.${f}`)
-          if (cellFormatter) merge(attr, await cellFormatter.call(this, dataValue, d))
+          if (cellFormatter) merge(attr, await cellFormatter.call(this, dataValue, d, { params: this.params, req }))
           const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
           if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
           else attr.text = noWrap
@@ -175,7 +175,7 @@ async function table () {
             if (item) value = req.t(item[lookup.field ?? 'name'])
           }
           const formatter = get(schema, `view.formatter.${f}`)
-          if (formatter) value = await formatter.call(this, value, d, { params: this.params })
+          if (formatter) value = await formatter.call(this, value, d, { params: this.params, req })
           else value = await this._defFormatter({ req, key: f, schema, value, data: d, params: this.params })
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)

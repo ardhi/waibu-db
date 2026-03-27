@@ -7,7 +7,9 @@ async function form () {
     build = async () => {
       const { get, find, filter, forOwn, isEmpty } = this.app.lib._
       const { base64JsonEncode } = this.app.waibu
+      const { req } = this.component
       const schema = get(this, 'component.locals.schema', {})
+      const data = get(this, 'component.locals.form', {})
       const body = []
       const xModels = get(schema, 'view.x.model', [])
       const xOns = get(schema, 'view.x.on', [])
@@ -31,7 +33,12 @@ async function form () {
             attr.push(`@${o.bind}="${o.handler}"`)
           }
           if (w.componentOpts) attr.push(`c-opts="${base64JsonEncode(w.componentOpts)}"`)
-          body.push(`<c:${w.component} ${w.attr.label ? ('t:label="' + w.attr.label + '"') : ''} data-type="${prop.type}" label-floating name="${w.name}" ${attr.join(' ')} />`)
+          if (schema.view.valueFormatter[f] && this.params.attr.method !== 'POST') {
+            const value = await schema.view.valueFormatter[f].call(this, data[f], data, { req })
+            body.push(`<c:${w.component} ${w.attr.label ? ('t:label="' + w.attr.label + '"') : ''} value="${value}" label-floating name="${w.name}" ${attr.join(' ')} />`)
+          } else {
+            body.push(`<c:${w.component} ${w.attr.label ? ('t:label="' + w.attr.label + '"') : ''} data-type="${prop.type}" label-floating name="${w.name}" ${attr.join(' ')} />`)
+          }
         }
         body.push('</c:fieldset>')
       }

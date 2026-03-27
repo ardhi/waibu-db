@@ -203,7 +203,7 @@ async function factory (pkgName) {
         rec[f] = format(data[f], prop.type, opts)
         const vf = get(schema, `view.valueFormatter.${f}`)
         if (vf) {
-          if (isFunction(vf)) rec[f] = await vf.call(this, data[f], data)
+          if (isFunction(vf)) rec[f] = await vf.call(this, data[f], data, { req })
           else rec[f] = await callHandler(vf, { req, value: data[f], data })
         } else if (['string', 'text'].includes(prop.type)) rec[f] = escape(rec[f])
       }

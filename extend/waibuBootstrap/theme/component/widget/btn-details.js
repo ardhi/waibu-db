@@ -10,7 +10,7 @@ async function btnDetails () {
       const { isEmpty, get } = this.app.lib._
       this.params.noTag = true
       const schema = get(this, 'component.locals.schema', {})
-      if (schema.view.disabled.includes('update')) {
+      if (schema.view.disabled.includes('get')) {
         this.params.html = ''
         return
       }
