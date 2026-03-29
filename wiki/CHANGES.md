@@ -1,9 +1,13 @@
 # Changes
 
+## 2026-03-30
+
+- [2.12.3] Bug fix in transaction supports
+
 ## 2026-03-27
 
 - [2.12.1] Bug fix in all ```view.formatter``` & ```view.valueFormatter```
-- [2.12.1] Bug fix in ```wdb-form``` & ```wdb-table``` widgets, now correctly use value from formatter if provided
+- [2.12.2] Bug fix in ```wdb-form``` & ```wdb-table``` widgets, now correctly use value from formatter if provided
 
 ## 2026-03-26
 
