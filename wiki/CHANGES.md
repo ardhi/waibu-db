@@ -3,6 +3,7 @@
 ## 2026-03-30
 
 - [2.12.3] Bug fix in transaction supports
+- [2.12.4] Bug fix in ```options.limit```, removed due to use ```findAllRecords()```
 
 ## 2026-03-27
 

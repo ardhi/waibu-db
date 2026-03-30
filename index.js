@@ -157,10 +157,9 @@ async function factory (pkgName) {
       const q = query ?? set({}, field, { $in })
       const options = {
         dataOnly: true,
-        limit: -1,
         query: q
       }
-      return await this.findRecord({ model, req, options })
+      return await this.findAllRecord({ model, req, options })
     }
 
     formatRecord = async ({ data, req, schema, options = {} }) => {
