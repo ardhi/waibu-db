@@ -61,7 +61,7 @@ async function table () {
       for (const prop of schema.properties) {
         if (typeof prop.values === 'string') this.propValues[prop.name] = await callHandler(prop.values)
       }
-      if (count === 0) {
+      if (count === 0 || data.length === 0) {
         const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
         this.params.noTag = true
         this.params.html = await this.component.buildSentence(alert)

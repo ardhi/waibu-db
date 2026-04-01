@@ -49,7 +49,7 @@ async function btnColumns () {
       this.params.attr.autoClose = 'outside'
       this.params.attr.triggerColor = this.params.attr.color
       this.params.attr.menuDir = this.params.attr.menuDir ?? 'end'
-      this.params.attr.menuMax = this.params.attr.menuMax ?? '10'
+      this.params.attr.menuMax = this.params.attr.menuMax ?? '20'
       const html = [...items]
       this.params.html = await this.component.buildTag({ tag: 'dropdown', attr: this.params.attr, html: html.join('\n') })
       this.params.noTag = true

@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-04-01
+
+- [2.12.4] Bug fix in ```wdb-btn-column``` widget
+- [2.12.4] Bug fix in ```wdb-pagination``` widget
+- [2.12.4] Bug fix in ```wdb-query``` widget
+- [2.12.4] Bug fix in ```wdb-recs-info``` widget
+- [2.12.4] Bug fix in ```wdb-table``` widget
+- [2.12.4] Bug fix in remove attachment
+
 ## 2026-03-30
 
 - [2.12.3] Bug fix in transaction supports

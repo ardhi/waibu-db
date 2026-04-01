@@ -27,7 +27,8 @@ async function pagination () {
       }
       let { count, limit, page } = attrToObject(this.params.attr.options)
       count = count ?? get(this, 'component.locals.list.count', 0)
-      if (count === 0) {
+      const data = get(this, 'component.locals.list.data', [])
+      if (count === 0 || data.length === 0) {
         this.params.noTag = true
         this.params.html = ''
         return

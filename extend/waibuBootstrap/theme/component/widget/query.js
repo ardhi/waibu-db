@@ -5,6 +5,7 @@ async function query () {
 
   return class WdbQuery extends WdbBase {
     build = async () => {
+      const { req } = this.component
       const { generateId } = this.app.lib.aneka
       const { jsonStringify } = this.app.waibuMpa
       const { find, get, without, isEmpty, filter, upperFirst } = this.app.lib._
@@ -24,27 +25,37 @@ async function query () {
         if (!fields.includes(f)) continue
         const prop = find(schema.properties, { name: f })
         const ops = []
-        if (['float', 'double', 'integer', 'smallint'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte')
-        else if (['datetime', 'date', 'time'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte')
+        if (['float', 'double', 'integer', 'smallint'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between')
+        else if (['datetime', 'date', 'time'].includes(prop.type)) ops.push('eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'between', 'in')
         else if (['boolean'].includes(prop.type)) ops.push('eq', 'neq')
         else ops.push('eq', 'neq', 'in', 'contains', 'starts', 'ends', '!in', '!contains', '!starts', '!ends')
         if (ops.length === 0) continue
-        const sels = ops.map(o => `<c:option>${o}</c:option>`)
-        models.push(`${f}Op: 'eq'`, `${f}Val: ''`)
+        const sels = ops.map(o => `<c:option value="${o}">${req.t('op.' + o)}</c:option>`)
+        models.push(`${f}Op: 'eq'`, `${f}Val: ''`, `${f}Val2: ''`)
         const label = this.component.req.t(get(schema, `view.label.${f}`, `field.${f}`))
-        columns.push(`
+        const items = [`
           <c:grid-col col="4-md" flex="align-items:center">
             <c:form-check x-model="selected" t:label="${label}" value="${f}" />
           </c:grid-col>
-          <c:grid-col col="3-md">
+          <c:grid-col col="2-md">
             <c:form-select x-model="${f}Op">
               ${sels.join('\n')}
             </c:form-select>
           </c:grid-col>
-          <c:grid-col col="5-md">
-            <c:form-input x-model="${f}Val" />
-          </c:grid-col>
-        `)
+          <c:grid-col col="6-md">
+            <c:div flex="justify-content:between">`]
+        if (prop.type === 'datetime') {
+          items.push(`<c:form-datetime x-model="${f}Val" />`)
+        } else {
+          items.push(`<c:form-input x-model="${f}Val" />`)
+        }
+        if (prop.type === 'datetime') {
+          items.push(`<c:form-datetime wrapper-x-show="${f}Op === 'between'" x-model="${f}Val2" wrapper-margin="start-2"/>`)
+        } else {
+          items.push(`<c:form-input wrapper-x-show="${f}Op === 'between'" x-model="${f}Val2" wrapper-margin="start-2" />`)
+        }
+        items.push('</c:div></c:grid-col>')
+        columns.push(items.join('\n'))
       }
       this.params.noTag = true
       const container = this.params.attr.modal ? 'modal' : 'drawer'
@@ -61,40 +72,50 @@ async function query () {
               ${models.join(',\n')},
               ops: { eq: ':', neq: ':-', gt: ':>', gte: ':>=', lt: ':<', lte: ':<=' },
               opsIn (v, neg) { return ':' + (neg ? '-' : '') + '[' + this.expandArray(v) + ']' },
+              opsBetween (v, v2, neg) { return ':' + (neg ? '-' : '') + '{' + this.expandArray(v) + ',' + this.expandArray(v2) + '}' },
               opsExt (v, neg, ext) {
                 let prefix = (neg ? '-' : '') + '~'
                 if (ext) prefix += ext
                 return ':' + prefix + '\\'' + v + '\\''
               },
-              initBuilder () {
+              parse () {
                 this.builder = document.getElementById('${id}').value
                 if (!this.builder.includes(':')) this.builder = ''
                 if (_.isEmpty(this.builder)) return
                 const tokens = _.merge({}, this.ops, {
                   in: ':[',
+                  between: ':{',
                   contains: ':~',
                   starts: ':~^',
                   ends: ':~$$',
                   '!in': ':-[',
+                  '!between': ':-{',
                   '!contains': ':-~',
                   '!starts': ':-~^',
                   '!ends': ':-~$$'
                 })
                 for (const part of this.builder.split('+')) {
-                  let [f, opv] = part.split(':')
-                  opv = ':' + opv
+                  let [f, ...opv] = part.split(':')
+                  opv = ':' + opv.join(':')
                   this.selected.push(f)
                   let op
                   let val
                   _.each(tokens, (v, k) => {
                     if (opv.slice(0, v.length) === v) {
                       op = k
-                      val = opv.slice(v.length).replaceAll('[', '').replaceAll(']', '').replaceAll('\\'', '')
+                      val = opv.slice(v.length).replaceAll('[', '').replaceAll('{', '').replaceAll(']', '').replaceAll('}', '').replaceAll('\\'', '')
                     }
                   })
+                  console.log(op, val)
                   if (_.isEmpty(op)) continue
                   this[f + 'Op'] = op
-                  this[f + 'Val'] = val
+                  if (op === 'between') {
+                    const vals = val.split(',')
+                    this[f + 'Val'] = vals[0]
+                    this[f + 'Val2'] = vals[1]
+                  } else {
+                    this[f + 'Val'] = val
+                  }
                 }
               },
               expandArray (val = '') {
@@ -109,10 +130,14 @@ async function query () {
                 for (const sel of this.selected) {
                   const key = this[sel + 'Op']
                   let val = this[sel + 'Val']
+                  let val2 = this[sel + 'Val2']
                   if (_.isEmpty(val)) continue
+                  if (key === 'between' && _.isEmpty(val2)) continue
                   let item
                   if (key === 'in') item = this.opsIn(val)
                   else if (key === '!in') item = this.opsIn(val, true)
+                  else if (key === 'between') item = this.opsBetween(val, val2, false)
+                  else if (key === '!between') item = this.opsBetween(val, val2, true)
                   else if (key === 'contains') item = this.opsExt(val)
                   else if (key === '!contains') item = this.opsExt(val, true)
                   else if (key === 'starts') item = this.opsExt(val, false, '^')
@@ -137,12 +162,13 @@ async function query () {
                 instance.hide()
               }
             }" x-init="
-              initBuilder()
+              parse()
               const ops = _.map(fields, f => (f + 'Op'))
               const vals = _.map(fields, f => (f + 'Val'))
-              const watcher = ['selected', ...ops, ...vals].join(',')
+              const vals2 = _.map(fields, f => (f + 'Val2'))
+              const watcher = ['selected', ...ops, ...vals, ...vals2].join(',')
               $watch(watcher, v => rebuild())
-            ">
+            " ${this.params.attr.modal ? '' : 'style="width:600px;"'}>
               <c:grid-row gutter="2">
                 <c:grid-col col="12">
                   <c:form-textarea x-model="builder" readonly rows="4"/>
