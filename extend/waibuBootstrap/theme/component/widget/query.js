@@ -43,18 +43,19 @@ async function query () {
             </c:form-select>
           </c:grid-col>
           <c:grid-col col="6-md">
-            <c:div flex="justify-content:between">`]
+            <c:grid-row gutter="1"><c:grid-col>`]
         if (prop.type === 'datetime') {
           items.push(`<c:form-datetime x-model="${f}Val" />`)
         } else {
           items.push(`<c:form-input x-model="${f}Val" />`)
         }
+        items.push(`</c:grid-col><c:grid-col x-show="${f}Op === 'between'">`)
         if (prop.type === 'datetime') {
-          items.push(`<c:form-datetime wrapper-x-show="${f}Op === 'between'" x-model="${f}Val2" wrapper-margin="start-2"/>`)
+          items.push(`<c:form-datetime x-model="${f}Val2" wrapper-margin="start-2"/>`)
         } else {
-          items.push(`<c:form-input wrapper-x-show="${f}Op === 'between'" x-model="${f}Val2" wrapper-margin="start-2" />`)
+          items.push(`<c:form-input x-model="${f}Val2" wrapper-margin="start-2" />`)
         }
-        items.push('</c:div></c:grid-col>')
+        items.push('</c:grid-col></c:grid-row></c:grid-col>')
         columns.push(items.join('\n'))
       }
       this.params.noTag = true
