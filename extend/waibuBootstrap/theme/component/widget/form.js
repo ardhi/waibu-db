@@ -33,7 +33,7 @@ async function form () {
             attr.push(`@${o.bind}="${o.handler}"`)
           }
           if (w.componentOpts) attr.push(`c-opts="${base64JsonEncode(w.componentOpts)}"`)
-          if (schema.view.valueFormatter[f] && this.params.attr.method !== 'POST') {
+          if (schema.view.valueFormatter[f] && (w.component === 'form-plaintext' || this.params.attr.method !== 'POST')) {
             const value = await schema.view.valueFormatter[f].call(this, data[f], data, { req })
             body.push(`<c:${w.component} ${w.attr.label ? ('t:label="' + w.attr.label + '"') : ''} value="${value}" label-floating name="${w.name}" ${attr.join(' ')} />`)
           } else {

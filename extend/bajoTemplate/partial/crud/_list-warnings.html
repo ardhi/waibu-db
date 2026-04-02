@@ -1,0 +1,10 @@
+<% if ((list.warnings ?? []).length > 0) { %>
+<c:div padding="all-3">
+  <c:div><%= _t('warning') %>:</c:div>
+  <c:ul>
+    <% list.warnings.forEach(warning => { %>
+      <c:li><%= warning %></c:li>
+    <% }) %>
+  </c:ul>
+</c:div>
+<% } %>

@@ -3,6 +3,9 @@
 ## 2026-04-02
 
 - [2.12.6] Bug fix in ```wdb-query``` widget
+- [2.13.0] Add warnings template
+- [2.13.0] Changes in all crud handlers, now the first parameter is an object of ```req``` and ```model```
+- [2.13.0] Bug fix in ```wdb-form``` widget
 
 ## 2026-04-01
 
