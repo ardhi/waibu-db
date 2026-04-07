@@ -34,7 +34,7 @@ async function table () {
         const item = find(values, { value }) ?? {}
         const ttext = camelCase(`${prop.name} ${item.text}`)
         value = escape(req.format(!isEmpty(item) ? (req.te(ttext) ? req.t(ttext) : item.text) : value, prop.type))
-        if (item && !params.attr.noDataValueRef) value += ` <sup><a href="#" title="${req.t('dataValue')}: ${data[key]}">*</a></sup>`
+        if (item && !params.attr.noDataValueRef && !isEmpty(data[key])) value += ` <sup><a href="#" title="${req.t('dataValue')}: ${data[key]}">*</a></sup>`
       } else if (['string', 'text'].includes(prop.type)) {
         if (!get(schema, 'view.noEscape', []).includes(key)) value = escape(value)
       }
@@ -161,7 +161,7 @@ async function table () {
             if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
             if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           }
-          let value = fd[f]
+          let value = this.getRefValue({ field: f, data: fd }) ?? fd[f]
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const cellFormatter = get(schema, `view.cellFormatter.${f}`)

@@ -1,5 +1,13 @@
 # Changes
 
+## 2026-04-07
+
+- [2.14.0] Add ```wdb-lookup-select``` widget
+- [2.14.0] Add ```WdbBase.getRef()```
+- [2.14.0] Add ```WdbBase.getRefValue()```
+- [2.14.0] Rewrite necessary changes to use dobo's new lookup mechanism through model references
+
+
 ## 2026-04-02
 
 - [2.12.6] Bug fix in ```wdb-query``` widget

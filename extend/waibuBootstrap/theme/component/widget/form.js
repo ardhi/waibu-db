@@ -33,11 +33,16 @@ async function form () {
             attr.push(`@${o.bind}="${o.handler}"`)
           }
           if (w.componentOpts) attr.push(`c-opts="${base64JsonEncode(w.componentOpts)}"`)
-          if (schema.view.valueFormatter[f] && (w.component === 'form-plaintext' || this.params.attr.method !== 'POST')) {
-            const value = await schema.view.valueFormatter[f].call(this, data[f], data, { req })
-            body.push(`<c:${w.component} ${w.attr.label ? ('t:label="' + w.attr.label + '"') : ''} value="${value}" label-floating name="${w.name}" ${attr.join(' ')} />`)
+          const attributes = `${w.attr.label ? ('t:label="' + w.attr.label + '"') : ''} label-floating name="${w.name}" ${attr.join(' ')}`
+          if (w.component === 'form-plaintext' || this.params.attr.method !== 'POST') {
+            let value
+            if (schema.view.valueFormatter[f]) value = await schema.view.valueFormatter[f].call(this, data[f], data, { req })
+            else if (prop.ref) value = this.getRefValue({ field: f, labelField: w.attr.labelField })
+            body.push(`<c:${w.component} ${attributes} data-type="${prop.type}" ${value ? `value="${value}"` : ''} />`)
+          } else if (prop.ref) {
+            body.push(`<c:wdb-lookup-select ${attributes} />`)
           } else {
-            body.push(`<c:${w.component} ${w.attr.label ? ('t:label="' + w.attr.label + '"') : ''} data-type="${prop.type}" label-floating name="${w.name}" ${attr.join(' ')} />`)
+            body.push(`<c:${w.component} ${attributes} data-type="${prop.type}" />`)
           }
         }
         body.push('</c:fieldset>')
