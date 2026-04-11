@@ -25,7 +25,7 @@ async function btnColumns () {
         let prop = find(schema.properties, { name: f })
         if (!prop) prop = find(schema.view.calcFields, { name: f })
         if (!prop) continue
-        const attr = { 'x-model': 'selected', label: req.t(get(schema, `view.label.${f}`, `field.${f}`)), value: f }
+        const attr = { 'x-model': 'selected', label: req.t(get(schema, `view.label.${f}`, `field.${f}`)), value: f, labelText: 'nowrap' }
         if (fields.includes(f)) attr.checked = true
         items.push(await this.component.buildTag({ tag: 'formCheck', attr }))
       }
@@ -39,17 +39,27 @@ async function btnColumns () {
         $refs.apply.href = '${href}&${qsKey.fields}=' + selected.join(',')
         $watch('selected', v => {
           $refs.apply.href = '${href}&${qsKey.fields}=' + v.join(',')
+          if (v.length === 0) $refs.apply.classList.add('disabled')
+          else $refs.apply.classList.remove('disabled')
         })
       ">`)
       this.params.attr.menuPrepend = Buffer.from(menuPrepend.join('\n')).toString('base64')
-      const attr = { size: 'sm', 'x-ref': 'apply', margin: 'top-2', color: this.params.attr.applyColor ?? 'primary', icon: this.params.attr.applyIcon ?? 'arrowsStartEnd', href }
-      let menuAppend = await this.component.buildTag({ tag: 'btn', attr, html: req.t('apply') })
-      menuAppend += '\n</form>'
-      this.params.attr.menuAppend = Buffer.from(menuAppend).toString('base64')
+      const btnColor = this.params.attr.applyColor ?? 'primary'
+      const sentences = [
+        '<c:div flex="justify-content:between" margin="top-2" >',
+        `  <c:btn size="sm" x-ref="apply" color="${btnColor}" href="${href}">${req.t('apply')}</c:btn>`,
+        '  <c:btn-group>',
+        `    <c:btn size="sm" color="${btnColor}-outline" icon="checkAll" @click="selected = all" />`,
+        `    <c:btn size="sm" color="${btnColor}-outline" icon="remove" @click="selected = []" />`,
+        '  </c:btn-group>',
+        '</c:div>'
+      ]
+      const menuAppend = await this.component.buildSentence(sentences, this.component.locals)
+      this.params.attr.menuAppend = Buffer.from(menuAppend + '\n</form>').toString('base64')
       this.params.attr.autoClose = 'outside'
       this.params.attr.triggerColor = this.params.attr.color
       this.params.attr.menuDir = this.params.attr.menuDir ?? 'end'
-      this.params.attr.menuMax = this.params.attr.menuMax ?? '20'
+      this.params.attr.menuMax = this.params.attr.menuMax ?? this.getSetting('control.{self}.menuMax')
       const html = [...items]
       this.params.html = await this.component.buildTag({ tag: 'dropdown', attr: this.params.attr, html: html.join('\n') })
       this.params.noTag = true

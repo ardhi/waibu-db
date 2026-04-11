@@ -43,6 +43,11 @@ async function factory (pkgName) {
           count: false,
           patchEnabled: false
         },
+        control: {
+          wdbBtnColumns: {
+            menuMax: 10
+          }
+        },
         enableRestApiForModel: false
       }
       this.methodMap = {
@@ -200,7 +205,7 @@ async function factory (pkgName) {
           time: options.time ?? { timeZone }
         }
         rec[f] = format(data[f], prop.type, opts)
-        const vf = get(schema, `view.valueFormatter.${f}`)
+        const vf = get(schema, `view.formatValue.${f}`)
         if (vf) {
           if (isFunction(vf)) rec[f] = await vf.call(this, data[f], data, { req })
           else rec[f] = await callHandler(vf, { req, value: data[f], data })

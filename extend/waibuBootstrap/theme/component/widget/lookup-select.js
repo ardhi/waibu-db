@@ -9,18 +9,16 @@ async function lookupSelect () {
       this.params.noTag = true
     }
 
-    returnEmpty = () => {
-      this.params.html = ''
-    }
-
     build = async () => {
       const { isEmpty, get, omit, set, camelCase, kebabCase } = this.app.lib._
       const { parseQuery } = this.app.dobo
       const { base64JsonEncode } = this.app.waibu
-      let refName = get(this.schema, `view.widget.${this.params.attr.name}.attr.refName`, this.params.attr.refName)
-      if (!refName && this.params.attr.name.endsWith('Id')) refName = this.params.attr.name.slice(0, -2)
-      const ref = this.getRef({ field: this.params.attr.name, refName })
-      if (isEmpty(ref)) return this.returnEmpty()
+      const ref = this.getRef({ field: this.params.attr.name, refName: this.getRefName(this.params.attr.name) })
+      if (isEmpty(ref)) {
+        const sentence = `<c:form-input ${Object.entries(this.params.attr).map(([k, v]) => `${kebabCase(k)}="${v}"`).join(' ')} />`
+        this.params.html = this.component.buildSentence(sentence, this.component.locals)
+        return
+      }
 
       this.params.attr.url = this.params.attr.url ?? `waibuDb.restapi:/lookup/${kebabCase(ref.model)}`
       const omitted = ['url', 'searchField', 'labelField', 'valueField']

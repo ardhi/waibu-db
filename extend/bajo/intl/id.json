@@ -38,6 +38,8 @@
   "ndjson": "NDJSON",
   "dataValue": "Nilai data",
   "suppressedError": "Kesalahan terjadi dan tidak ditampilkan. Silahkan cek log kesalahan untuk detilnya",
+  "queryHint%s": "Cari berdasarkan %s",
+  "noAttachmentFound": "Tidak ada lampiran ditemukan",
   "op": {
     "eq": "=",
     "neq": "≠",

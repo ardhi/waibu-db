@@ -61,7 +61,7 @@ async function btnExport () {
               }
               item[key] = value
             }
-            return this.ftype === 'csv' ? CSVJSON.json2csv(item) : JSON.stringify(item)
+            return this.ftype === 'csv' ? CSVJSON.json2csv(item) : JSON.stringify(item, null, 2)
           },
           extractTable (selector) {
             let items = []
@@ -98,7 +98,7 @@ async function btnExport () {
               }
               items.push(item)
             }
-            return this.ftype === 'csv' ? CSVJSON.json2csv(items) : JSON.stringify(items)
+            return this.ftype === 'csv' ? CSVJSON.json2csv(items) : JSON.stringify(items, null, 2)
           },
           async submit () {
             const instance = wbs.getInstance('Modal', $refs.export)

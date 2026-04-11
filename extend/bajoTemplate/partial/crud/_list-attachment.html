@@ -1,9 +1,15 @@
-<% for (const att of attachments) { %>
-<c:grid-col col="4-lg 6-md">
-  <% if (attr.readonly) { %>
-  <a href="<%= decodeURI(att.url) %>" target="_blank"><%= att.fileName %></a>
-  <% } else { %>
-  <c:form-check x-model="selected" value="<%= att.fullPath %>" label="<a href='<%= att.url %>' target='_blank'><%= att.fileName %></a>" />
+<% if (attachments.length === 0) { %>
+  <c:grid-col col="12">
+    <c:alert color="warning" t:content="noAttachmentFound" margin="bottom-1" />
+  </c:grid-col>
+<% } else { %>
+  <% for (const att of attachments) { %>
+  <c:grid-col col="4-lg 6-md">
+    <% if (attr.readonly) { %>
+    <a href="<%= decodeURI(att.url) %>" target="_blank"><%= att.fileName %></a>
+    <% } else { %>
+    <c:form-check x-model="selected" value="<%= att.fullPath %>" label="<a href='<%= att.url %>' target='_blank'><%= att.fileName %></a>" />
+    <% } %>
+  </c:grid-col>
   <% } %>
-</c:grid-col>
-<% } %>
+ <% } %>

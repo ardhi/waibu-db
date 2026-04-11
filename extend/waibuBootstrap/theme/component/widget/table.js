@@ -21,31 +21,10 @@ async function table () {
       return get(schema, 'view.noWrap', []).includes(field)
     }
 
-    _defFormatter = async ({ req, key, value, data, schema, params }) => {
-      const { get, find, camelCase, isEmpty } = this.app.lib._
-      const { escape } = this.app.waibu
-      const prop = find(schema.properties, { name: key })
-      if (!prop) return value
-      if (prop.type === 'boolean') {
-        value = (await this.component.buildTag({ tag: 'icon', attr: { name: `circle${data[key] ? 'Check' : 'Cross'}` } })) +
-          ' ' + (req.t(data[key] ? 'Yes' : 'No'))
-      } else if (prop.values) {
-        const values = typeof prop.values === 'string' ? this.propValues[key] : prop.values
-        const item = find(values, { value }) ?? {}
-        const ttext = camelCase(`${prop.name} ${item.text}`)
-        value = escape(req.format(!isEmpty(item) ? (req.te(ttext) ? req.t(ttext) : item.text) : value, prop.type))
-        if (item && !params.attr.noDataValueRef && !isEmpty(data[key])) value += ` <sup><a href="#" title="${req.t('dataValue')}: ${data[key]}">*</a></sup>`
-      } else if (['string', 'text'].includes(prop.type)) {
-        if (!get(schema, 'view.noEscape', []).includes(key)) value = escape(value)
-      }
-      return value
-    }
-
     build = async () => {
       const { callHandler } = this.app.bajo
       const { req } = this.component
       const { escape, attrToArray } = this.app.waibu
-      const { formatRecord } = this.app.waibuDb
       const { groupAttrs } = this.app.waibuMpa
       const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
@@ -54,7 +33,6 @@ async function table () {
 
       const schema = get(this, 'component.locals.schema', {})
       const data = get(this, 'component.locals.list.data', [])
-      const fdata = await formatRecord.call(this.plugin, { data, req, schema })
       const filter = get(this, 'component.locals.list.filter', {})
       const count = get(this, 'component.locals.list.count', 0)
       // collect prop.values for later use
@@ -87,7 +65,8 @@ async function table () {
       let selection
       const canDelete = !disableds.includes('remove')
       const canEdit = !disableds.includes('update')
-      if (canEdit) selection = 'single'
+      const canDetails = !disableds.includes('get')
+      if (canEdit || canDetails) selection = 'single'
       if (canDelete) selection = 'multi'
       if (selection) this.params.attr.hover = true
 
@@ -141,13 +120,12 @@ async function table () {
       items = []
       for (const idx in data) {
         const d = data[idx]
-        const fd = fdata[idx]
         const lines = []
         if (selection) {
           const tag = selection === 'single' ? 'formRadio' : 'formCheck'
-          const attr = { 'x-model': 'selected', name: '_rt', value: d.id, noLabel: true, noWrapper: true }
+          const attr = { 'x-model': 'selected', name: '_rt', value: d._orig.id, noLabel: true, noWrapper: true }
           const type = find(schema.properties, { name: 'id' }).type
-          const prepend = `<td data-value="${d.id}" data-key="id" data-type="${type}">`
+          const prepend = `<td data-value="${d._orig.id}" data-key="id" data-type="${type}">`
           lines.push(await this.component.buildTag({ tag, attr, prepend, append: '</td>' }))
         }
         for (const f of schema.view.fields) {
@@ -155,17 +133,24 @@ async function table () {
           let prop = find(schema.properties, { name: f })
           if (!prop) prop = find(schema.view.calcFields, { name: f })
           if (!prop) continue
-          let dataValue = d[f] ?? ''
+          let dataValue = d._orig[f] ?? ''
           if (!isEmpty(dataValue)) {
             if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
             if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
             if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           }
-          let value = this.getRefValue({ field: f, data: fd }) ?? fd[f]
+          const refName = get(schema, `view.widget.${f}.attr.refName`)
+          let value = this.getRefValue({ field: f, data: d, refName }) ?? d[f]
+          const formatValue = get(schema, `view.formatValue.${f}`)
+          if (formatValue) {
+            value = await formatValue.call(this, value, d, { params: this.params, req })
+            dataValue = value
+          }
+          if (!get(schema, 'view.noEscape', []).includes(f)) value = escape(value)
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
-          const cellFormatter = get(schema, `view.cellFormatter.${f}`)
-          if (cellFormatter) merge(attr, await cellFormatter.call(this, dataValue, d, { params: this.params, req }))
+          const formatCell = get(schema, `view.formatCell.${f}`)
+          if (formatCell) merge(attr, await formatCell.call(this, value, d, { params: this.params, req }))
           const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
           if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
           else attr.text = noWrap
@@ -174,15 +159,14 @@ async function table () {
             const item = find(lookup.values, set({}, lookup.id ?? 'id', d[f]))
             if (item) value = req.t(item[lookup.field ?? 'name'])
           }
-          const formatter = get(schema, `view.formatter.${f}`)
-          if (formatter) value = await formatter.call(this, value, d, { params: this.params, req })
-          else value = await this._defFormatter({ req, key: f, schema, value, data: d, params: this.params })
+          const format = get(schema, `view.format.${f}`)
+          if (format) value = await format.call(this, value, d, { params: this.params, req })
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }
-        const attr = { id: `rec-${d.id}` }
-        if (!disableds.includes('update') || !disableds.includes('remove')) attr['@click'] = `toggle('${d.id}')`
-        if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
+        const attr = { id: `rec-${d._orig.id}` }
+        if (!disableds.includes('update') || !disableds.includes('remove') || !disableds.includes('get')) attr['@click'] = `toggle('${d._orig.id}')`
+        if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d._orig.id}')`
         items.push(await this.component.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
       }
       html.push(await this.component.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
@@ -235,7 +219,7 @@ async function table () {
         }`
         xInit = `
           ${xInit}
-          $watch('selected', val => $dispatch('on-selection', [val]))
+          $watch('selected', val => $dispatch('on-selection', _.isEmpty(val) ? [] : [val]))
         `
       } else {
         xData = `{
@@ -244,6 +228,7 @@ async function table () {
       }
       this.params.attr['x-data'] = xData
       this.params.attr['x-init'] = xInit
+      this.params.attr.responsive = true
       this.params.html = await this.component.buildTag({ tag: 'table', attr: this.params.attr, html: html.join('\n') })
     }
   }

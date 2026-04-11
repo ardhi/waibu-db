@@ -38,6 +38,8 @@
   "ndjson": "NDJSON",
   "dataValue": "Data value",
   "suppressedError": "Error occured and suppressed. Please check error log for details",
+  "queryHint%s": "Search by %s",
+  "noAttachmentFound": "No attachment found",
   "op": {
     "eq": "=",
     "neq": "≠",

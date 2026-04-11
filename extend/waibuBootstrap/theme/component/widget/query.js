@@ -7,6 +7,7 @@ async function query () {
     build = async () => {
       const { req } = this.component
       const { generateId } = this.app.lib.aneka
+      const { join } = this.app.bajo
       const { jsonStringify } = this.app.waibuMpa
       const { find, get, without, isEmpty, filter, upperFirst } = this.app.lib._
       const qsKey = this.app.waibu.config.qsKey
@@ -60,8 +61,11 @@ async function query () {
       }
       this.params.noTag = true
       const container = this.params.attr.modal ? 'modal' : 'drawer'
+      const scanables = (this.model ? this.model.scanables : []).map(item => req.t(`field.${item}`))
+      let placeholder = this.params.attr.placeholder
+      if (!placeholder) placeholder = scanables.length > 0 ? req.t('queryHint%s', join(scanables, { lastSeparator: 'or' })) : req.t('query')
       this.params.html = await this.component.buildSentence(`
-        <c:form-input type="search" t:placeholder="query" id="${id}" x-data="{ query: '' }" x-init="
+        <c:form-input type="search" placeholder="${placeholder}" id="${id}" x-data="{ query: '' }" x-init="
           const url = new URL(window.location.href)
           query = url.searchParams.get('${qsKey.query}') ?? ''
         " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">

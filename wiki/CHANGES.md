@@ -1,5 +1,15 @@
 # Changes
 
+## 2026-04-11
+
+- [2.15.0] Add ```control``` key in config object
+- [2.15.0] Bug fix in ```formatRow()```
+- [2.15.0] Add ```WdbBase.getRefName()```
+- [2.15.0] Add ```WdbBase.getSetting()```
+- [2.15.0] Update placeholder in ```WdbQuery``` based on model's ```scanables``` values
+- [2.15.0] ```getSchemaExt()``` now support ```format```, ```formatValue``` and ```formatCell```
+- [2.15.0] All default handlers now support ```options.formatValue``` and ```options.retainOriginalValue````
+
 ## 2026-04-07
 
 - [2.14.0] Add ```wdb-lookup-select``` widget
@@ -31,8 +41,8 @@
 
 ## 2026-03-27
 
-- [2.12.1] Bug fix in all ```view.formatter``` & ```view.valueFormatter```
-- [2.12.2] Bug fix in ```wdb-form``` & ```wdb-table``` widgets, now correctly use value from formatter if provided
+- [2.12.1] Bug fix in all ```view.format``` & ```view.formatValue```
+- [2.12.2] Bug fix in ```wdb-form``` & ```wdb-table``` widgets, now correctly use value from format if provided
 
 ## 2026-03-26
 
