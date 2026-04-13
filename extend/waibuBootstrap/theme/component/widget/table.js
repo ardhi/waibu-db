@@ -26,7 +26,7 @@ async function table () {
       const { req } = this.component
       const { escape, attrToArray } = this.app.waibu
       const { groupAttrs } = this.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
+      const { get, omit, set, find, isEmpty, without, merge, camelCase } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
@@ -38,6 +38,7 @@ async function table () {
       // collect prop.values for later use
       for (const prop of schema.properties) {
         if (typeof prop.values === 'string') this.propValues[prop.name] = await callHandler(prop.values)
+        else if (prop.values) this.propValues[prop.name] = prop.values
       }
       if (count === 0 || data.length === 0) {
         const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
@@ -156,11 +157,18 @@ async function table () {
           else attr.text = noWrap
           const lookup = get(schema, `view.lookup.${f}`)
           if (lookup) {
-            const item = find(lookup.values, set({}, lookup.id ?? 'id', d[f]))
+            const item = find(lookup.values, set({}, lookup.id ?? 'id', dataValue))
             if (item) value = req.t(item[lookup.field ?? 'name'])
           }
           const format = get(schema, `view.format.${f}`)
           if (format) value = await format.call(this, value, d, { params: this.params, req })
+          if (this.propValues[f]) {
+            const item = find(this.propValues[f], { value: dataValue })
+            if (item) {
+              const key = camelCase(`${f} ${item.text}`)
+              value = req.te(key) ? req.t(key) : item.text
+            }
+          }
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }

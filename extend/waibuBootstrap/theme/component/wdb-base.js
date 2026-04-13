@@ -6,6 +6,7 @@ async function wdbBase () {
       const { get } = this.app.lib._
       this.schema = get(this, 'component.locals.schema', {})
       this.formData = get(this, 'component.locals.form', {})
+      this.oldData = get(this, 'component.locals.oldData', {})
       this.model = getModel(this.schema.name, true)
     }
 
@@ -37,13 +38,12 @@ async function wdbBase () {
       return refName
     }
 
-    getSetting = (key, defaultValue) => {
-      const { req } = this.component
+    getSetting = (key, defValue) => {
       const { get, camelCase } = this.app.lib._
       const widgetName = camelCase(this.constructor.name)
       key = key.replaceAll('{self}', widgetName)
-      const config = req.getSetting(`${this.plugin.ns}:${key}`, defaultValue)
-      return get(this.schema, `view.${key}`, config)
+      const cfg = this.app.waibu.getSetting(`${this.plugin.ns}:${key}`, { defValue, req: this.component.req })
+      return get(this.schema, `view.${key}`, cfg)
     }
   }
 }

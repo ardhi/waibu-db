@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-04-13
+
+- [2.16.0] Add ```oldData``` propety to ```WdbBase``` widget
+- [2.16.0] Change ```WdbBase.getSetting()``` to also respect setting from ```waibu.getSetting()```
+- [2.16.0] Rewrite ```WdbForm``` widget entirely
+- [2.16.0] Remove redundant call to get old record in ```updateRecord()```
+
 ## 2026-04-11
 
 - [2.15.0] Add ```control``` key in config object
