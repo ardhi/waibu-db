@@ -28,6 +28,7 @@ async function handleRo (attr = {}, prop = {}, widget = {}) {
 
   if (['object', 'array', 'text'].includes(prop.type)) {
     attr.style = 'min-height: 100px'
+    attr.readonly = true
     return await this.component.buildTag({ tag: 'formTextarea', attr, html: value })
   }
   return await this.component.buildTag({ tag: 'formPlaintext', attr, selfCosing: true, noEscape: true })

@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-04-16
+
+- [2.16.1] Bug fix in ```WdbBtnExport``` widget
+- [2.16.1] Bug fix in ```WdbForm``` widget
+- [2.16.1] Bug fix in ```WdbTable``` widget
+- [2.16.1] Bug fix in ```prepCrud()```
+- [2.16.1] Bug fix in ```createRecord()```
+- [2.16.1] Bug fix in ```updateRecord()```
+
 ## 2026-04-13
 
 - [2.16.0] Add ```oldData``` propety to ```WdbBase``` widget

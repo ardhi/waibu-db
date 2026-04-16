@@ -67,16 +67,13 @@ async function btnExport () {
             let items = []
             let checker = false
             const keys = []
-            const types = []
             let els = document.querySelectorAll(selector + ' thead th')
             for (const el of els) {
               keys.push(this.options.includes('fkey') ? el.innerText : el.dataset.key)
-              types.push(el.dataset.type)
             }
             if (_.isEmpty(keys[0])) {
               checker = true
               keys.shift()
-              types.shift()
             }
             els = document.querySelectorAll(selector + ' tbody tr')
             for (const el of els) {
@@ -85,12 +82,7 @@ async function btnExport () {
                 i = i + ''
                 if (i === '0' && checker) return undefined
                 if (this.options.includes('fvalue')) data.push(v.innerText)
-                else {
-                  const type = types[parseInt(i)]
-                  let val = wmpa.parseValue(v.dataset.value, type)
-                  if (['datetime', 'date', 'time'].includes(type)) val = val.toISOString()
-                  data.push(val)
-                }
+                else data.push(wmpa.parseValue(v.dataset.value, v.dataset.value))
               })
               const item = {}
               for (const i in keys) {

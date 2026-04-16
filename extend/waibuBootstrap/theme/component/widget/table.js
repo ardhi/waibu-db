@@ -134,12 +134,10 @@ async function table () {
           let prop = find(schema.properties, { name: f })
           if (!prop) prop = find(schema.view.calcFields, { name: f })
           if (!prop) continue
-          let dataValue = d._orig[f] ?? ''
-          if (!isEmpty(dataValue)) {
-            if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
-            if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
-            if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
-          }
+          let dataValue = d._orig[f]
+          if (['datetime'].includes(prop.type)) dataValue = escape(dataValue.toISOString())
+          else if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
+          else if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(d[f]))
           const refName = get(schema, `view.widget.${f}.attr.refName`)
           let value = this.getRefValue({ field: f, data: d, refName }) ?? d[f]
           const formatValue = get(schema, `view.formatValue.${f}`)
