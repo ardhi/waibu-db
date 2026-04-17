@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-04-17
+
+- [2.16.2] Bug fix in ```WdbTable``` widget
+- [2.16.2] Bug fix in ```WdbForm``` widget
+- [2.16.2] Remove reduncat codes in ```WdbBase``` widget
+
 ## 2026-04-16
 
 - [2.16.1] Bug fix in ```WdbBtnExport``` widget

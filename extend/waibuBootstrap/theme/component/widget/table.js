@@ -4,8 +4,6 @@ async function table () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbTable extends WdbBase {
-    propValues = {}
-
     isRightAligned = (field, schema) => {
       const { get, find } = this.app.lib._
       const prop = find(schema.properties, { name: field })
@@ -22,11 +20,10 @@ async function table () {
     }
 
     build = async () => {
-      const { callHandler } = this.app.bajo
       const { req } = this.component
       const { escape, attrToArray } = this.app.waibu
       const { groupAttrs } = this.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without, merge, camelCase } = this.app.lib._
+      const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
@@ -35,11 +32,6 @@ async function table () {
       const data = get(this, 'component.locals.list.data', [])
       const filter = get(this, 'component.locals.list.filter', {})
       const count = get(this, 'component.locals.list.count', 0)
-      // collect prop.values for later use
-      for (const prop of schema.properties) {
-        if (typeof prop.values === 'string') this.propValues[prop.name] = await callHandler(prop.values)
-        else if (prop.values) this.propValues[prop.name] = prop.values
-      }
       if (count === 0 || data.length === 0) {
         const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
         this.params.noTag = true
@@ -152,21 +144,9 @@ async function table () {
           if (formatCell) merge(attr, await formatCell.call(this, value, d, { params: this.params, req }))
           const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
           if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
-          else attr.text = noWrap
-          const lookup = get(schema, `view.lookup.${f}`)
-          if (lookup) {
-            const item = find(lookup.values, set({}, lookup.id ?? 'id', dataValue))
-            if (item) value = req.t(item[lookup.field ?? 'name'])
-          }
+          else attr.text = `${noWrap}`
           const format = get(schema, `view.format.${f}`)
           if (format) value = await format.call(this, value, d, { params: this.params, req })
-          if (this.propValues[f]) {
-            const item = find(this.propValues[f], { value: dataValue })
-            if (item) {
-              const key = camelCase(`${f} ${item.text}`)
-              value = req.te(key) ? req.t(key) : item.text
-            }
-          }
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }

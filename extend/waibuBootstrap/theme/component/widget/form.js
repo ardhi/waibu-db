@@ -1,59 +1,24 @@
 import wdbBase from '../wdb-base.js'
 
-async function handleRo (attr = {}, prop = {}, widget = {}) {
-  const { get, camelCase, isEmpty, isString } = this.app.lib._
-  const { callHandler } = this.app.bajo
-  const { escape } = this.app.waibu
-  const { req } = this.component
-  const dataValue = get(this.formData, `_orig.${prop.name}`, prop.dataValue ?? '')
-  let value = get(this.oldData, prop.name, get(this.formData, prop.name, prop.value ?? ''))
-  const format = get(this.schema, `view.format.${prop.name}`)
-  const formatValue = get(this.schema, `view.formatValue.${prop.name}`)
-  const labelField = get(this.schema, `view.widget.${prop.name}.attr.labelField`)
-  if (formatValue) value = await formatValue.call(this, value, this.formData, { req })
-  else if (prop.ref) {
-    value = this.getRefValue({ field: prop.name, labelField, refName: this.getRefName(prop.name) })
-    if (format && !isEmpty(value)) attr.href = await format.call(this, value, this.formData, { linkOnly: true })
-  } else if (prop.values) {
-    const values = isString(prop.values) ? (await callHandler(prop.values)) : prop.values
-    value = values.find(v => v.value === dataValue)
-    if (value) {
-      const key = camelCase(`${prop.name} ${value.text}`)
-      value = req.te(key) ? req.t(key) : value.text
-    }
-  } else if (format && !isEmpty(value)) value = await format.call(this, value, this.formData)
-  attr.dataValue = escape(dataValue)
-  attr.value = escape(value)
-  attr.dataType = prop.type
-
-  if (['object', 'array', 'text'].includes(prop.type)) {
-    attr.style = 'min-height: 100px'
-    attr.readonly = true
-    return await this.component.buildTag({ tag: 'formTextarea', attr, html: value })
-  }
-  return await this.component.buildTag({ tag: 'formPlaintext', attr, selfCosing: true, noEscape: true })
-}
-
-async function handleRw (attr = {}, prop = {}, widget = {}) {
-  const { get, has, isPlainObject, isArray } = this.app.lib._
-  const { escape } = this.app.waibu
-  const { stringifyAttribs } = this.app.waibuMpa
-  if (has(attr, 'name') && !has(attr, 'value')) {
-    attr.dataType = attr.dataType ?? prop.type
-    attr.dataValue = get(this, `formData.${attr.name}`)
-    if (isPlainObject(attr.dataValue) || isArray(attr.dataValue)) attr.dataValue = JSON.stringify(attr.dataValue)
-    attr.dataValue = escape(attr.dataValue)
-    attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
-  }
-
-  const cmp = prop.ref ? 'wdb-lookup-select' : widget.component
-  return `<c:${cmp} ${stringifyAttribs(attr)} data-type="${prop.type}" />`
-}
-
 async function form () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbForm extends WdbBase {
+    static async handleRo ({ attr = {}, prop = {} } = {}) {
+      return await this.component.buildTag({ tag: 'formPlaintext', attr, selfCosing: true, noEscape: true })
+    }
+
+    static async handleRw ({ attr = {}, prop = {}, widget = {} } = {}) {
+      const { get, has } = this.app.lib._
+      const { stringifyAttribs } = this.app.waibuMpa
+      if (has(attr, 'name') && !has(attr, 'value')) {
+        attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
+      }
+      attr.dataType = prop.type
+      const cmp = prop.ref ? 'wdb-lookup-select' : widget.component
+      return `<c:${cmp} ${stringifyAttribs(attr)} />`
+    }
+
     build = async () => {
       const { get, find, filter, forOwn, isEmpty } = this.app.lib._
       const { base64JsonEncode } = this.app.waibu
@@ -86,9 +51,9 @@ async function form () {
           }
           if (widget.componentOpts) attr['c-opts'] = base64JsonEncode(widget.componentOpts)
           if (widget.component === 'form-plaintext' || this.params.attr.method !== 'POST') {
-            body.push(await handleRo.call(this, attr, prop, widget))
+            body.push(await WdbForm.handleRo.call(this, { attr, prop, widget }))
           } else {
-            body.push(await handleRw.call(this, attr, prop, widget))
+            body.push(await WdbForm.handleRw.call(this, { attr, prop, widget }))
           }
         }
         body.push('</c:fieldset>')
