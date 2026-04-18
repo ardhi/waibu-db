@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-04-18
+
+- [2.16.3] Bug fix in ```WdbForm``` widget
+- [2.16.3] Bug fix in ```WdbTable``` widget
+- [2.16.3] Bug fix in ```add-handler.js``` module
+- [2.16.3] Bug fix in ```edit-handler.js``` module
+
 ## 2026-04-17
 
 - [2.16.2] Bug fix in ```WdbTable``` widget

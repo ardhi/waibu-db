@@ -11,11 +11,11 @@ async function form () {
     static async handleRw ({ attr = {}, prop = {}, widget = {} } = {}) {
       const { get, has } = this.app.lib._
       const { stringifyAttribs } = this.app.waibuMpa
-      if (has(attr, 'name') && !has(attr, 'value')) {
-        attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
-      }
       attr.dataType = prop.type
       const cmp = prop.ref ? 'wdb-lookup-select' : widget.component
+      if (has(attr, 'name') && !has(attr, 'value')) {
+        attr.value = cmp === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
+      }
       return `<c:${cmp} ${stringifyAttribs(attr)} />`
     }
 
