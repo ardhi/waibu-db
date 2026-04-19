@@ -3,7 +3,7 @@ import wdbBase from '../wdb-base.js'
 async function table () {
   const WdbBase = await wdbBase.call(this)
 
-  return class WdbTable extends WdbBase {
+  return class WdbDataTable extends WdbBase {
     isRightAligned = (field, schema) => {
       const { get, find } = this.app.lib._
       const prop = find(schema.properties, { name: field })

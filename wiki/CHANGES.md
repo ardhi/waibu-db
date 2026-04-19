@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-04-19
+
+- [2.12.0] Rename ```WdbTable``` to ```WdbDataTable``` widget
+- [2.12.0] ```getSchemaExt()``` now include export related model too
+
 ## 2026-04-18
 
 - [2.16.3] Bug fix in ```WdbForm``` widget
@@ -60,7 +65,7 @@
 - [2.12.5] Bug fix in ```wdb-pagination``` widget
 - [2.12.5] Bug fix in ```wdb-query``` widget
 - [2.12.5] Bug fix in ```wdb-recs-info``` widget
-- [2.12.5] Bug fix in ```wdb-table``` widget
+- [2.12.5] Bug fix in ```wdb-data-table``` widget
 - [2.12.5] Bug fix in remove attachment
 
 ## 2026-03-30
@@ -71,7 +76,7 @@
 ## 2026-03-27
 
 - [2.12.1] Bug fix in all ```view.format``` & ```view.formatValue```
-- [2.12.2] Bug fix in ```wdb-form``` & ```wdb-table``` widgets, now correctly use value from format if provided
+- [2.12.2] Bug fix in ```wdb-form``` & ```wdb-data-table``` widgets, now correctly use value from format if provided
 
 ## 2026-03-26
 
@@ -96,7 +101,7 @@
 
 - [2.9.0] Add ability to overwrite ```base``` through ```options```
 - [2.9.0] Bug fix in ```wdb-btn-columns``` widget
-- [2.9.0] Bug fix in ```wdb-table``` widget
+- [2.9.0] Bug fix in ```wdb-data-table``` widget
 
 ## 2026-03-08
 

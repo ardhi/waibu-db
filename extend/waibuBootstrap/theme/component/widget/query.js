@@ -61,7 +61,7 @@ async function query () {
       }
       this.params.noTag = true
       const container = this.params.attr.modal ? 'modal' : 'drawer'
-      const scanables = (this.model ? this.model.scanables : []).map(item => req.t(`field.${item}`))
+      const scanables = (this.schema.scanables ?? []).map(item => req.t(`field.${item}`))
       let placeholder = this.params.attr.placeholder
       if (!placeholder) placeholder = scanables.length > 0 ? req.t('queryHint%s', join(scanables, { separator: ', ', lastSeparator: 'or' })) : req.t('query')
       this.params.html = await this.component.buildSentence(`
@@ -111,7 +111,6 @@ async function query () {
                       val = opv.slice(v.length).replaceAll('[', '').replaceAll('{', '').replaceAll(']', '').replaceAll('}', '').replaceAll('\\'', '')
                     }
                   })
-                  console.log(op, val)
                   if (_.isEmpty(op)) continue
                   this[f + 'Op'] = op
                   if (op === 'between') {
