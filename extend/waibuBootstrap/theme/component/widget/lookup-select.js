@@ -16,7 +16,7 @@ async function lookupSelect () {
       const ref = this.getRef({ field: this.params.attr.name, refName: this.getRefName(this.params.attr.name) })
       if (isEmpty(ref)) {
         const sentence = `<c:form-input ${Object.entries(this.params.attr).map(([k, v]) => `${kebabCase(k)}="${v}"`).join(' ')} />`
-        this.params.html = this.component.buildSentence(sentence, this.component.locals)
+        this.params.html = await this.component.buildSentence(sentence, this.component.locals)
         return
       }
 

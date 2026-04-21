@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-04-21
+
+- [2.5.1] Bug fix in ```WdbLookupSelect.build()```
+
 ## 2026-04-19
 
 - [2.12.0] Rename ```WdbTable``` to ```WdbDataTable``` widget
