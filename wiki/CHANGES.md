@@ -1,13 +1,18 @@
 # Changes
 
+## 2026-04-23
+
+- [2.17.2] Bug fix in ```getSchemaExt()```
+- [2.17.2] Bug fix in ```WdbDataTable``` widget
+
 ## 2026-04-21
 
-- [2.5.1] Bug fix in ```WdbLookupSelect.build()```
+- [2.17.1] Bug fix in ```WdbLookupSelect.build()```
 
 ## 2026-04-19
 
-- [2.12.0] Rename ```WdbTable``` to ```WdbDataTable``` widget
-- [2.12.0] ```getSchemaExt()``` now include export related model too
+- [2.17.0] Rename ```WdbTable``` to ```WdbDataTable``` widget
+- [2.17.0] ```getSchemaExt()``` now include export related model too
 
 ## 2026-04-18
 
