@@ -1,5 +1,5 @@
-async function update (req, reply) {
-  return await this.updateRecord({ req, reply })
+async function update (req, reply, options) {
+  return await this.updateRecord({ req, reply, options, transaction: true })
 }
 
 export default update

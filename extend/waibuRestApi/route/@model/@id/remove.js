@@ -1,5 +1,5 @@
-async function remove (req, reply) {
-  return await this.removeRecord({ req, reply })
+async function remove (req, reply, options) {
+  return await this.removeRecord({ req, reply, options, transaction: true })
 }
 
 export default remove

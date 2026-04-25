@@ -21,10 +21,10 @@ async function lookupSelect () {
       }
 
       this.params.attr.url = this.params.attr.url ?? `waibuDb.restapi:/lookup/${kebabCase(ref.model)}`
-      const omitted = ['url', 'searchField', 'labelField', 'valueField']
-      const attr = omit(this.params.attr, omitted)
-      for (const k of omitted) {
-        attr[camelCase(`remote ${k}`)] = this.params.attr[k] ?? ref[k]
+      const keys = ['url', 'searchField', 'labelField', 'valueField']
+      const attr = omit(this.params.attr, keys)
+      for (const k of keys) {
+        attr[camelCase(`remote ${k}`)] = this.params.attr[k] ?? ref[k] ?? ref.field
       }
       const q = set({}, this.params.attr.searchField ?? get(ref, 'searchField', 'id'), ['__REGEXP__', '{searchItem}', 'i'])
       attr.remoteQuery = base64JsonEncode({ $and: [parseQuery(get(ref, 'query', {})), q] })
@@ -32,7 +32,7 @@ async function lookupSelect () {
       attr.clearBtn = true
       const sentence = `<c:form-select-ext ${Object.entries(attr).map(([k, v]) => `${kebabCase(k)}="${v}"`).join(' ')} />`
       this.params.html = await this.component.buildSentence(sentence, this.component.locals)
-      this.params.attr = omit(this.params.attr, ['model', 'field', ...omitted])
+      this.params.attr = omit(this.params.attr, ['model', 'field', ...keys])
     }
   }
 }

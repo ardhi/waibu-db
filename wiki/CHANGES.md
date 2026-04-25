@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-04-25
+
+- [2.18.0] Change options to format value using the new key set by dobo
+- [2.18.0] Remove ```options.retainOriginalValue``` since it is not needed anymore
+- [2.18.0] Add all necessary ```options``` for all auto generated api endpoints
+
 ## 2026-04-23
 
 - [2.17.2] Bug fix in ```getSchemaExt()```

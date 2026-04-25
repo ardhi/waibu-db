@@ -116,9 +116,9 @@ async function table () {
         const lines = []
         if (selection) {
           const tag = selection === 'single' ? 'formRadio' : 'formCheck'
-          const attr = { 'x-model': 'selected', name: '_rt', value: d._orig.id, noLabel: true, noWrapper: true }
+          const attr = { 'x-model': 'selected', name: '_rt', value: d.id, noLabel: true, noWrapper: true }
           const type = find(schema.properties, { name: 'id' }).type
-          const prepend = `<td data-value="${d._orig.id}" data-key="id" data-type="${type}">`
+          const prepend = `<td data-value="${d.id}" data-key="id" data-type="${type}">`
           lines.push(await this.component.buildTag({ tag, attr, prepend, append: '</td>' }))
         }
         for (const f of schema.view.fields) {
@@ -126,17 +126,12 @@ async function table () {
           let prop = find(schema.properties, { name: f })
           if (!prop) prop = find(schema.view.calcFields, { name: f })
           if (!prop) continue
-          let dataValue = d._orig[f]
+          let dataValue = d[f]
           if (['datetime'].includes(prop.type) && dataValue instanceof Date && !isNaN(dataValue)) dataValue = escape(dataValue.toISOString())
           else if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
           else if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(dataValue))
           const refName = get(schema, `view.widget.${f}.attr.refName`)
-          let value = this.getRefValue({ field: f, data: d, refName }) ?? d[f]
-          const formatValue = get(schema, `view.formatValue.${f}`)
-          if (formatValue) {
-            value = await formatValue.call(this, value, d, { params: this.params, req })
-            dataValue = value
-          }
+          let value = this.getRefValue({ field: f, data: d, refName }) ?? get(d, `_fmt.${f}`)
           if (!get(schema, 'view.noEscape', []).includes(f)) value = escape(value)
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
@@ -150,9 +145,9 @@ async function table () {
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }
-        const attr = { id: `rec-${d._orig.id}` }
-        if (!disableds.includes('update') || !disableds.includes('remove') || !disableds.includes('get')) attr['@click'] = `toggle('${d._orig.id}')`
-        if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d._orig.id}')`
+        const attr = { id: `rec-${d.id}` }
+        if (!disableds.includes('update') || !disableds.includes('remove') || !disableds.includes('get')) attr['@click'] = `toggle('${d.id}')`
+        if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
         items.push(await this.component.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
       }
       html.push(await this.component.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
