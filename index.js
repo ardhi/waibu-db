@@ -167,49 +167,6 @@ async function factory (pkgName) {
       return await this.findAllRecord({ model, req, options })
     }
 
-    formatRecord = async ({ data, req, schema, options = {} }) => {
-      const { isArray } = this.app.lib._
-      if (!isArray(data)) return await this.formatRow({ data, req, schema, options })
-      const items = []
-      for (const d of data) {
-        const item = await this.formatRow({ data: d, req, schema, options })
-        items.push(item)
-      }
-      return items
-    }
-
-    formatRow = async ({ data, req, schema, options = {} }) => {
-      const { get, find, isFunction, cloneDeep } = this.app.lib._
-      const { format, callHandler } = this.app.bajo
-      const { escape } = this.app.waibu
-      const fields = get(schema, 'view.fields', Object.keys(schema.properties))
-      const rec = cloneDeep(data)
-      const lang = get(req, 'lang')
-      const unitSys = get(req, 'site.setting.sumba.unitSys')
-      const timeZone = get(req, 'site.setting.sumba.timeZone', this.app.bajo.config.intl.format.datetime.timeZone)
-      for (const f of fields) {
-        if (f === '_ref') continue
-        let prop = find(schema.properties, { name: f })
-        if (!prop) prop = find(schema.view.calcFields, { name: f })
-        if (!prop) continue
-        const opts = {
-          lang: options.lang ?? lang,
-          longitude: ['lng', 'longitude'].includes(f),
-          latitude: ['lat', 'latitude'].includes(f),
-          speed: ['speed'].includes(f),
-          degree: ['course', 'heading'].includes(f),
-          distance: ['distance'].includes(f),
-          unitSys: options.unitSys ?? unitSys,
-          datetime: options.datetime ?? { timeZone },
-          date: options.date ?? { timeZone },
-          time: options.time ?? { timeZone }
-        }
-        rec[f] = format(data[f], prop.type, opts)
-        if (['string', 'text'].includes(prop.type)) rec[f] = escape(rec[f])
-      }
-      return rec
-    }
-
     countRecord = countRecord
     createAggregate = createAggregate
     createHistogram = createHistogram

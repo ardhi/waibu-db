@@ -12,11 +12,10 @@ async function form () {
       const { get, has } = this.app.lib._
       const { stringifyAttribs } = this.app.waibuMpa
       attr.dataType = prop.type
-      const cmp = prop.ref ? 'wdb-lookup-select' : widget.component
       if (has(attr, 'name') && !has(attr, 'value')) {
-        attr.value = cmp === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
+        attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
       }
-      return `<c:${cmp} ${stringifyAttribs(attr)} />`
+      return `<c:${widget.component} ${stringifyAttribs(attr)} />`
     }
 
     build = async () => {

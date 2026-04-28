@@ -123,15 +123,14 @@ async function table () {
         }
         for (const f of schema.view.fields) {
           if (!fields.includes(f)) continue
-          let prop = find(schema.properties, { name: f })
-          if (!prop) prop = find(schema.view.calcFields, { name: f })
+          const prop = find(schema.properties, { name: f })
           if (!prop) continue
           let dataValue = d[f]
           if (['datetime'].includes(prop.type) && dataValue instanceof Date && !isNaN(dataValue)) dataValue = escape(dataValue.toISOString())
           else if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
           else if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(dataValue))
           const refName = get(schema, `view.widget.${f}.attr.refName`)
-          let value = this.getRefValue({ field: f, data: d, refName }) ?? get(d, `_fmt.${f}`)
+          let value = this.getRefValue({ field: f, data: d, refName }) ?? get(d, `_fmt.${f}`, d[f])
           if (!get(schema, 'view.noEscape', []).includes(f)) value = escape(value)
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
