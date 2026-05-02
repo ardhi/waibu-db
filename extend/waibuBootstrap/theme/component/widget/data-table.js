@@ -23,7 +23,7 @@ async function table () {
       const { req } = this.component
       const { escape, attrToArray } = this.app.waibu
       const { groupAttrs } = this.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
+      const { get, omit, set, find, isEmpty, without, merge, isString } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
@@ -133,6 +133,10 @@ async function table () {
           let value = this.getRefValue({ field: f, data: d, refName }) ?? get(d, `_fmt.${f}`, d[f])
           if (!get(schema, 'view.noEscape', []).includes(f)) value = escape(value)
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
+          if (isString(d[f]) && d[f].startsWith('<a ')) {
+            delete attr.dataValue
+            value = d[f]
+          }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const formatCell = get(schema, `view.formatCell.${f}`)
           if (formatCell) merge(attr, await formatCell.call(this, value, d, { params: this.params, req }))

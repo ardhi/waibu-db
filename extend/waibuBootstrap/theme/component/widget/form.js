@@ -15,6 +15,7 @@ async function form () {
       if (has(attr, 'name') && !has(attr, 'value')) {
         attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
       }
+      if (prop.virtual) widget.component = 'form-plaintext'
       return `<c:${widget.component} ${stringifyAttribs(attr)} />`
     }
 
@@ -30,9 +31,9 @@ async function form () {
         body.push(`<c:fieldset ${this.schema.view.card === false ? '' : 'card'} ${l.name[0] !== '_' ? ('t:legend="' + l.name + '"') : ''} grid-gutter="2">`)
         for (const f of fields) {
           const widget = this.schema.view.widget[f]
-          let prop = find(this.schema.properties, { name: f })
-          if (!prop) prop = find(this.schema.view.calcFields, { name: f })
+          const prop = find(this.schema.properties, { name: f })
           if (!prop) continue
+          if (['dobo:image'].includes(prop.feature)) continue
           const attr = {
             'x-ref': widget.name,
             labelFloating: true,

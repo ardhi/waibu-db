@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-05-02
+
+- [2.18.2] Bug fix in ```wdb-data-table``` widget
+- [2.18.2] Bug fix in ```wdb-form``` widget
+
 ## 2026-04-25
 
 - [2.18.0] Change options to format value using the new key set by dobo
