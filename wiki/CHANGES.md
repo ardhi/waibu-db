@@ -3,6 +3,7 @@
 ## 2026-05-03
 
 - [2.18.3] Bug fix in ```wdb-data-table``` widget
+- [2.18.4] Bug fix in ```wdb-data-table``` widget
 
 ## 2026-05-02
 

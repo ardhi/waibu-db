@@ -128,8 +128,7 @@ async function table () {
           if (!prop) continue
           let dataValue = d[f]
           if (['datetime'].includes(prop.type) && dataValue instanceof Date && !isNaN(dataValue)) dataValue = escape(dataValue.toISOString())
-          else if (['string', 'text'].includes(prop.type)) dataValue = escape(dataValue)
-          else if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(dataValue))
+          else if (['string', 'text', 'array', 'object'].includes(prop.type)) dataValue = escape(dataValue)
           const refName = get(schema, `view.widget.${f}.attr.refName`)
           let value = this.getRefValue({ field: f, data: d, refName }) ?? get(d, `_fmt.${f}`, d[f])
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
