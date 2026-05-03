@@ -23,7 +23,8 @@ async function table () {
       const { req } = this.component
       const { escape, attrToArray } = this.app.waibu
       const { groupAttrs } = this.app.waibuMpa
-      const { get, omit, set, find, isEmpty, without, merge, isString } = this.app.lib._
+      const { isHtmlLink } = this.app.bajoExtra
+      const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
@@ -131,12 +132,7 @@ async function table () {
           else if (['array', 'object'].includes(prop.type)) dataValue = escape(JSON.stringify(dataValue))
           const refName = get(schema, `view.widget.${f}.attr.refName`)
           let value = this.getRefValue({ field: f, data: d, refName }) ?? get(d, `_fmt.${f}`, d[f])
-          if (!get(schema, 'view.noEscape', []).includes(f)) value = escape(value)
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
-          if (isString(d[f]) && d[f].startsWith('<a ')) {
-            delete attr.dataValue
-            value = d[f]
-          }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const formatCell = get(schema, `view.formatCell.${f}`)
           if (formatCell) merge(attr, await formatCell.call(this, value, d, { params: this.params, req }))
@@ -145,6 +141,7 @@ async function table () {
           else attr.text = `${noWrap}`
           const format = get(schema, `view.format.${f}`)
           if (format) value = await format.call(this, value, d, { params: this.params, req })
+          if (!get(schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }
