@@ -20,7 +20,7 @@ async function form () {
     }
 
     build = async () => {
-      const { get, find, filter, forOwn, isEmpty } = this.app.lib._
+      const { get, find, filter, forOwn, isEmpty, omit } = this.app.lib._
       const { base64JsonEncode } = this.app.waibu
       const body = []
       const xModels = get(this.schema, 'view.x.model', [])
@@ -40,7 +40,7 @@ async function form () {
             name: widget.name
           }
           if (xModels.includes(widget.name)) attr['x-model'] = widget.name
-          forOwn(widget.attr, (v, k) => {
+          forOwn(omit(widget.attr, ['url', 'refUrl', 'refName']), (v, k) => {
             if (v === true) attr[k] = true
             else attr[k] = v
           })

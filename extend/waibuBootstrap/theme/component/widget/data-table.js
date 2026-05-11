@@ -25,6 +25,7 @@ async function table () {
       const { groupAttrs } = this.app.waibuMpa
       const { isHtmlLink } = this.app.bajoExtra
       const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
+      const { isSet } = this.app.lib.aneka
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
@@ -56,13 +57,15 @@ async function table () {
       let [sortCol, sortDir] = sort.split(':')
       if (!['-1', '1'].includes(sortDir)) sortDir = '1'
 
-      let selection
-      const canDelete = !disableds.includes('remove')
-      const canEdit = !disableds.includes('update')
-      const canDetails = !disableds.includes('get')
-      if (canEdit || canDetails) selection = 'single'
-      if (canDelete) selection = 'multi'
-      if (selection) this.params.attr.hover = true
+      let selection = this.params.attr.selection
+      if (!isSet(selection)) {
+        const canDelete = !disableds.includes('remove')
+        const canEdit = !disableds.includes('update')
+        const canDetails = !disableds.includes('get')
+        if (canEdit || canDetails) selection = 'single'
+        if (canDelete) selection = 'multi'
+        if (selection) this.params.attr.hover = true
+      } else if (!['single', 'multi'].includes(selection)) selection = false
 
       this.params.noTag = true
       const html = []
@@ -129,8 +132,7 @@ async function table () {
           let dataValue = d[f]
           if (['datetime'].includes(prop.type) && dataValue instanceof Date && !isNaN(dataValue)) dataValue = escape(dataValue.toISOString())
           else if (['string', 'text', 'array', 'object'].includes(prop.type)) dataValue = escape(dataValue)
-          const refName = get(schema, `view.widget.${f}.attr.refName`)
-          let value = this.getRefValue({ field: f, data: d, refName }) ?? get(d, `_fmt.${f}`, d[f])
+          let value = this.getRefValue({ field: f, data: d, refName: this.getRefName(f) }) ?? get(d, `_fmt.${f}`, d[f])
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const formatCell = get(schema, `view.formatCell.${f}`)

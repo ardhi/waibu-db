@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-05-11
+
+- [2.19.0] Updates to match ```dobo@2.23.0``` specs
+- [2.19.0] Bug fix in ```wdb-btn-export``` widget
+
 ## 2026-05-03
 
 - [2.18.3] Bug fix in ```wdb-data-table``` widget

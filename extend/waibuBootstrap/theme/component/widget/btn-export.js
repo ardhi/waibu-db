@@ -51,7 +51,7 @@ async function btnExport () {
             let item = {}
             const els = document.querySelectorAll(selector + ' [data-value]')
             for (const el of els) {
-              const value = this.options.includes('fvalue') ? el.getAttribute('value') : wmpa.parseValue(el.dataset.value, el.dataset.type)
+              const value = this.options.includes('fvalue') ? el.innerText : wmpa.parseValue(el.dataset.value, el.dataset.type)
               let key = el.getAttribute('name')
               if (this.options.includes('fkey')) {
                 try {
