@@ -21,7 +21,7 @@ async function lookupSelect () {
       }
 
       this.params.attr.url = this.params.attr.url ?? `waibuDb.restapi:/lookup/${kebabCase(ref.model)}`
-      const keys = ['url', 'searchField', 'labelField', 'valueField']
+      const keys = ['url', 'searchField', 'labelField', 'valueField', 'allowCreate']
       const attr = omit(this.params.attr, keys)
       for (const k of keys) {
         attr[camelCase(`remote ${k}`)] = this.params.attr[k] ?? ref[k] ?? ref.field

@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-05-16
+
+- [2.20.0] Change to ```wdb-data-table``` widget to handle immutable rows
+- [2.20.0] Change to ```wdb-lookup-select``` widget to allow new value creation
+- [2.20.0] Change to ```getSchemaExt()``` to allow auto widget creation
+
 ## 2026-05-11
 
 - [2.19.0] Updates to match ```dobo@2.23.0``` specs

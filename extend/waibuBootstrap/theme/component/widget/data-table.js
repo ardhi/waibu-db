@@ -140,6 +140,7 @@ async function table () {
           const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
           if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
           else attr.text = `${noWrap}`
+          if (d._immutable) attr.text += ' color:body-tertiary'
           const format = get(schema, `view.format.${f}`)
           if (format) value = await format.call(this, value, d, { params: this.params, req })
           if (!get(schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
