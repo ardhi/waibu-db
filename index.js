@@ -129,9 +129,14 @@ async function factory (pkgName) {
         menu.push({
           title: req.t(k),
           children: map(items, item => {
+            const params = {
+              model: kebabCase(item.name),
+              action: 'list'
+            }
             return {
               title: camelCase(item.name.slice(plugin.alias.length)),
-              href: `waibuAdmin:/${prefix}/${kebabCase(item.name)}/list`
+              href: `waibuAdmin:/${prefix}/:model/:action`,
+              params
             }
           })
         })

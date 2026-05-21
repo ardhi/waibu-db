@@ -5,11 +5,12 @@ async function btnColumns () {
 
   return class WdbBtnColumns extends WdbBase {
     build = async () => {
-      const { find, get, isEmpty, without } = this.app.lib._
+      const { find, get, isEmpty, without, intersection } = this.app.lib._
       const { jsonStringify } = this.app.waibuMpa
       const { req } = this.component
       const qsKey = this.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
+      const data = get(this, 'component.locals.list.data', [])
       const count = get(this, 'component.locals.list.count', 0)
       if (count === 0) this.params.attr.triggerDisabled = true
       if (schema.view.disabled.includes('find')) {
@@ -18,12 +19,13 @@ async function btnColumns () {
       }
       let fields = without(get(this, `component.locals._meta.query.${qsKey.fields}`, '').split(','), '')
       if (isEmpty(fields)) fields = without(schema.view.fields, 'id')
+      const allFields = data.length > 0 ? intersection(schema.view.fields, Object.keys(data[0])) : []
       const items = []
       this.params.attr.color = this.params.attr.color ?? 'secondary-outline'
       if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('columns')
       for (const f of schema.view.fields) {
-        let prop = find(schema.properties, { name: f })
-        if (!prop) prop = find(schema.view.calcFields, { name: f })
+        if (allFields.length > 0 && !allFields.includes(f)) continue
+        const prop = find(schema.properties, { name: f })
         if (!prop) continue
         const attr = { 'x-model': 'selected', label: req.t(get(schema, `view.label.${f}`, `field.${f}`)), value: f, labelText: 'nowrap' }
         if (fields.includes(f)) attr.checked = true

@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-05-22
+
+- [2.20.1] Bug fix in admin menu
+- [2.20.1] Bug fix in ```wdb-btn-columns``` widget
+- [2.20.1] Bug fix in ```wdb-data-table``` widget
+- [2.20.1] Bug fix in ```wdb-form``` widget
+
 ## 2026-05-16
 
 - [2.20.0] Change to ```wdb-data-table``` widget to handle immutable rows

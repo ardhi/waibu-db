@@ -24,7 +24,8 @@ async function table () {
       const { escape, attrToArray } = this.app.waibu
       const { groupAttrs } = this.app.waibuMpa
       const { isHtmlLink } = this.app.bajoExtra
-      const { get, omit, set, find, isEmpty, without, merge } = this.app.lib._
+      const { getTruncated } = this.app.bajoTemplate
+      const { get, omit, set, find, isEmpty, without, merge, intersection } = this.app.lib._
       const { isSet } = this.app.lib.aneka
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
@@ -48,6 +49,9 @@ async function table () {
       const qsKey = this.app.waibu.config.qsKey
       let fields = without(get(this, `component.locals._meta.query.${qsKey.fields}`, '').split(','), '')
       if (isEmpty(fields)) fields = without(schema.view.fields, 'id')
+      if (data.length > 0) {
+        fields = intersection(fields, Object.keys(data[0]))
+      }
       let sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(this, `component.locals._meta.query.${qsKey.sort}`, '')
       if (isEmpty(sort) && filter.sort) {
         const keys = Object.keys(filter.sort)
@@ -143,6 +147,7 @@ async function table () {
           if (d._immutable) attr.text += ' color:body-tertiary'
           const format = get(schema, `view.format.${f}`)
           if (format) value = await format.call(this, value, d, { params: this.params, req })
+          if (['object', 'array'].includes(prop.type) && !isHtmlLink(value)) value = getTruncated(value, 20) // TODO: should be handle by css instead
           if (!get(schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })
           lines.push(line)

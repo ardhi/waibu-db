@@ -4,8 +4,8 @@ async function form () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbForm extends WdbBase {
-    static async handleRo ({ attr = {}, prop = {} } = {}) {
-      return await this.component.buildTag({ tag: 'formPlaintext', attr, selfCosing: true, noEscape: true })
+    static async handleRo ({ attr = {}, prop = {}, widget = {} } = {}) {
+      return await this.component.buildTag({ tag: 'formPlaintext', attr, selfCosing: true, noEscape: true }, { prop, widget })
     }
 
     static async handleRw ({ attr = {}, prop = {}, widget = {} } = {}) {
@@ -44,6 +44,7 @@ async function form () {
             if (v === true) attr[k] = true
             else attr[k] = v
           })
+          if (['array', 'object'].includes(prop.type)) attr.col = '12-md'
           attr.label = this.component.req.t(attr.label)
           const xon = filter(xOns, { field: widget.name })
           for (const o of xon) {
