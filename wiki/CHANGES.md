@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-05-25
+
+- [2.21.0] Auto detect theme & iconset
+
 ## 2026-05-22
 
 - [2.20.1] Bug fix in admin menu

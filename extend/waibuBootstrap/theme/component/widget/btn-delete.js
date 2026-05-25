@@ -46,9 +46,7 @@ async function btnDelete () {
         await wbs.confirmation(\`${req.t(msg)}\`, {
           ok: '${this.params.attr.id}:remove',
           close: 'y',
-          opts: selected,
-          theme: '${get(this, 'component.theme.name', 'default')}',
-          iconset: '${get(this, 'component.iconset.name', 'default')}'
+          opts: selected
         })
       `
       this.params.html = await this.component.buildTag({ tag: 'btn', attr: this.params.attr, html: this.params.html })
