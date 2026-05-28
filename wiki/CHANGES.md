@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-05-28
+
+- [2.21.1] Bug fix in ```get-schema-ext.js```
+
 ## 2026-05-25
 
 - [2.21.0] Auto detect theme & iconset
