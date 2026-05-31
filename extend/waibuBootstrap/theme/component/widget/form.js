@@ -5,7 +5,7 @@ async function form () {
 
   return class WdbForm extends WdbBase {
     static async handleRo ({ attr = {}, prop = {}, widget = {} } = {}) {
-      return await this.component.buildTag({ tag: 'formPlaintext', attr, selfCosing: true, noEscape: true }, { prop, widget })
+      return await this.component.buildTag({ tag: 'formPlaintext', attr, addons: widget.addons, selfCosing: true, noEscape: true }, { prop, widget })
     }
 
     static async handleRw ({ attr = {}, prop = {}, widget = {} } = {}) {
@@ -15,12 +15,11 @@ async function form () {
       if (has(attr, 'name') && !has(attr, 'value')) {
         attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
       }
-      if (prop.virtual) widget.component = 'form-plaintext'
       return `<c:${widget.component} ${stringifyAttribs(attr)} />`
     }
 
     build = async () => {
-      const { get, find, filter, forOwn, isEmpty, omit } = this.app.lib._
+      const { get, find, filter, forOwn, isEmpty, omit, isArray } = this.app.lib._
       const { base64JsonEncode } = this.app.waibu
       const body = []
       const xModels = get(this.schema, 'view.x.model', [])
@@ -51,11 +50,21 @@ async function form () {
             attr[`@${o.bind}`] = o.handler
           }
           if (widget.componentOpts) attr['c-opts'] = base64JsonEncode(widget.componentOpts)
-          if (widget.component === 'form-plaintext' || this.params.attr.method !== 'POST') {
-            body.push(await WdbForm.handleRo.call(this, { attr, prop, widget }))
-          } else {
-            body.push(await WdbForm.handleRw.call(this, { attr, prop, widget }))
+          if (prop.virtual) widget.component = 'form-plaintext'
+          widget.addons = widget.addons ?? []
+          if (!isArray(widget.addons)) widget.addons = [widget.addons]
+          for (const ao of widget.addons) {
+            const tag = ao.type === 'button' ? 'btn' : 'formInputAddon'
+            ao.html = await this.component.buildTag({ tag, attr: ao.attr, html: ao.html })
+            ao.position = ao.position ?? 'append'
           }
+          let html
+          if (widget.component === 'form-plaintext' || this.params.attr.method !== 'POST') {
+            html = await WdbForm.handleRo.call(this, { attr, prop, widget })
+          } else {
+            html = await WdbForm.handleRw.call(this, { attr, prop, widget })
+          }
+          body.push(html)
         }
         body.push('</c:fieldset>')
       }
