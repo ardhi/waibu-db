@@ -25,7 +25,7 @@ async function table () {
       const { groupAttrs } = this.app.waibuMpa
       const { isHtmlLink } = this.app.bajoExtra
       const { getTruncated } = this.app.bajoTemplate
-      const { get, omit, set, find, isEmpty, without, merge, intersection } = this.app.lib._
+      const { get, omit, set, find, isEmpty, without, merge, intersection, isPlainObject } = this.app.lib._
       const { isSet } = this.app.lib.aneka
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
       this.params.attr = group._
@@ -146,7 +146,10 @@ async function table () {
           else attr.text = `${noWrap}`
           if (d._immutable) attr.text += ' color:body-tertiary'
           const format = get(schema, `view.format.${f}`)
-          if (format) value = await format.call(this, value, d, { params: this.params, req })
+          if (format) {
+            const formatted = await format.call(this, value, d, { params: this.params, req })
+            value = isPlainObject(formatted) ? `<a href="${formatted.href}">${formatted.value}</a>` : formatted
+          }
           if (['object', 'array'].includes(prop.type) && !isHtmlLink(value)) value = getTruncated(value, 20) // TODO: should be handle by css instead
           if (!get(schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
           const line = await this.component.buildTag({ tag: 'td', attr, html: value })

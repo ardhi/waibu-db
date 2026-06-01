@@ -3,6 +3,7 @@
 ## 2026-06-01
 
 - [2.21.3] Bug fix in ```wdb-form``` widget
+- [2.22.0] Now use the new ```format``` definition for ```virtual``` column in ```wdb-data-table``` widget
 
 ## 2026-05-28
 
