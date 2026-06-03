@@ -100,13 +100,9 @@ async function factory (pkgName) {
       }
     }
 
-    adminMenu = async (locals, req) => {
-      const { getPluginPrefix } = this.app.waibu
+    getAutoModels = () => {
+      const { filter, get, map, isArray } = this.app.lib._
       const { pascalCase } = this.app.lib.aneka
-      const { getPluginTitle } = this.app.waibuMpa
-      const { camelCase, map, groupBy, keys, kebabCase, filter, get, isArray } = this.app.lib._
-
-      const prefix = getPluginPrefix(this.ns)
       const allModels = this.app.dobo.models
       const models = filter(allModels, s => {
         const byModelFind = !s.disabled.includes('find')
@@ -117,6 +113,16 @@ async function factory (pkgName) {
         const byDbDisabled = !modelDisabled.includes(s.name)
         return byModelFind && byDbDisabled
       })
+      return models
+    }
+
+    adminMenu = async (locals, req) => {
+      const { getPluginPrefix } = this.app.waibu
+      const { getPluginTitle } = this.app.waibuMpa
+      const { camelCase, map, groupBy, keys, kebabCase } = this.app.lib._
+
+      const prefix = getPluginPrefix(this.ns)
+      const models = this.getAutoModels()
       const omenu = groupBy(map(models, s => {
         const item = { name: s.name, ns: s.plugin.ns }
         item.nsTitle = getPluginTitle(s.plugin.ns, req)

@@ -20,7 +20,7 @@ async function table () {
     }
 
     build = async () => {
-      const { req } = this.component
+      const { req, buildTag, buildSentence, buildUrl, locals = {} } = this.component
       const { escape, attrToArray } = this.app.waibu
       const { groupAttrs } = this.app.waibuMpa
       const { isHtmlLink } = this.app.bajoExtra
@@ -31,14 +31,14 @@ async function table () {
       this.params.attr = group._
       const prettyUrl = this.params.attr.prettyUrl
 
-      const schema = get(this, 'component.locals.schema', {})
-      const data = get(this, 'component.locals.list.data', [])
-      const filter = get(this, 'component.locals.list.filter', {})
-      const count = get(this, 'component.locals.list.count', 0)
+      const schema = get(locals, 'schema', {})
+      const data = get(locals, 'list.data', [])
+      const filter = get(locals, 'list.filter', {})
+      const count = get(locals, 'list.count', 0)
       if (count === 0 || data.length === 0) {
         const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
         this.params.noTag = true
-        this.params.html = await this.component.buildSentence(alert)
+        this.params.html = await buildSentence(alert)
         return
       }
       const disableds = get(schema, 'view.disabled', [])
@@ -47,12 +47,12 @@ async function table () {
         return
       }
       const qsKey = this.app.waibu.config.qsKey
-      let fields = without(get(this, `component.locals._meta.query.${qsKey.fields}`, '').split(','), '')
+      let fields = without(get(locals, `_meta.query.${qsKey.fields}`, '').split(','), '')
       if (isEmpty(fields)) fields = without(schema.view.fields, 'id')
       if (data.length > 0) {
         fields = intersection(fields, Object.keys(data[0]))
       }
-      let sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(this, `component.locals._meta.query.${qsKey.sort}`, '')
+      let sort = this.params.attr.sort ? attrToArray(this.params.attr.sort) : get(locals, `_meta.query.${qsKey.sort}`, '')
       if (isEmpty(sort) && filter.sort) {
         const keys = Object.keys(filter.sort)
         if (keys.length > 0) sort = `${keys[0]}:${filter.sort[keys[0]]}`
@@ -89,34 +89,34 @@ async function table () {
             icon = sortDir === '1' ? (this.params.attr.sortUpIcon ?? 'caretUp') : (this.params.attr.sortDownIcon ?? 'caretDown')
           }
           const item = set({ page: 1 }, qsKey.sort, sortItem)
-          const href = this.component.buildUrl({ params: item })
+          const href = buildUrl({ params: item })
           const attr = this.isRightAligned(f, schema) ? { text: 'align:end' } : {}
           const content = [
-            await this.component.buildTag({ tag: 'div', attr, html: head }),
-            await this.component.buildTag({ tag: 'a', attr: { icon, href, noIconLink: true }, prepend: '<div class="ms-1">', append: '</div>' })
+            await buildTag({ tag: 'div', attr, html: head }),
+            await buildTag({ tag: 'a', attr: { icon, href, noIconLink: true }, prepend: '<div class="ms-1">', append: '</div>' })
           ]
-          head = await this.component.buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
+          head = await buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
         }
         let text = this.params.attr.headerNowrap ? '' : 'nowrap'
         if (text === '' && this.isNoWrap(f, schema, group.body.nowrap)) text = 'nowrap'
         if (this.isRightAligned(f, schema)) text += ' align:end'
         const attr = { dataKey: f, dataType: prop.type, text }
-        items.push(await this.component.buildTag({ tag: 'th', attr, html: head }))
+        items.push(await buildTag({ tag: 'th', attr, html: head }))
       }
       if (items.length > 0 && selection) {
         let item = '<th></th>'
         if (selection === 'multi') {
           const attr = { 'x-model': 'toggleAll', name: '_rtm', noWrapper: true, noLabel: true }
-          item = await this.component.buildTag({ tag: 'formCheck', attr, prepend: '<th>', append: '</th>' })
+          item = await buildTag({ tag: 'formCheck', attr, prepend: '<th>', append: '</th>' })
         } else {
           const attr = { name: 'remove', '@click': 'selected = \'\'' }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
-          item = await this.component.buildTag({ tag: 'icon', attr, prepend: '<th>', append: '</th>' })
+          item = await buildTag({ tag: 'icon', attr, prepend: '<th>', append: '</th>' })
         }
         items.unshift(item)
       }
-      const header = await this.component.buildTag({ tag: 'tr', html: items.join('\n') })
-      html.push(await this.component.buildTag({ tag: 'thead', attr: group.head, html: header }))
+      const header = await buildTag({ tag: 'tr', html: items.join('\n') })
+      html.push(await buildTag({ tag: 'thead', attr: group.head, html: header }))
       // body
       items = []
       for (const idx in data) {
@@ -127,7 +127,7 @@ async function table () {
           const attr = { 'x-model': 'selected', name: '_rt', value: d.id, noLabel: true, noWrapper: true }
           const type = find(schema.properties, { name: 'id' }).type
           const prepend = `<td data-value="${d.id}" data-key="id" data-type="${type}">`
-          lines.push(await this.component.buildTag({ tag, attr, prepend, append: '</td>' }))
+          lines.push(await buildTag({ tag, attr, prepend, append: '</td>' }))
         }
         for (const f of schema.view.fields) {
           if (!fields.includes(f)) continue
@@ -148,23 +148,31 @@ async function table () {
           const format = get(schema, `view.format.${f}`)
           if (format) {
             const formatted = await format.call(this, value, d, { params: this.params, req })
-            value = isPlainObject(formatted) ? `<a href="${formatted.href}">${formatted.value}</a>` : formatted
+            if (isPlainObject(formatted) && formatted.href) {
+              const text = await buildTag({ tag: 'div', attr: {}, html: formatted.value })
+              const link = await buildTag({ tag: 'a', attr: { text: 'color:white', icon: 'link', href: formatted.href, noIconLink: true } })
+              const badge = await buildTag({ tag: 'badge', attr: { text: 'background:primary', rounded: 'type:pill' }, html: link, prepend: '<div class="ms-2">', append: '</div>' })
+              const line = await buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: `${text}\n${badge}` })
+              lines.push(await buildTag({ tag: 'td', attr, html: line }))
+              continue
+            }
+            value = formatted
           }
           if (['object', 'array'].includes(prop.type) && !isHtmlLink(value)) value = getTruncated(value, 20) // TODO: should be handle by css instead
           if (!get(schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
-          const line = await this.component.buildTag({ tag: 'td', attr, html: value })
+          const line = await buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }
         const attr = { id: `rec-${d.id}` }
         if (!disableds.includes('update') || !disableds.includes('remove') || !disableds.includes('get')) attr['@click'] = `toggle('${d.id}')`
         if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
-        items.push(await this.component.buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
+        items.push(await buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
       }
-      html.push(await this.component.buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
+      html.push(await buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
       this.params.attr = omit(this.params.attr, ['sortUpIcon', 'sortDownIcon', 'noSort', 'selection', 'headerNowrap'])
       let xData = `
         goDetails (id) {
-          let url = '${this.params.attr.detailsHref ?? this.component.buildUrl({ base: 'details', prettyUrl })}'
+          let url = '${this.params.attr.detailsHref ?? buildUrl({ base: 'details', prettyUrl })}'
           if (url === '#') return
           if (url.indexOf('/:id') > -1) url = url.replace('/:id', '/' + id)
           else url += '&id=' + id
@@ -220,7 +228,7 @@ async function table () {
       this.params.attr['x-data'] = xData
       this.params.attr['x-init'] = xInit
       this.params.attr.responsive = true
-      this.params.html = await this.component.buildTag({ tag: 'table', attr: this.params.attr, html: html.join('\n') })
+      this.params.html = await buildTag({ tag: 'table', attr: this.params.attr, html: html.join('\n') })
     }
   }
 }

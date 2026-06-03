@@ -9,13 +9,14 @@ async function form () {
     }
 
     static async handleRw ({ attr = {}, prop = {}, widget = {} } = {}) {
-      const { get, has } = this.app.lib._
-      const { stringifyAttribs } = this.app.waibuMpa
+      const { get, has, camelCase } = this.app.lib._
+      // const { stringifyAttribs } = this.app.waibuMpa
       attr.dataType = prop.type
       if (has(attr, 'name') && !has(attr, 'value')) {
         attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
       }
-      return `<c:${widget.component} ${stringifyAttribs(attr)} />`
+      return await this.component.buildTag({ tag: camelCase(widget.component), attr, addons: widget.addons, selfCosing: true, noEscape: true }, { prop, widget })
+      // return `<c:${widget.component} ${stringifyAttribs(attr)} />`
     }
 
     build = async () => {

@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-06-03
+
+- [2.23.0] Add ```getAutoModels()```
+- [2.23.0] Display link in ```data-table``` widget as separate link inside a ```badge```
+- [2.23.0] Bug fix in ```form.js```
+- [2.23.0] Add folder redirection
+- [2.23.0] Bug fix in model route, now correctly works for allowed models only
+- [2.23.0] Bug fix in ```get-schema-ext.js```
+
 ## 2026-06-01
 
 - [2.21.3] Bug fix in ```wdb-form``` widget
