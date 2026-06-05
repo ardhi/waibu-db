@@ -12,8 +12,8 @@ async function form () {
       const { get, has, camelCase } = this.app.lib._
       // const { stringifyAttribs } = this.app.waibuMpa
       attr.dataType = prop.type
-      if (has(attr, 'name') && !has(attr, 'value')) {
-        attr.value = widget.component === 'form-plaintext' ? get(this, `oldData.${attr.name}`, attr.dataValue) : attr.dataValue
+      if (has(attr, 'name') && !has(attr, 'value') && widget.component === 'form-plaintext') {
+        attr.value = get(this, `oldData.${attr.name}`, attr.dataValue)
       }
       return await this.component.buildTag({ tag: camelCase(widget.component), attr, addons: widget.addons, selfCosing: true, noEscape: true }, { prop, widget })
       // return `<c:${widget.component} ${stringifyAttribs(attr)} />`

@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-06-05
+
+- [2.23.1] Add ```form``` widget
+
 ## 2026-06-03
 
 - [2.23.0] Add ```getAutoModels()```
