@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-10
+
+- [2.24.0] Add secure routes declaration
+- [2.24.0] Bug fix in ```wdb-btn-columns``` widget
+- [2.24.0] Add support for ```sumba:immutable``` feature
+
 ## 2026-06-05
 
 - [2.23.1] Add ```form``` widget

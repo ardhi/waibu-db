@@ -144,7 +144,10 @@ async function table () {
           const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
           if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
           else attr.text = `${noWrap}`
-          if (d._immutable) attr.text += ' color:body-tertiary'
+          if (d._immutable && d._immutable.length > 0) {
+            if (d._immutable[0] === '*' || d._immutable.includes(f)) attr.text += ' color:body-tertiary'
+          }
+          if (f === 'id') attr.text += ' color:body-tertiary'
           const format = get(schema, `view.format.${f}`)
           if (format) {
             const formatted = await format.call(this, value, d, { params: this.params, req })

@@ -52,6 +52,8 @@ async function form () {
           }
           if (widget.componentOpts) attr['c-opts'] = base64JsonEncode(widget.componentOpts)
           if (prop.virtual) widget.component = 'form-plaintext'
+          const immutable = get(this, 'formData._immutable', [])
+          if ((immutable.length === 1 && immutable[0] === '*') || immutable.includes(prop.name)) widget.component = 'form-plaintext'
           widget.addons = widget.addons ?? []
           if (!isArray(widget.addons)) widget.addons = [widget.addons]
           for (const ao of widget.addons) {
