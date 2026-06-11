@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-11
+
+- [2.24.1] Bug fix in ```wdb-form``` widget
+- [2.24.1] Bug fix in ```_details-btns.html``` partial
+
 ## 2026-06-10
 
 - [2.24.0] Add secure routes declaration
