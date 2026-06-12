@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-06-12
+
+- [2.25.0] Necessary updates to ```bajo@2.18.0``` specs
+
 ## 2026-06-11
 
 - [2.24.1] Bug fix in ```wdb-form``` widget

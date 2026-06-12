@@ -74,11 +74,10 @@ async function factory (pkgName) {
     }
 
     exportData = async (params) => {
-      const { getPlugin } = this.app.bajo
       const { get } = this.app.lib._
       const { fs } = this.app.lib
       const { exportTo } = this.app.doboExtra
-      const { downloadDir } = getPlugin('sumba')
+      const { downloadDir } = this.app.getPlugin('sumba')
       const model = get(params, 'payload.data.name')
       const fields = get(params, 'payload.data.opts.fields')
       const { id, file } = get(params, 'payload.data.download', {})
