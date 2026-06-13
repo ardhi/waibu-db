@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-06-13
+
+- [2.25.1] Bug fix in ```transaction```: only applicable to ```CUD```
+
 ## 2026-06-12
 
 - [2.25.0] Necessary updates to ```bajo@2.18.0``` specs
