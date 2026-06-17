@@ -5,6 +5,7 @@
 - [2.25.2] Bug fix in ```wdb-data-table``` widget
 - [2.25.2] Bug fix in ```wdb-form``` widget
 - [2.25.2] Bug fix in ```get-schema-ext.js```
+- [2.26.0] Add feature to edit schema only on main site
 
 ## 2026-06-13
 
