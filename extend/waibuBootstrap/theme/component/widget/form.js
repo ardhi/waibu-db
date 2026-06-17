@@ -22,6 +22,7 @@ async function form () {
     build = async () => {
       const { get, find, filter, forOwn, isEmpty, omit, isArray } = this.app.lib._
       const { base64JsonEncode } = this.app.waibu
+      const { req } = this.component
       const body = []
       const xModels = get(this.schema, 'view.x.model', [])
       const xOns = get(this.schema, 'view.x.on', [])
@@ -53,7 +54,9 @@ async function form () {
           if (widget.componentOpts) attr['c-opts'] = base64JsonEncode(widget.componentOpts)
           if (prop.virtual) widget.component = 'form-plaintext'
           const immutable = get(this, 'formData._immutable') || []
-          if ((immutable.length === 1 && immutable[0] === '*') || immutable.includes(prop.name)) widget.component = 'form-plaintext'
+          if (!req.routeOptions.config.xSite) {
+            if ((immutable.length === 1 && immutable[0] === '*') || immutable.includes(prop.name)) widget.component = 'form-plaintext'
+          }
           widget.addons = widget.addons ?? []
           if (!isArray(widget.addons)) widget.addons = [widget.addons]
           for (const ao of widget.addons) {

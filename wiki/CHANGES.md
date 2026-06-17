@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-17
+
+- [2.25.2] Bug fix in ```wdb-data-table``` widget
+- [2.25.2] Bug fix in ```wdb-form``` widget
+- [2.25.2] Bug fix in ```get-schema-ext.js```
+
 ## 2026-06-13
 
 - [2.25.1] Bug fix in ```transaction```: only applicable to ```CUD```
