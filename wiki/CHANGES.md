@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-06-18
+
+- [2.26.1] Bug fix in ```get-schema-ext.js```
+
 ## 2026-06-17
 
 - [2.25.2] Bug fix in ```wdb-data-table``` widget
