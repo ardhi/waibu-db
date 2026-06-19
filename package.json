@@ -1,6 +1,6 @@
 {
   "name": "waibu-db",
-  "version": "2.26.1",
+  "version": "2.26.3",
   "description": "DB Helper",
   "main": "index.js",
   "scripts": {

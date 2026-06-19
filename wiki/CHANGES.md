@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-06-19
+
+- [2.26.2] Bug fix in ```add-handler.js```
+
 ## 2026-06-18
 
 - [2.26.1] Bug fix in ```get-schema-ext.js```
