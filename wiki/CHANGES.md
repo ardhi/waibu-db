@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-24
+
+- [2.26.4] Bug fix in ```wdb-btn-columns``` widget
+- [2.26.4] Bug fix in ```wdb-forms``` widget
+
 ## 2026-06-19
 
 - [2.26.2] Bug fix in ```add-handler.js```

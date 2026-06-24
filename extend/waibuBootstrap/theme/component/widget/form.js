@@ -45,7 +45,7 @@ async function form () {
             if (v === true) attr[k] = true
             else attr[k] = v
           })
-          if (['array', 'object'].includes(prop.type)) attr.col = '12-md'
+          if (['array', 'object', 'text'].includes(prop.type)) attr.col = '12-md'
           attr.label = this.component.req.t(attr.label)
           const xon = filter(xOns, { field: widget.name })
           for (const o of xon) {

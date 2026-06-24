@@ -23,7 +23,7 @@ async function btnColumns () {
       if (isEmpty(this.params.attr.content)) this.params.attr.content = req.t('columns')
       for (const f of schema.view.fields) {
         // if (allFields.length > 0 && !allFields.includes(f)) continue
-        const prop = schema.properties.find(p => p.name === f && !p.virtual)
+        const prop = schema.properties.find(p => p.name === f)
         if (!prop) continue
         const attr = { 'x-model': 'selected', label: req.t(get(schema, `view.label.${f}`, `field.${f}`)), value: f, labelText: 'nowrap' }
         if (fields.includes(f)) attr.checked = true
