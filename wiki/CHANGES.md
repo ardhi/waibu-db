@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-29
+
+- [2.27.0] Add ```isActionAllowed()``` in ```wdb-base```
+- [2.27.0] Add all related action permission on all widgets & page handlers
+
 ## 2026-06-24
 
 - [2.26.4] Bug fix in ```wdb-btn-columns``` widget

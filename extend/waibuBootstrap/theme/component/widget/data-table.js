@@ -4,19 +4,19 @@ async function table () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbDataTable extends WdbBase {
-    isRightAligned = (field, schema) => {
+    isRightAligned = (field) => {
       const { get, find } = this.app.lib._
-      const prop = find(schema.properties, { name: field })
+      const prop = find(this.schema.properties, { name: field })
       if (!prop) return false
-      let value = get(schema, 'view.alignEnd', []).includes(field)
+      let value = get(this.schema, 'view.alignEnd', []).includes(field)
       if (!value) value = ['smallint', 'integer', 'float', 'double'].includes(prop.type)
       return value
     }
 
-    isNoWrap = (field, schema, bodyNowrap) => {
+    isNoWrap = (field, bodyNowrap) => {
       if (bodyNowrap) return true
       const { get } = this.app.lib._
-      return get(schema, 'view.noWrap', []).includes(field)
+      return get(this.schema, 'view.noWrap', []).includes(field)
     }
 
     build = async () => {
@@ -32,24 +32,30 @@ async function table () {
       const prettyUrl = this.params.attr.prettyUrl
 
       const hasXSite = get(req, 'routeOptions.config.xSite')
-      const schema = get(locals, 'schema', {})
       const data = get(locals, 'list.data', [])
       const filter = get(locals, 'list.filter', {})
       const count = get(locals, 'list.count', 0)
+      const allowed = await this.isActionAllowed('READ')
+      if (!allowed) {
+        const alert = '<c:alert color="error" t:content="accessDenied" margin="top-4"/>'
+        this.params.noTag = true
+        this.params.html = await buildSentence(alert)
+        return
+      }
       if (count === 0 || data.length === 0) {
         const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
         this.params.noTag = true
         this.params.html = await buildSentence(alert)
         return
       }
-      const disableds = get(schema, 'view.disabled', [])
+      const disableds = get(this.schema, 'view.disabled', [])
       if (disableds.includes('find')) {
         this.params.html = ''
         return
       }
       const qsKey = this.app.waibu.config.qsKey
       let fields = without(get(locals, `_meta.query.${qsKey.fields}`, '').split(','), '')
-      if (isEmpty(fields)) fields = without(schema.view.fields, 'id')
+      if (isEmpty(fields)) fields = without(this.schema.view.fields, 'id')
       if (data.length > 0) {
         fields = intersection(fields, Object.keys(data[0]))
       }
@@ -64,9 +70,9 @@ async function table () {
 
       let selection = this.params.attr.selection
       if (!isSet(selection)) {
-        const canDelete = !disableds.includes('remove')
-        const canEdit = !disableds.includes('update')
-        const canDetails = !disableds.includes('get')
+        const canDelete = !disableds.includes('remove') && (await this.isActionAllowed('REMOVE'))
+        const canEdit = !disableds.includes('update') && (await this.isActionAllowed('UPDATE'))
+        const canDetails = !disableds.includes('get') && (await this.isActionAllowed('READ'))
         if (canEdit || canDetails) selection = 'single'
         if (canDelete) selection = 'multi'
         if (selection) this.params.attr.hover = true
@@ -76,13 +82,13 @@ async function table () {
       const html = []
       let items = []
       // head
-      for (const f of schema.view.fields) {
+      for (const f of this.schema.view.fields) {
         if (!fields.includes(f)) continue
-        let prop = find(schema.properties, { name: f })
-        if (!prop) prop = find(schema.view.calcFields, { name: f })
+        let prop = find(this.schema.properties, { name: f })
+        if (!prop) prop = find(this.schema.view.calcFields, { name: f })
         if (!prop) continue
-        let head = req.t(get(schema, `view.label.${f}`, `field.${f}`))
-        if (!this.params.attr.noSort && (schema.sortables ?? []).includes(f)) {
+        let head = req.t(get(this.schema, `view.label.${f}`, `field.${f}`))
+        if (!this.params.attr.noSort && (this.schema.sortables ?? []).includes(f)) {
           let sortItem = `${f}:-1`
           let icon = this.params.attr.sortUpIcon ?? 'caretUp'
           if (f === sortCol) {
@@ -91,7 +97,7 @@ async function table () {
           }
           const item = set({ page: 1 }, qsKey.sort, sortItem)
           const href = buildUrl({ params: item })
-          const attr = this.isRightAligned(f, schema) ? { text: 'align:end' } : {}
+          const attr = this.isRightAligned(f, this.schema) ? { text: 'align:end' } : {}
           const content = [
             await buildTag({ tag: 'div', attr, html: head }),
             await buildTag({ tag: 'a', attr: { icon, href, noIconLink: true }, prepend: '<div class="ms-1">', append: '</div>' })
@@ -99,8 +105,8 @@ async function table () {
           head = await buildTag({ tag: 'div', attr: { flex: 'justify-content:between align-items:end' }, html: content.join('\n') })
         }
         let text = this.params.attr.headerNowrap ? '' : 'nowrap'
-        if (text === '' && this.isNoWrap(f, schema, group.body.nowrap)) text = 'nowrap'
-        if (this.isRightAligned(f, schema)) text += ' align:end'
+        if (text === '' && this.isNoWrap(f, group.body.nowrap)) text = 'nowrap'
+        if (this.isRightAligned(f)) text += ' align:end'
         const attr = { dataKey: f, dataType: prop.type, text }
         items.push(await buildTag({ tag: 'th', attr, html: head }))
       }
@@ -126,13 +132,13 @@ async function table () {
         if (selection) {
           const tag = selection === 'single' ? 'formRadio' : 'formCheck'
           const attr = { 'x-model': 'selected', name: '_rt', value: d.id, noLabel: true, noWrapper: true }
-          const type = find(schema.properties, { name: 'id' }).type
+          const type = find(this.schema.properties, { name: 'id' }).type
           const prepend = `<td data-value="${d.id}" data-key="id" data-type="${type}">`
           lines.push(await buildTag({ tag, attr, prepend, append: '</td>' }))
         }
-        for (const f of schema.view.fields) {
+        for (const f of this.schema.view.fields) {
           if (!fields.includes(f)) continue
-          const prop = find(schema.properties, { name: f })
+          const prop = find(this.schema.properties, { name: f })
           if (!prop) continue
           let dataValue = d[f]
           if (['datetime'].includes(prop.type) && dataValue instanceof Date && !isNaN(dataValue)) dataValue = escape(dataValue.toISOString())
@@ -140,16 +146,16 @@ async function table () {
           let value = this.getRefValue({ field: f, data: d, refName: this.getRefName(f) }) ?? get(d, `_fmt.${f}`, d[f])
           const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
-          const formatCell = get(schema, `view.formatCell.${f}`)
+          const formatCell = get(this.schema, `view.formatCell.${f}`)
           if (formatCell) merge(attr, await formatCell.call(this, value, d, { params: this.params, req }))
-          const noWrap = this.isNoWrap(f, schema, group.body.nowrap) ? 'nowrap' : ''
-          if (this.isRightAligned(f, schema)) attr.text = `align:end ${noWrap}`
+          const noWrap = this.isNoWrap(f, group.body.nowrap) ? 'nowrap' : ''
+          if (this.isRightAligned(f)) attr.text = `align:end ${noWrap}`
           else attr.text = `${noWrap}`
           if (!hasXSite && d._immutable && d._immutable.length > 0) {
             if (d._immutable[0] === '*' || d._immutable.includes(f)) attr.text += ' color:body-tertiary'
           }
           if (f === 'id') attr.text += ' color:body-tertiary'
-          const format = get(schema, `view.format.${f}`)
+          const format = get(this.schema, `view.format.${f}`)
           if (format) {
             const formatted = await format.call(this, value, d, { params: this.params, req })
             if (isPlainObject(formatted) && formatted.href) {
@@ -163,7 +169,7 @@ async function table () {
             value = formatted
           }
           if (['object', 'array'].includes(prop.type) && !isHtmlLink(value)) value = getTruncated(value, 20) // TODO: should be handle by css instead
-          if (!get(schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
+          if (!get(this.schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
           const line = await buildTag({ tag: 'td', attr, html: value })
           lines.push(line)
         }
@@ -183,10 +189,10 @@ async function table () {
           window.location.href = url
         }
       `
-      const xDataView = get(schema, 'view.x.data', '')
+      const xDataView = get(this.schema, 'view.x.data', '')
       if (!isEmpty(xDataView)) xData += `, ${xDataView}`
       let xInit = ''
-      const xInitView = get(schema, 'view.x.init', '')
+      const xInitView = get(this.schema, 'view.x.init', '')
       if (!isEmpty(xInitView)) xInit += `${xInitView}\n`
 
       if (selection === 'multi') {

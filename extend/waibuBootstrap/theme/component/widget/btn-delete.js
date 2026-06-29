@@ -7,10 +7,10 @@ async function btnDelete () {
     build = async () => {
       const { req } = this.component
       const { generateId } = this.app.lib.aneka
-      const { isEmpty, get } = this.app.lib._
+      const { isEmpty } = this.app.lib._
       this.params.noTag = true
-      const schema = get(this, 'component.locals.schema', {})
-      if (schema.view.disabled.includes('remove')) {
+      const allowed = await this.isActionAllowed('REMOVE')
+      if (!allowed || this.schema.view.disabled.includes('remove')) {
         this.params.html = ''
         return
       }

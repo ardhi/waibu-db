@@ -5,11 +5,11 @@ async function btnAdd () {
 
   return class WdbBtnAdd extends WdbBase {
     build = async () => {
-      const { isEmpty, get } = this.app.lib._
+      const { isEmpty } = this.app.lib._
       const { req } = this.component
       this.params.noTag = true
-      const schema = get(this, 'component.locals.schema', {})
-      if (schema.view.disabled.includes('create')) {
+      const allowed = await this.isActionAllowed('CREATE')
+      if (!allowed || this.schema.view.disabled.includes('create')) {
         this.params.html = ''
         return
       }

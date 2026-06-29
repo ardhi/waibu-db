@@ -7,10 +7,10 @@ async function btnDetails () {
     build = async () => {
       const { req } = this.component
       const { generateId } = this.app.lib.aneka
-      const { isEmpty, get } = this.app.lib._
+      const { isEmpty } = this.app.lib._
       this.params.noTag = true
-      const schema = get(this, 'component.locals.schema', {})
-      if (schema.view.disabled.includes('get')) {
+      const allowed = await this.isActionAllowed('READ')
+      if (!allowed || this.schema.view.disabled.includes('get')) {
         this.params.html = ''
         return
       }

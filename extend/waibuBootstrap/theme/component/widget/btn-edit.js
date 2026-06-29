@@ -7,10 +7,10 @@ async function btnEdit () {
     build = async () => {
       const { req } = this.component
       const { generateId } = this.app.lib.aneka
-      const { isEmpty, get } = this.app.lib._
+      const { isEmpty } = this.app.lib._
       this.params.noTag = true
-      const schema = get(this, 'component.locals.schema', {})
-      if (schema.view.disabled.includes('update')) {
+      const allowed = await this.isActionAllowed('UPDATE')
+      if (!allowed || this.schema.view.disabled.includes('update')) {
         this.params.html = ''
         return
       }
