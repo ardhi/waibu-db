@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-07-12
+
+- [2.27.1] Bug fix in `util.js`
+
 ## 2026-06-29
 
 - [2.27.0] Add ```isActionAllowed()``` in ```wdb-base```
