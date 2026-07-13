@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-07-13
+
+- [2.28.0] Update documentations
+- [2.28.0] Add feature to allow export only if `options.allowExport` is set to true
+
 ## 2026-07-12
 
 - [2.27.1] Bug fix in `util.js`

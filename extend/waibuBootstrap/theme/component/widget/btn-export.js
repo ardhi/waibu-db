@@ -12,6 +12,7 @@ async function btnExport () {
       const { isEmpty, get } = this.app.lib._
       const { req } = this.component
       this.params.noTag = true
+      const noBase = this.params.attr.noBase ?? false
       const schema = get(this, 'component.locals.schema', {})
       const count = get(this, 'component.locals.list.count', 0)
       if (count === 0 && this.params.attr.handler === 'list') this.params.attr.triggerDisabled = true
@@ -106,7 +107,7 @@ async function btnExport () {
               instance.hide()
               return
             }
-            wmpa.postForm({ options: this.options.join(','), ftype: this.ftype, handler }, '${this.component.buildUrl({ base: 'export' })}')
+            wmpa.postForm({ _action: 'export', options: this.options.join(','), ftype: this.ftype, handler }, '${this.component.buildUrl({ base: noBase ? undefined : 'export' })}')
             instance.hide()
           }
         }" x-init="
