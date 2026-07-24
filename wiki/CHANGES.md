@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-07-24
+
+- [2.29.0] Change `selfBind` to `bindThis`
+
 ## 2026-07-13
 
 - [2.28.0] Update documentations

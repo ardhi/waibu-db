@@ -57,19 +57,19 @@ async function factory (pkgName) {
         remove: 'DELETE'
       }
 
-      this.selfBind([
-        'countRecord',
-        'createAggregate',
-        'createHistogram',
-        'createRecord',
-        'findOneRecord',
-        'findRecord',
-        'getSchemaExt',
-        'getRecord',
-        'removeRecord',
-        'updateRecord',
-        'findAllRecord'
-      ])
+      this.bindThis(
+        countRecord,
+        createAggregate,
+        createHistogram,
+        createRecord,
+        findOneRecord,
+        findRecord,
+        getSchemaExt,
+        getRecord,
+        removeRecord,
+        updateRecord,
+        findAllRecord
+      )
     }
 
     /**
@@ -226,18 +226,6 @@ async function factory (pkgName) {
       }
       return await this.findAllRecord({ model, req, options })
     }
-
-    countRecord = countRecord
-    createAggregate = createAggregate
-    createHistogram = createHistogram
-    createRecord = createRecord
-    findOneRecord = findOneRecord
-    findRecord = findRecord
-    findAllRecord = findAllRecord
-    getSchemaExt = getSchemaExt
-    getRecord = getRecord
-    removeRecord = removeRecord
-    updateRecord = updateRecord
   }
 
   return WaibuDb
