@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-07-25
+
+- [2.29.1] Bug fix in `exportData()`
+
 ## 2026-07-24
 
 - [2.29.0] Change `selfBind` to `bindThis`
