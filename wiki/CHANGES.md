@@ -5,6 +5,7 @@
 - [2.30.0] Canges in `exportTo()`
 - [2.30.0] Bug fix in `btn-export.js`
 - [2.30.0] Bug fix in `export-handler.js`
+- [2.31.0] Add support for `i18n` options in `export-handler.js`
 
 ## 2026-07-25
 
