@@ -30,8 +30,8 @@ async function btnExport () {
           ftype: 'json',
           toggle (val) {
             if (val === 'clipboard') {
-              $refs.fkey.removeAttribute('disabled')
-              $refs.fvalue.removeAttribute('disabled')
+              // $refs.fkey.removeAttribute('disabled')
+              // $refs.fvalue.removeAttribute('disabled')
               $refs.zip.setAttribute('disabled', '')
               $refs.xlsx.setAttribute('disabled', '')
               $refs.tsv.setAttribute('disabled', '')
@@ -39,8 +39,8 @@ async function btnExport () {
               _.pull(this.options, 'zip')
               if (!['json', 'csv'].includes(this.ftype)) this.ftype = 'json'
             } else {
-              $refs.fkey.setAttribute('disabled', '')
-              $refs.fvalue.setAttribute('disabled', '')
+              // $refs.fkey.setAttribute('disabled', '')
+              // $refs.fvalue.setAttribute('disabled', '')
               $refs.zip.removeAttribute('disabled')
               $refs.xlsx.removeAttribute('disabled')
               $refs.tsv.removeAttribute('disabled')

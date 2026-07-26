@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-07-26
+
+- [2.30.0] Canges in `exportTo()`
+- [2.30.0] Bug fix in `btn-export.js`
+- [2.30.0] Bug fix in `export-handler.js`
+
 ## 2026-07-25
 
 - [2.29.1] Bug fix in `exportData()`

@@ -92,23 +92,22 @@ async function factory (pkgName) {
       const model = get(params, 'payload.data.name')
       const fields = get(params, 'payload.data.opts.fields')
       const { id, file } = get(params, 'payload.data.download', {})
-      let dest = `${this.app.bajo.getDownloadDir()}/${file}`
       const options = {
         filter: get(params, 'payload.data.filter', {}),
-        ensureDir: true,
+        exportOpts: get(params, 'payload.data.exportOpts', []),
+        opts: get(params, 'payload.data.opts', {}),
         fields
       }
       options.filter.sort = 'id:1' // TODO: make this configurable
       if (!this.app.sumba || !id) {
-        const result = await exportTo(model, dest, options)
+        const result = await exportTo(model, file, options)
         return result.file
       }
-      const { downloadDir } = this.app.sumba
-      dest = `${downloadDir}/${file}`
       const dmodel = this.app.dobo.getModel('SumbaDownload')
+      let dest
       try {
         await dmodel.updateRecord(id, { status: 'PROCESSING' })
-        const result = await exportTo(model, dest, options)
+        const result = await exportTo(model, file, options)
         dest = result.file
         const { size } = fs.statSync(dest)
         await dmodel.updateRecord(id, { size, status: 'COMPLETE' })
