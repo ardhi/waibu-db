@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-07-27
+
+- [2.32.0] Add support for `sumba.download()` through `export-handler.js`
+
 ## 2026-07-26
 
 - [2.30.0] Canges in `exportTo()`
