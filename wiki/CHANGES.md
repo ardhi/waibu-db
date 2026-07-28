@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-07-28
+
+- [2.32.1] Bug fix in `exportData()`
+- [2.32.1] Bug fix in `btn-export.js`
+- [2.32.1] Bug fix in `export-handler.js`
+- [2.32.1] Bug fix in `create-record.js`
+
 ## 2026-07-27
 
 - [2.32.0] Add support for `sumba.download()` through `export-handler.js`

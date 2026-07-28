@@ -95,7 +95,7 @@ async function btnExport () {
           },
           async submit () {
             const instance = wbs.getInstance('Modal', $refs.export)
-            const handler = '${this.params.attr.handler ?? ''}'
+            const handler = '${this.params.attr.noBase ? '' : (this.params.attr.handler ?? '')}'
             if (this.delivery === 'clipboard') {
               const selector = '${this.params.attr.selector}'
               if (_.isEmpty(selector)) {
@@ -128,11 +128,11 @@ async function btnExport () {
             </c:grid-col>
             <c:grid-col col="6-md">
               <c:fieldset t:legend="fileType" legend-type="6">
-                <c:form-radio x-ref="xlsx" x-model="ftype" value="xlsx" t:label="excelXlsx" />
-                <c:form-radio x-ref="csv" x-model="ftype" value="csv" t:label="csv" />
-                <c:form-radio x-ref="tsv" x-model="ftype" value="tsv" t:label="tsv" />
-                <c:form-radio x-ref="json" x-model="ftype" value="json" t:label="json" />
-                <c:form-radio x-ref="ndjson" x-model="ftype" value="ndjson" t:label="ndjson" />
+                <c:form-radio x-ref="xlsx" x-model="ftype" value="xlsx" t:label="fileXlsx" />
+                <c:form-radio x-ref="csv" x-model="ftype" value="csv" t:label="fileCsv" />
+                <c:form-radio x-ref="tsv" x-model="ftype" value="tsv" t:label="fileTsv" />
+                <c:form-radio x-ref="json" x-model="ftype" value="json" t:label="fileJson" />
+                <c:form-radio x-ref="ndjson" x-model="ftype" value="ndjson" t:label="fileNdjson" />
               </c:fieldset />
             </c:grid-col>
           </c:grid-row>
