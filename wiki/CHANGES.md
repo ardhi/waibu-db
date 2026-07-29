@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-07-29
+
+- [2.32.2] Bug fix in `export-handler.js`
+
 ## 2026-07-28
 
 - [2.32.1] Bug fix in `exportData()`
