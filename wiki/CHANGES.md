@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-08-18
+
+- [2.33.0] Update things to match `dobo@2.38.0`
+
 ## 2026-07-29
 
 - [2.32.2] Bug fix in `export-handler.js`

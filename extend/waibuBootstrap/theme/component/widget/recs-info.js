@@ -23,9 +23,9 @@ async function recsInfo () {
         this.params.html = ''
         return
       }
-      page = page ?? get(this, 'component.locals.list.page', 1)
-      limit = limit ?? get(this, 'component.locals.list.limit', 25)
-      pages = pages ?? get(this, 'component.locals.list.pages', 0)
+      page = get(this, 'component.locals.list.page', page ?? 1)
+      limit = get(this, 'component.locals.list.limit', limit ?? 25)
+      pages = get(this, 'component.locals.list.pages', pages ?? 0)
 
       this.params.tag = 'div'
       this.params.attr.flex = 'justify-center:start align-items:center'

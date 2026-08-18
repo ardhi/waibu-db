@@ -4,12 +4,141 @@ async function query () {
   const WdbBase = await wdbBase.call(this)
 
   return class WdbQuery extends WdbBase {
+    modal = ({ container, models, columns, fields, id }) => {
+      const { jsonStringify } = this.app.waibuMpa
+      const { upperFirst } = this.app.lib._
+      const qsKey = this.app.waibu.config.qsKey
+      const icon = this.params.attr.mini ? 'search' : (this.params.attr.icon ?? 'dotsThree')
+      const applyBtn = !this.params.attr.mini ? '<c:btn color="primary" t:content="apply" margin="start-2" @click="submit()" />' : ''
+      let parse = 'parse () {},'
+      if (!this.params.attr.mini) {
+        parse = `parse () {
+            this.builder = document.getElementById('${id}').value
+            if (!this.builder.includes(':')) this.builder = ''
+            if (_.isEmpty(this.builder)) return
+            const tokens = _.merge({}, this.ops, {
+              in: ':[',
+              between: ':{',
+              contains: ':~',
+              starts: ':~^',
+              ends: ':~$$',
+              '!in': ':-[',
+              '!between': ':-{',
+              '!contains': ':-~',
+              '!starts': ':-~^',
+              '!ends': ':-~$$'
+            })
+            for (const part of this.builder.split('+')) {
+              let [f, ...opv] = part.split(':')
+              opv = ':' + opv.join(':')
+              this.selected.push(f)
+              let op
+              let val
+              _.each(tokens, (v, k) => {
+                if (opv.slice(0, v.length) === v) {
+                  op = k
+                  val = opv.slice(v.length).replaceAll('[', '').replaceAll('{', '').replaceAll(']', '').replaceAll('}', '').replaceAll('\\'', '')
+                }
+              })
+              if (_.isEmpty(op)) continue
+              this[f + 'Op'] = op
+              if (op === 'between') {
+                const vals = val.split(',')
+                this[f + 'Val'] = vals[0]
+                this[f + 'Val2'] = vals[1]
+              } else {
+                this[f + 'Val'] = val
+              }
+            }
+          },
+        `
+      }
+      return `
+        <c:${container} trigger-color="secondary-outline" trigger-icon="${icon}" trigger-on-end t:title="queryBuilder" x-ref="query" x-data="{
+          fields: ${jsonStringify(fields, true)},
+          builder: '',
+          selected: [],
+          ${models.join(',\n')},
+          ops: { eq: ':', neq: ':-', gt: ':>', gte: ':>=', lt: ':<', lte: ':<=' },
+          opsIn (v, neg) { return ':' + (neg ? '-' : '') + '[' + this.expandArray(v) + ']' },
+          opsBetween (v, v2, neg) { return ':' + (neg ? '-' : '') + '{' + this.expandArray(v) + ',' + this.expandArray(v2) + '}' },
+          opsExt (v, neg, ext) {
+            let prefix = (neg ? '-' : '') + '~'
+            if (ext) prefix += ext
+            return ':' + prefix + '\\'' + v + '\\''
+          },
+          ${parse}
+          expandArray (val = '') {
+            return _.map(val.split(','), item => {
+              item = _.trim(item)
+              if (Number(item)) return item
+              return '\\'' + item + '\\''
+            })
+          },
+          rebuild () {
+            const items = []
+            for (const sel of this.selected) {
+              const key = this[sel + 'Op']
+              let val = this[sel + 'Val']
+              let val2 = this[sel + 'Val2']
+              if (_.isEmpty(val)) continue
+              if (key === 'between' && _.isEmpty(val2)) continue
+              let item
+              if (key === 'in') item = this.opsIn(val)
+              else if (key === '!in') item = this.opsIn(val, true)
+              else if (key === 'between') item = this.opsBetween(val, val2, false)
+              else if (key === '!between') item = this.opsBetween(val, val2, true)
+              else if (key === 'contains') item = this.opsExt(val)
+              else if (key === '!contains') item = this.opsExt(val, true)
+              else if (key === 'starts') item = this.opsExt(val, false, '^')
+              else if (key === '!starts') item = this.opsExt(val, true, '^')
+              else if (key === 'ends') item = this.opsExt(val, false, '$$')
+              else if (key === '!ends') item = this.opsExt(val, true, '$$')
+              else if (val.includes(' ')) item = this.ops[key] + '\\'' + val + '\\''
+              else item = this.ops[key] + val
+              items.push(sel + item)
+            }
+            this.builder = items.join('+')
+          },
+          submit (run) {
+            if (run) {
+              const url = new URL(window.location.href)
+              const params = new URLSearchParams(url.search)
+              params.set('${qsKey.page}', 1)
+              params.set('${qsKey.query}', this.builder ?? '')
+              window.location.href = '?' + params.toString()
+            } else $dispatch('on-query', this.builder)
+            const instance = wbs.getInstance('${upperFirst(container)}', $refs.query)
+            instance.hide()
+          }
+        }" x-init="
+          parse()
+          const ops = _.map(fields, f => (f + 'Op'))
+          const vals = _.map(fields, f => (f + 'Val'))
+          const vals2 = _.map(fields, f => (f + 'Val2'))
+          const watcher = ['selected', ...ops, ...vals, ...vals2].join(',')
+          $watch(watcher, v => rebuild())
+        " ${this.params.attr.modal ? '' : 'style="width:600px;"'}>
+          <c:grid-row gutter="2">
+            <c:grid-col col="12">
+              <c:form-textarea x-model="builder" readonly rows="4"/>
+            </c:grid-col>
+            ${columns.join('\n')}
+          </c:grid-row>
+          <c:div flex="justify-content:end" margin="top-3">
+            <c:btn color="secondary" t:content="close" dismiss="${container}" />
+            ${applyBtn}
+            <c:btn color="primary" t:content="submitQuery" margin="start-2" @click="submit(true)" />
+          </c:div>
+        </c:${container}>
+      `
+    }
+
     build = async () => {
       const { req } = this.component
       const { generateId } = this.app.lib.aneka
       const { join } = this.app.bajo
-      const { jsonStringify } = this.app.waibuMpa
-      const { find, get, without, isEmpty, filter, upperFirst } = this.app.lib._
+      const { find, get, without, isEmpty, filter } = this.app.lib._
       const qsKey = this.app.waibu.config.qsKey
       const schema = get(this, 'component.locals.schema', {})
       if (schema.view.disabled.includes('find')) {
@@ -62,144 +191,36 @@ async function query () {
       this.params.noTag = true
       const container = this.params.attr.modal ? 'modal' : 'drawer'
       const scanables = (this.schema.scanables ?? []).map(item => req.t(`field.${item}`))
-      let placeholder = this.params.attr.placeholder
-      if (!placeholder) placeholder = scanables.length > 0 ? req.t('queryHint%s', join(scanables, { separator: ', ', lastSeparator: 'or' })) : req.t('query')
-      this.params.html = await this.component.buildSentence(`
-        <c:form-input type="search" placeholder="${placeholder}" id="${id}" x-data="{ query: '' }" x-init="
-          const url = new URL(window.location.href)
-          query = url.searchParams.get('${qsKey.query}') ?? ''
-        " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
-          <c:form-input-addon>
-            <c:${container} trigger-icon="${this.params.attr.icon ?? 'dotsThree'}" trigger-on-end t:title="queryBuilder" x-ref="query" x-data="{
-              fields: ${jsonStringify(fields, true)},
-              builder: '',
-              selected: [],
-              ${models.join(',\n')},
-              ops: { eq: ':', neq: ':-', gt: ':>', gte: ':>=', lt: ':<', lte: ':<=' },
-              opsIn (v, neg) { return ':' + (neg ? '-' : '') + '[' + this.expandArray(v) + ']' },
-              opsBetween (v, v2, neg) { return ':' + (neg ? '-' : '') + '{' + this.expandArray(v) + ',' + this.expandArray(v2) + '}' },
-              opsExt (v, neg, ext) {
-                let prefix = (neg ? '-' : '') + '~'
-                if (ext) prefix += ext
-                return ':' + prefix + '\\'' + v + '\\''
-              },
-              parse () {
-                this.builder = document.getElementById('${id}').value
-                if (!this.builder.includes(':')) this.builder = ''
-                if (_.isEmpty(this.builder)) return
-                const tokens = _.merge({}, this.ops, {
-                  in: ':[',
-                  between: ':{',
-                  contains: ':~',
-                  starts: ':~^',
-                  ends: ':~$$',
-                  '!in': ':-[',
-                  '!between': ':-{',
-                  '!contains': ':-~',
-                  '!starts': ':-~^',
-                  '!ends': ':-~$$'
-                })
-                for (const part of this.builder.split('+')) {
-                  let [f, ...opv] = part.split(':')
-                  opv = ':' + opv.join(':')
-                  this.selected.push(f)
-                  let op
-                  let val
-                  _.each(tokens, (v, k) => {
-                    if (opv.slice(0, v.length) === v) {
-                      op = k
-                      val = opv.slice(v.length).replaceAll('[', '').replaceAll('{', '').replaceAll(']', '').replaceAll('}', '').replaceAll('\\'', '')
-                    }
-                  })
-                  if (_.isEmpty(op)) continue
-                  this[f + 'Op'] = op
-                  if (op === 'between') {
-                    const vals = val.split(',')
-                    this[f + 'Val'] = vals[0]
-                    this[f + 'Val2'] = vals[1]
-                  } else {
-                    this[f + 'Val'] = val
-                  }
-                }
-              },
-              expandArray (val = '') {
-                return _.map(val.split(','), item => {
-                  item = _.trim(item)
-                  if (Number(item)) return item
-                  return '\\'' + item + '\\''
-                })
-              },
-              rebuild () {
-                const items = []
-                for (const sel of this.selected) {
-                  const key = this[sel + 'Op']
-                  let val = this[sel + 'Val']
-                  let val2 = this[sel + 'Val2']
-                  if (_.isEmpty(val)) continue
-                  if (key === 'between' && _.isEmpty(val2)) continue
-                  let item
-                  if (key === 'in') item = this.opsIn(val)
-                  else if (key === '!in') item = this.opsIn(val, true)
-                  else if (key === 'between') item = this.opsBetween(val, val2, false)
-                  else if (key === '!between') item = this.opsBetween(val, val2, true)
-                  else if (key === 'contains') item = this.opsExt(val)
-                  else if (key === '!contains') item = this.opsExt(val, true)
-                  else if (key === 'starts') item = this.opsExt(val, false, '^')
-                  else if (key === '!starts') item = this.opsExt(val, true, '^')
-                  else if (key === 'ends') item = this.opsExt(val, false, '$$')
-                  else if (key === '!ends') item = this.opsExt(val, true, '$$')
-                  else if (val.includes(' ')) item = this.ops[key] + '\\'' + val + '\\''
-                  else item = this.ops[key] + val
-                  items.push(sel + item)
-                }
-                this.builder = items.join('+')
-              },
-              submit (run) {
-                if (run) {
+      if (this.params.attr.mini) {
+        this.params.html = await this.component.buildSentence(`
+          ${this.modal({ container, models, columns, fields, id })}
+        `)
+      } else {
+        let placeholder = this.params.attr.placeholder
+        if (!placeholder) placeholder = scanables.length > 0 ? req.t('queryHint%s', join(scanables, { separator: ', ', lastSeparator: 'or' })) : req.t('query')
+        this.params.html = await this.component.buildSentence(`
+          <c:form-input type="search" placeholder="${placeholder}" id="${id}" x-data="{ query: '' }" x-init="
+            const url = new URL(window.location.href)
+            query = url.searchParams.get('${qsKey.query}') ?? ''
+          " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
+            <c:form-input-addon>
+              ${this.modal({ container, models, columns, fields, id })}
+            </c:form-input-addon>
+            <c:form-input-addon>
+              <c:btn t:content="submit" x-data="{
+                submit () {
+                  const val = document.getElementById('${id}').value ?? ''
                   const url = new URL(window.location.href)
                   const params = new URLSearchParams(url.search)
                   params.set('${qsKey.page}', 1)
-                  params.set('${qsKey.query}', this.builder ?? '')
+                  params.set('${qsKey.query}', val)
                   window.location.href = '?' + params.toString()
-                } else $dispatch('on-query', this.builder)
-                const instance = wbs.getInstance('${upperFirst(container)}', $refs.query)
-                instance.hide()
-              }
-            }" x-init="
-              parse()
-              const ops = _.map(fields, f => (f + 'Op'))
-              const vals = _.map(fields, f => (f + 'Val'))
-              const vals2 = _.map(fields, f => (f + 'Val2'))
-              const watcher = ['selected', ...ops, ...vals, ...vals2].join(',')
-              $watch(watcher, v => rebuild())
-            " ${this.params.attr.modal ? '' : 'style="width:600px;"'}>
-              <c:grid-row gutter="2">
-                <c:grid-col col="12">
-                  <c:form-textarea x-model="builder" readonly rows="4"/>
-                </c:grid-col>
-                ${columns.join('\n')}
-              </c:grid-row>
-              <c:div flex="justify-content:end" margin="top-3">
-                <c:btn color="secondary" t:content="close" dismiss="${container}" />
-                <c:btn color="primary" t:content="apply" margin="start-2" @click="submit()" />
-                <c:btn color="primary" t:content="submitQuery" margin="start-2" @click="submit(true)" />
-              </c:div>
-            </c:${container}>
-          </c:form-input-addon>
-          <c:form-input-addon>
-            <c:btn t:content="submit" x-data="{
-              submit () {
-                const val = document.getElementById('${id}').value ?? ''
-                const url = new URL(window.location.href)
-                const params = new URLSearchParams(url.search)
-                params.set('${qsKey.page}', 1)
-                params.set('${qsKey.query}', val)
-                window.location.href = '?' + params.toString()
-              }
-            }" @click="submit" @on-submit.window="submit()" />
-          </c:form-input-addon>
-        </c:form-input>
-      `)
+                }
+              }" @click="submit" @on-submit.window="submit()" />
+            </c:form-input-addon>
+          </c:form-input>
+        `)
+      }
     }
   }
 }

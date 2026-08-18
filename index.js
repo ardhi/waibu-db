@@ -1,6 +1,6 @@
 import countRecord from './lib/method/count-record.js'
-import createAggregate from './lib/method/create-aggregate.js'
-import createHistogram from './lib/method/create-histogram.js'
+import aggregate from './lib/method/aggregate.js'
+import histogram from './lib/method/histogram.js'
 import createRecord from './lib/method/create-record.js'
 import findOneRecord from './lib/method/find-one-record.js'
 import findRecord from './lib/method/find-record.js'
@@ -59,8 +59,8 @@ async function factory (pkgName) {
 
       this.bindThis(
         countRecord,
-        createAggregate,
-        createHistogram,
+        aggregate,
+        histogram,
         createRecord,
         findOneRecord,
         findRecord,
