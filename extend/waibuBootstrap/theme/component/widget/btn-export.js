@@ -101,7 +101,7 @@ async function btnExport () {
               if (_.isEmpty(selector)) {
                 await wbs.notify('Cant get data selector', { type: 'danger' })
               } else {
-                const item = handler === 'list' ? this.extractTable(selector) : this.extractForm(selector)
+                const item = ['list', ''].includes(handler) ? this.extractTable(selector) : this.extractForm(selector)
                 await wbs.copyToClipboard(item)
               }
               instance.hide()

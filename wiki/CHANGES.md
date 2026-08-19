@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-08-19
+
+- [2.33.1] Bug fix in `wdb-btn-export` widget
+- [2.33.1] Bug fix in `export-handler.js`
+- [2.33.1] Bug fix in `util.js`
+
 ## 2026-08-18
 
 - [2.33.0] Update things to match `dobo@2.38.0`
