@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-10-19
+
+- [2.33.2] Bug fix in `get-schema-ext.js`
+
 ## 2026-08-19
 
 - [2.33.1] Bug fix in `wdb-btn-export` widget
