@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-10-21
+
+- [2.34.0] Add support for `_attachments`
+
 ## 2026-10-19
 
 - [2.33.2] Bug fix in `get-schema-ext.js`
