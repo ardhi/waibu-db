@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-11-02
+
+- [2.34.1] Bug fix in `echarts.js`
+- [2.34.1] Bug fix in `echarts-bar.js`
+- [2.34.1] Bug fix in `echarts-pie.js`
+
 ## 2026-10-21
 
 - [2.34.0] Add support for `_attachments`

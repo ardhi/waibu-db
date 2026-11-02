@@ -26,7 +26,7 @@ async function echarts () {
       this.params.attr['@load.window'] = 'await windowLoad()'
     }
 
-    _build = ({ setting = {}, onLoad = [] } = {}) => {
+    _build = ({ setting = {}, onLoad = [], data = [] } = {}) => {
       const { jsonStringify } = this.app.waibuMpa
       const { merge, isArray } = this.app.lib._
       if (!isArray(onLoad)) onLoad = [onLoad]
@@ -55,6 +55,7 @@ async function echarts () {
               ${onLoad.join('\n')}
             },
             option: ${jsonStringify(option, true)}
+            ${data.length > 0 ? (',' + data.join(',')) : ''}
           }
         })
       `)

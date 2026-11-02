@@ -37,11 +37,11 @@ async function echartsBar () {
         }]
       })
       const onLoad = []
-      if (this.params.attr.remote) {
-        const remote = this._parseBase64Attr(this.params.attr.remote)
-        onLoad.push(`
+      const remote = this.params.attr.remote ? this._parseBase64Attr(this.params.attr.remote) : {}
+      const data = [
+        `async load (params) {
           this.chart.showLoading('default', { text: '' })
-          const remote = ${jsonStringify(remote, true)}
+          const remote = params ?? ${jsonStringify(remote, true)}
           const agg = remote.filter.aggregate ?? 'count'
           const recs = await wmpa.fetchApi(remote.url, { fetching: false }, remote.filter)
           this.chart.hideLoading()
@@ -49,9 +49,14 @@ async function echartsBar () {
             xAxis: { data: _.map(recs, remote.key.name) },
             series: [{ type: 'bar', data: _.map(recs, remote.key.value ?? agg ) }]
           }
+        }`
+      ]
+      if (!this.params.attr.noAutoLoad) {
+        onLoad.push(`
+          this.load()
         `)
       }
-      this._build({ onLoad })
+      this._build({ onLoad, data })
     }
   }
 }
