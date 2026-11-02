@@ -37,13 +37,13 @@ async function table () {
       const count = get(locals, 'list.count', 0)
       const allowed = await this.isActionAllowed('READ')
       if (!allowed) {
-        const alert = '<c:alert color="error" t:content="accessDenied" margin="top-4"/>'
+        const alert = '<c:alert color="error" t:content="accessDenied" margin="top-4 x-4"/>'
         this.params.noTag = true
         this.params.html = await buildSentence(alert)
         return
       }
       if (count === 0 || data.length === 0) {
-        const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4"/>'
+        const alert = '<c:alert color="warning" t:content="noRecordFound" margin="top-4 x-4"/>'
         this.params.noTag = true
         this.params.html = await buildSentence(alert)
         return

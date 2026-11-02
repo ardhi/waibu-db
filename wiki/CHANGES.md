@@ -5,6 +5,9 @@
 - [2.34.1] Bug fix in `echarts.js`
 - [2.34.1] Bug fix in `echarts-bar.js`
 - [2.34.1] Bug fix in `echarts-pie.js`
+- [2.34.2] Bug fix in templates
+- [2.34.2] Bug fix in `helper.addOnsHandler()`
+- [2.34.2] Bug fix in `data-table.js` widget
 
 ## 2026-10-21
 
