@@ -1,9 +1,13 @@
 # Changes
 
+## 2026-11-08
+
+- [2.34.4] Bug fix in `echarts.js`
+
 ## 2026-11-05
 
-- [2.34.1] Bug fix in `echarts-bar.js`
-- [2.34.1] Bug fix in `echarts-pie.js`
+- [2.34.3] Bug fix in `echarts-bar.js`
+- [2.34.3] Bug fix in `echarts-pie.js`
 
 ## 2026-11-02
 

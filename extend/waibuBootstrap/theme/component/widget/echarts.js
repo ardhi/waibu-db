@@ -21,7 +21,7 @@ async function echarts () {
       }
       this.params.tag = 'div'
       this.params.attr.id = this.params.attr.id ?? generateId('alpha')
-      this.params.attr['x-data'] = `chart${this.params.attr.id}`
+      this.params.attr['x-data'] = `echart${this.params.attr.id}`
       this.params.attr['@resize.window.debounce.500ms'] = 'resize()'
       this.params.attr['@load.window'] = 'await windowLoad()'
     }
@@ -32,7 +32,7 @@ async function echarts () {
       if (!isArray(onLoad)) onLoad = [onLoad]
       const option = merge({}, this.defSetting, this.setting, setting)
       this.component.addScriptBlock('alpineInit', `
-        Alpine.data('chart${this.params.attr.id}', () => {
+        Alpine.data('echart${this.params.attr.id}', () => {
           let chart
           return {
             init () {
