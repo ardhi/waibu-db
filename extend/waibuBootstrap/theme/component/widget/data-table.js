@@ -24,7 +24,7 @@ async function table () {
       const { escape, attrToArray } = this.app.waibu
       const { groupAttrs } = this.app.waibuMpa
       const { isHtmlLink } = this.app.bajoExtra
-      const { getTruncated } = this.app.bajoTemplate
+      const { createTruncatedText } = this.app.lib.aneka
       const { get, omit, set, find, isEmpty, without, merge, intersection, isPlainObject } = this.app.lib._
       const { isSet } = this.app.lib.aneka
       const group = groupAttrs(this.params.attr, ['body', 'head', 'foot'])
@@ -168,7 +168,7 @@ async function table () {
             }
             value = formatted
           }
-          if (['object', 'array'].includes(prop.type) && !isHtmlLink(value)) value = getTruncated(value, 20) // TODO: should be handle by css instead
+          if (['object', 'array'].includes(prop.type) && !isHtmlLink(value)) value = createTruncatedText(value, 20) // TODO: should be handle by css instead
           if (!get(this.schema, 'view.noEscape', []).includes(f) && !isHtmlLink(value)) value = escape(value)
           const line = await buildTag({ tag: 'td', attr, html: value })
           lines.push(line)

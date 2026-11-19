@@ -1,7 +1,5 @@
 <c:card border>
-  <c:card-header>
-    <c:card-title t:content="<%= attr.name %>" />
-  </c:card-header>
+  <c:card-header tag="h6" t:content="<%= attr.name %>" />
   <c:card-body>
     <c:wdb-echarts style="height: 150px;" setting="<%= attr.setting %>">
     </c:wdb-echarts>

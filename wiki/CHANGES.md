@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-11-20
+
+- [2.35.0] `attachment` options can now accept plain object too
+- [2.35.0] Bug fix in `attachment` handling
+- [2.35.0] Bug fix in `dataOnly` handling
+- [2.35.0] Submit button can be omitted in `query` widget 
+
 ## 2026-11-08
 
 - [2.34.4] Bug fix in `echarts.js`

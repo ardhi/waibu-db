@@ -198,27 +198,32 @@ async function query () {
       } else {
         let placeholder = this.params.attr.placeholder
         if (!placeholder) placeholder = scanables.length > 0 ? req.t('queryHint%s', join(scanables, { separator: ', ', lastSeparator: 'or' })) : req.t('query')
+        const submitBtn = `
+          <c:form-input-addon>
+            <c:btn t:content="submit" @click="submit" @on-submit.window="submit()" />
+          </c:form-input-addon>`
         this.params.html = await this.component.buildSentence(`
-          <c:form-input type="search" placeholder="${placeholder}" id="${id}" x-data="{ query: '' }" x-init="
+          <c:div x-data="{ 
+            query: '',
+            submit () {
+              const val = document.getElementById('${id}').value ?? ''
+              const url = new URL(window.location.href)
+              const params = new URLSearchParams(url.search)
+              params.set('${qsKey.page}', 1)
+              params.set('${qsKey.query}', val)
+              window.location.href = '?' + params.toString()
+            }
+          }" x-init="
             const url = new URL(window.location.href)
             query = url.searchParams.get('${qsKey.query}') ?? ''
-          " x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="$dispatch('on-submit')">
-            <c:form-input-addon>
-              ${this.modal({ container, models, columns, fields, id })}
-            </c:form-input-addon>
-            <c:form-input-addon>
-              <c:btn t:content="submit" x-data="{
-                submit () {
-                  const val = document.getElementById('${id}').value ?? ''
-                  const url = new URL(window.location.href)
-                  const params = new URLSearchParams(url.search)
-                  params.set('${qsKey.page}', 1)
-                  params.set('${qsKey.query}', val)
-                  window.location.href = '?' + params.toString()
-                }
-              }" @click="submit" @on-submit.window="submit()" />
-            </c:form-input-addon>
-          </c:form-input>
+          ">
+            <c:form-input type="search" placeholder="${placeholder}" id="${id}" x-model="query" @on-query.window="query = $event.detail ?? ''" @keyup.enter="submit()">
+              <c:form-input-addon>
+                ${this.modal({ container, models, columns, fields, id })}
+              </c:form-input-addon>
+              ${this.params.attr.noSubmitButton ? '' : submitBtn}
+            </c:form-input>
+          </c:div>
         `)
       }
     }
