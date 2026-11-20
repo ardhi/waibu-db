@@ -6,6 +6,7 @@
 - [2.35.0] Bug fix in `attachment` handling
 - [2.35.0] Bug fix in `dataOnly` handling
 - [2.35.0] Submit button can be omitted in `query` widget 
+- [2.36.0] Refactoring everything related to attachment handling
 
 ## 2026-11-08
 
