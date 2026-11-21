@@ -21,20 +21,21 @@ async function pagination () {
       const { attrToObject } = this.app.waibu
       const { get, isNumber } = this.app.lib._
       const schema = get(this, 'component.locals.schema', {})
+      const dataKey = this.params.attr.dataKey ?? 'list'
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''
         return
       }
       let { count, limit, page } = attrToObject(this.params.attr.options)
-      count = count ?? get(this, 'component.locals.list.count', 0)
-      const data = get(this, 'component.locals.list.data', [])
+      count = count ?? get(this, `component.locals.${dataKey}.count`, 0)
+      const data = get(this, `component.locals.${dataKey}.data`, [])
       if (count === 0 || data.length === 0) {
         this.params.noTag = true
         this.params.html = ''
         return
       }
-      limit = limit ?? get(this, 'component.locals.list.limit', 25)
-      page = page ?? get(this, 'component.locals.list.page', 1)
+      limit = limit ?? get(this, `component.locals.${dataKey}.limit`, 25)
+      page = page ?? get(this, `component.locals.${dataKey}.page`, 1)
       const pages = paginationLayout(count, limit, page) ?? []
       this.params.noTag = true
       const group = groupAttrs(this.params.attr, ['pagination'])

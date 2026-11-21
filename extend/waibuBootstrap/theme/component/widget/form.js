@@ -65,7 +65,8 @@ async function form () {
             ao.position = ao.position ?? 'append'
           }
           let html
-          if (widget.component === 'form-plaintext' || this.params.attr.method !== 'POST') {
+          const roCmps = ['createdAt', 'updatedAt']
+          if (widget.component === 'form-plaintext' || this.params.attr.method !== 'POST' || roCmps.includes(widget.name)) {
             html = await WdbForm.handleRo.call(this, { attr, prop, widget })
           } else {
             html = await WdbForm.handleRw.call(this, { attr, prop, widget })

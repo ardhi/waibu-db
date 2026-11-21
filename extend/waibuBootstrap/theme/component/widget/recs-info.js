@@ -11,21 +11,22 @@ async function recsInfo () {
       const { attrToObject, attrToArray } = this.app.waibu
       const { get, isEmpty, omit, merge } = this.app.lib._
       const schema = get(this, 'component.locals.schema', {})
+      const dataKey = this.params.attr.dataKey ?? 'list'
       if (schema.view.disabled.includes('find')) {
         this.params.html = ''
         return
       }
       let { count, limit, page, pages } = attrToObject(this.params.attr.options)
-      count = count ?? get(this, 'component.locals.list.count', 0)
-      const data = get(this, 'component.locals.list.data', [])
+      count = count ?? get(this, `component.locals.${dataKey}.count`, 0)
+      const data = get(this, `component.locals.${dataKey}.data`, [])
       if (count === 0 || data.length === 0) {
         this.params.noTag = true
         this.params.html = ''
         return
       }
-      page = get(this, 'component.locals.list.page', page ?? 1)
-      limit = get(this, 'component.locals.list.limit', limit ?? 25)
-      pages = get(this, 'component.locals.list.pages', pages ?? 0)
+      page = get(this, `component.locals.${dataKey}.page`, page ?? 1)
+      limit = get(this, `component.locals.${dataKey}.limit`, limit ?? 25)
+      pages = get(this, `component.locals.${dataKey}.pages`, pages ?? 0)
 
       this.params.tag = 'div'
       this.params.attr.flex = 'justify-center:start align-items:center'

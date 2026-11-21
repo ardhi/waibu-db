@@ -211,7 +211,7 @@ async function query () {
               const params = new URLSearchParams(url.search)
               params.set('${qsKey.page}', 1)
               params.set('${qsKey.query}', val)
-              window.location.href = '?' + params.toString()
+              window.location.href = '${this.params.attr.href ?? ''}?' + params.toString()
             }
           }" x-init="
             const url = new URL(window.location.href)

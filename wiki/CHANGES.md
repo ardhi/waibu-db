@@ -1,5 +1,13 @@
 # Changes
 
+## 2026-11-22
+
+- [2.37.0] `recs-info` widget now accept `data-key` option
+- [2.37.0] `pagination` widget now accept `data-key` option
+- [2.37.0] Bug fix in `form` widget
+- [2.37.0] Crud handlers now support `page` locals
+- [2.37.0] Bug fix in crud methods when no data is returned
+
 ## 2026-11-20
 
 - [2.35.0] `attachment` options can now accept plain object too
