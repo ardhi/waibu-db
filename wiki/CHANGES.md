@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-11-23
+
+- [2.38.0] Add `view.qs` to `getSchemaExt()`
+
 ## 2026-11-22
 
 - [2.37.0] `recs-info` widget now accept `data-key` option
@@ -13,7 +17,7 @@
 - [2.35.0] `attachment` options can now accept plain object too
 - [2.35.0] Bug fix in `attachment` handling
 - [2.35.0] Bug fix in `dataOnly` handling
-- [2.35.0] Submit button can be omitted in `query` widget 
+- [2.35.0] Submit button can be omitted in `query` widget
 - [2.36.0] Refactoring everything related to attachment handling
 
 ## 2026-11-08
