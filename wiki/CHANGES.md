@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-11-25
+
+- [2.38.1] Bug fix in `lookup-select.js` widget
+- [2.38.1] Bug fix in `query.js` widget
+
 ## 2026-11-23
 
 - [2.38.0] Add `view.qs` to `getSchemaExt()`

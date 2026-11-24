@@ -27,7 +27,7 @@ async function lookupSelect () {
         attr[camelCase(`remote ${k}`)] = this.params.attr[k] ?? ref[k] ?? ref.field
       }
       const q = set({}, this.params.attr.searchField ?? get(ref, 'searchField', 'id'), ['__REGEXP__', '{searchItem}', 'i'])
-      attr.remoteQuery = base64JsonEncode({ $and: [parseQuery(get(ref, 'query', {})), q] })
+      attr.remoteQuery = base64JsonEncode({ $and: [parseQuery(get(ref, 'query', {}), this.component.model), q] })
       attr.remoteApiKey = true
       attr.clearBtn = true
       const sentence = `<c:form-select-ext ${Object.entries(attr).map(([k, v]) => `${kebabCase(k)}="${v}"`).join(' ')} />`

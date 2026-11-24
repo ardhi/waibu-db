@@ -203,7 +203,7 @@ async function query () {
             <c:btn t:content="submit" @click="submit" @on-submit.window="submit()" />
           </c:form-input-addon>`
         this.params.html = await this.component.buildSentence(`
-          <c:div x-data="{ 
+          <c:div x-data="{
             query: '',
             submit () {
               const val = document.getElementById('${id}').value ?? ''
