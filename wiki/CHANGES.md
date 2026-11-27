@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-11-27
+
+- [2.38.2] Bug fix in `data-table.js` widget
+
 ## 2026-11-25
 
 - [2.38.1] Bug fix in `lookup-select.js` widget

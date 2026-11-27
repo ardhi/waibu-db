@@ -144,7 +144,7 @@ async function table () {
           if (['datetime'].includes(prop.type) && dataValue instanceof Date && !isNaN(dataValue)) dataValue = escape(dataValue.toISOString())
           else if (['string', 'text', 'array', 'object'].includes(prop.type)) dataValue = escape(dataValue)
           let value = this.getRefValue({ field: f, data: d, refName: this.getRefName(f) }) ?? get(d, `_fmt.${f}`, d[f])
-          const attr = { dataValue, dataKey: prop.name, dataType: prop.type }
+          const attr = this.params.attr.noDataCell ? {} : { dataValue, dataKey: prop.name, dataType: prop.type }
           if (!disableds.includes('get')) attr.style = { cursor: 'pointer' }
           const formatCell = get(this.schema, `view.formatCell.${f}`)
           if (formatCell) merge(attr, await formatCell.call(this, value, d, { params: this.params, req }))
@@ -176,6 +176,7 @@ async function table () {
         const attr = { id: `rec-${d.id}` }
         if (!disableds.includes('update') || !disableds.includes('remove') || !disableds.includes('get')) attr['@click'] = `toggle('${d.id}')`
         if (!disableds.includes('get')) attr['@dblclick'] = `goDetails('${d.id}')`
+        if (!selection) delete attr['@click']
         items.push(await buildTag({ tag: 'tr', attr, html: lines.join('\n') }))
       }
       html.push(await buildTag({ tag: 'tbody', attr: group.body, html: items.join('\n') }))
