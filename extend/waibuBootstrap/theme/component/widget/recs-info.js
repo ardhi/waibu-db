@@ -49,7 +49,7 @@ async function recsInfo () {
         }
         const attr = group.dropdown
         attr.content = limit + ''
-        attr.color = attr.color ?? 'secondary-outline'
+        attr.triggerColor = attr.triggerColor ?? 'secondary-outline'
         html.push(await this.component.buildTag({ tag: 'dropdown', attr, html: items.join('\n') }))
         html.push(' ', req.t('recsPerPage'))
       }

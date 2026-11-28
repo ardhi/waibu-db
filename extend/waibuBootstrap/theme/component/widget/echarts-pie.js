@@ -13,6 +13,11 @@ async function echartsPie () {
         },
         series: [{
           type: 'pie',
+          label: {
+            textBorderWidth: 0,
+            textBorderColor: 'transparent'
+            // color: 'inherit'
+          },
           data: []
         }]
       })
@@ -20,6 +25,7 @@ async function echartsPie () {
       const remote = this.params.attr.remote ? this._parseBase64Attr(this.params.attr.remote) : {}
       const data = [
         `async load (params = {}) {
+          const textColor = getComputedStyle(document.body).color
           this.chart.showLoading('default', { text: '' })
           const remote = params.remote ?? ${jsonStringify(remote, true)}
           const agg = remote.filter.aggregate ?? 'count'
@@ -29,6 +35,7 @@ async function echartsPie () {
           const data = recs.map(r => ({ name: r[keyName], value: r[keyValue] }))
           this.chart.hideLoading()
           this.option = params.option ?? { series: [{ type: 'pie', data }]}
+          _.set(this.option, 'series.0.label.color', textColor, _.get(this.option, 'series.0.label.color'))
         }`
       ]
       if (!this.params.attr.noAutoLoad) {

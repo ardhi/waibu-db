@@ -41,6 +41,7 @@ async function echartsBar () {
       const remote = this.params.attr.remote ? this._parseBase64Attr(this.params.attr.remote) : {}
       const data = [
         `async load (params = {}) {
+          const textColor = getComputedStyle(document.body).color
           this.chart.showLoading('default', { text: '' })
           const remote = params.remote ?? ${jsonStringify(remote, true)}
           const agg = remote.filter.aggregate ?? 'count'
@@ -56,6 +57,8 @@ async function echartsBar () {
             xAxis: { data: _.map(recs, remote.key.name) },
             series: [{ type: style, smooth, data: _.map(recs, remote.key.value ?? agg ) }]
           }
+          _.set(this.option, 'xAxis.axisLabel.color', textColor, _.get(this.option, 'xAxis.axisLabel.color'))
+          _.set(this.option, 'yAxis.axisLabel.color', textColor, _.get(this.option, 'yAxis.axisLabel.color'))
         }`
       ]
       if (!this.params.attr.noAutoLoad) {

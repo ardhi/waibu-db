@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-11-28
+
+- [2.39.0] Update on `echarts*.js` widgets
+- [2.39.0] Update on `recs-info.js` widgets
+
 ## 2026-11-27
 
 - [2.38.2] Bug fix in `data-table.js` widget
