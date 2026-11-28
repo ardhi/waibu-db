@@ -114,7 +114,7 @@ async function btnExport () {
           toggle(delivery)
           $watch('delivery', val => toggle(val))
         ">
-          <c:grid-row gutter="2">
+          <c:grid-row>
             <c:grid-col col="6-md">
               <c:fieldset t:legend="delivery" legend-type="6">
                 <c:form-radio x-model="delivery" value="clipboard" t:label="copyClipboard" />

@@ -2,6 +2,7 @@
 
 ## 2026-11-28
 
+- [2.39.1] Bug fix in echarts label color
 - [2.39.0] Update on `echarts*.js` widgets
 - [2.39.0] Update on `recs-info.js` widgets
 

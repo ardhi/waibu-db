@@ -119,7 +119,7 @@ async function query () {
           const watcher = ['selected', ...ops, ...vals, ...vals2].join(',')
           $watch(watcher, v => rebuild())
         " ${this.params.attr.modal ? '' : 'style="width:600px;"'}>
-          <c:grid-row gutter="2">
+          <c:grid-row>
             <c:grid-col col="12">
               <c:form-textarea x-model="builder" readonly rows="4"/>
             </c:grid-col>

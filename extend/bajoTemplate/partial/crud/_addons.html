@@ -1,5 +1,12 @@
-<% for (const ao of arguments[0].addOns ?? []) { %>
-<c:div append-to="#sb-addons" margin="bottom-2">
-  <!-- include <%= ao.resource %>|<%= JSON.stringify(ao.data) %> -->
+<% const addons = arguments[0].addOns ?? [] %>
+<% if (addons.length >= 0) { %>
+<c:div append-to="#sb-addons">
+  <c:grid-row>
+  <% for (const ao of addons) { %>
+    <c:grid-col col="12">
+    <!-- include <%= ao.resource %>|<%= JSON.stringify(ao.data) %> -->
+    </c:grid-col>
+  <% } %>
+  </c:grid-row>
 </c:div>
 <% } %>
